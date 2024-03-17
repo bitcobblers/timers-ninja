@@ -29,12 +29,6 @@ jobs:
       - name: NPM Dependencies      
         run: "npm install"
       
-      - name: Install JsonResume
-        run: npm install resume-cli jsonresume-theme-relaxed
-    
-      - name: Generate Resume
-        run:  npx resume export public/sergei-golos-resume.pdf -t jsonresume-theme-relaxed
-
       - name: Generate Static Site
         run: npm run build            
 
