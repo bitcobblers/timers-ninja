@@ -1,6 +1,7 @@
 import { component$ } from "@builder.io/qwik";
+import { Action } from "@builder.io/qwik-city";
 
-export default component$(()=> {
+export default component$((args : { onLoad: Action})=> {
     return <>
          <div class="rounded-3xl p-8 xl:p-10 ring-1 ring-gray-200">
               <div class="flex items-center justify-between gap-x-4">
