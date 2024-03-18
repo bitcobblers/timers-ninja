@@ -5,11 +5,7 @@ import CountDown from "~/components/count-down/count-down";
 import TimerCard from "~/components/timer-card/timer-card";
 
 export default component$(() => {
-  const loadTimer = (steps: TimerStep[]) => {
-
-  }
-  
-  
+    
   const step : TimerStep = {
     seconds : 3
   }
