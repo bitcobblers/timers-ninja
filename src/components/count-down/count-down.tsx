@@ -1,9 +1,9 @@
 import { component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
 
-export default component$((args: { step: TimerStep }) => {
+export default component$(() => {
 
     const store = useStore({
-        count: args.step.seconds,
+        count: 3,
         hour: 0,
         minute: -1,
         second: -1,
@@ -30,7 +30,7 @@ export default component$((args: { step: TimerStep }) => {
         if (number < 0) {
             return ""
         }
-        
+
         if(number< 10) {
             return "0" + number;
         }        

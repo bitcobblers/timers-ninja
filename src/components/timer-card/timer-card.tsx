@@ -1,13 +1,13 @@
-import { component$ } from "@builder.io/qwik";
+import { Slot, component$ } from "@builder.io/qwik";
 
-export default component$(()=> {
+export default component$((args : {id: string, label?: string})=> {
     return <>
          <div class="rounded-3xl p-8 xl:p-10 ring-1 ring-gray-200">
               <div class="flex items-center justify-between gap-x-4">
-                <h3 id="tier-freelancer" class="text-lg font-semibold leading-8 text-gray-900">Timer</h3>
+                <h3 id="tier-freelancer" class="text-lg font-semibold leading-8 text-gray-900">{args.label || args.id}</h3>
               </div>
-              <p class="mt-4 text-sm leading-6 text-gray-600">Customized clock that counts up or counts down.</p>              
-              <a href="#" aria-describedby="tier-freelancer" class="mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300">Start Timer</a>
+              <p class="mt-4 text-sm leading-6 text-gray-600"><Slot /></p>              
+              <a href={"/timers/" + args.id}  aria-describedby="tier-freelancer" class="mt-6 block rounded-md py-2 px-3 text-center text-sm font-semibold leading-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 text-indigo-600 ring-1 ring-inset ring-indigo-200 hover:ring-indigo-300">Start Timer</a>
               <ul role="list" class="mt-8 space-y-3 text-sm leading-6 text-gray-600 xl:mt-10">
                 {/* <li class="flex gap-x-3">
                   <svg class="h-6 w-5 flex-none text-indigo-600" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
