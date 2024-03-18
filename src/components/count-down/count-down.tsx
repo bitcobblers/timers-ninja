@@ -5,8 +5,8 @@ export default component$((args: { step: TimerStep }) => {
     const store = useStore({
         count: args.step.seconds,
         hour: 0,
-        minute: 0,
-        second: 0,
+        minute: -1,
+        second: -1,
     });
 
 
@@ -27,6 +27,10 @@ export default component$((args: { step: TimerStep }) => {
 
 
     const padStart = (number: number) =>{        
+        if (number < 0) {
+            return ""
+        }
+        
         if(number< 10) {
             return "0" + number;
         }        
