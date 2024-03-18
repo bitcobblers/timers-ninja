@@ -22,10 +22,10 @@ export default component$(() => {
           </div>
           {/* <p class="mx-auto mt-6 max-w-2xl text-center text-lg leading-8 text-gray-600">Choose an affordable plan that’s packed with the best features for engaging your audience, creating customer loyalty, and driving sales.</p> */}
           <div class="isolate mx-auto mt-10 grid max-w-md grid-cols-1 gap-8 lg:mx-0 lg:max-w-none lg:grid-cols-4">
-            <TimerCard onLoad={loadTimer}/>
-            <TimerCard onLoad={loadTimer}/>
-            <TimerCard onLoaD={loadTimer}/>
-            <TimerCard onLoad={loadTimer}/>
+            <TimerCard />
+            <TimerCard />
+            <TimerCard />
+            <TimerCard />
           </div>
         </div>
         <div class="mx-auto max-w-7xl px-6 lg:px-8">
