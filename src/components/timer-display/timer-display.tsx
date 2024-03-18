@@ -1,9 +1,9 @@
 import { component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
 
-export default component$(() => {
-
-    const store = useStore({
-        count: 3,
+export default component$((args: {step?:number, start:number, end:number}) => {
+    
+    const store = useStore({    
+        count: args.start || 0,        
         hour: 0,
         minute: -1,
         second: -1,
@@ -13,15 +13,17 @@ export default component$(() => {
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(() => {                
         const update = () => {            
-            if (store.count == 0) {            
+            if ((args.start > args.end && store.count <= args.end) ||
+            (args.start < args.end && store.count >= args.end))                                
+            {
                 clearInterval(tmrId);                
             }
             
             store.second = store.count % 60;
             store.minute = Math.floor(store.count / 60);
-            store.count -= 1;
+            store.count += args.step || 1;
         };        
-        const tmrId = setInterval(update, 1000);    
+        const tmrId = setInterval(update, 1000 * Math.abs(args.step || 1));    
         return () => clearInterval(tmrId);
     });
 
@@ -44,6 +46,10 @@ export default component$(() => {
         </div>
     </>
 })
+
+export type TimerConfig = {
+    
+}
 
 export type TimerStep = {
     seconds: number;

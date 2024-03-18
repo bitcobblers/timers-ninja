@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from "storybook-framework-qwik";
-import CountDown from "~/components/count-down/count-down";
+import CountDown from "~/components/timer-display/timer-display";
 
 const meta: Meta<typeof CountDown>  = {
   component: CountDown,

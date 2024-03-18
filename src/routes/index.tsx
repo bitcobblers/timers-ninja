@@ -14,9 +14,15 @@ export default component$(() => {
             <TimerCard id="countdown?t=300" label="Count Down">
               Countdown from a set time (Default: 5min).
             </TimerCard>
-            <TimerCard id="stopwatch" label="Stopwatch" />
-            <TimerCard id="tabada" label="Tabada" />
-            <TimerCard id="custom" label="Build Your Own"/>
+            <TimerCard id="stopwatch" label="Stopwatch" >
+              Count up with w/ Laps
+            </TimerCard>            
+            <TimerCard id="tabada" label="Tabada">
+              The typical tabata timer, 20 second of work, 10 seconds of rest.
+            </TimerCard>
+            <TimerCard id="custom" label="Build Your Own">
+              Custom Markdown Timer Editor
+            </TimerCard>
           </div>  
     </>
   );
