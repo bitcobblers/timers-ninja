@@ -1,36 +1,11 @@
-import { component$, useStore, useVisibleTask$ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 
-export default component$((args: {step?:number, start:number, end:number}) => {
-    
-    const store = useStore({    
-        count: args.start || 0,        
-        hour: 0,
-        minute: -1,
-        second: -1,
-    });
-
-
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(() => {                
-        const update = () => {            
-            if ((args.start > args.end && store.count <= args.end) ||
-            (args.start < args.end && store.count >= args.end))                                
-            {
-                clearInterval(tmrId);                
-            }
-            
-            store.second = store.count % 60;
-            store.minute = Math.floor(store.count / 60);
-            store.count += args.step || 1;
-        };        
-        const tmrId = setInterval(update, 1000 * Math.abs(args.step || 1));    
-        return () => clearInterval(tmrId);
-    });
-
-
+export default component$((args: {hour?:number, minute:number, second:number}) => {
+         
     const padStart = (number: number) =>{        
+        number = number || 0
         if (number < 0) {
-            return ""
+            return "00"
         }
 
         if(number< 10) {
@@ -41,13 +16,14 @@ export default component$((args: {step?:number, start:number, end:number}) => {
             
     };
     return <>
-        <div class="text-center text-8xl font-bold text-gray-800 dark:text-white">
-            {padStart(store.minute)}:{padStart(store.second)}
+        <div class="text-center text-8xl font-bold text-gray-800 
+                    border-2 rounded-xl p-5 bg-green-50" >
+            {padStart(args.minute)}:{padStart(args.second)}
         </div>
     </>
 })
 
-export type TimerConfig = {
+export type TimerDisplayArgs = {
     
 }
 
