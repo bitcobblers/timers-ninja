@@ -1,6 +1,4 @@
----
-title: Tabata
----
+# Tabata
 
 ```clock
 Round [pushups, situps, pullups, squats]

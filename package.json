@@ -25,6 +25,8 @@
     "preview": "qwik build preview && vite preview --open",
     "start": "vite --open --mode ssr",
     "storybook": "storybook dev -p 6006",
+    "test.unit": "vitest components",
+    "test.unit.ui": "vitest --ui components",
     "qwik": "qwik"
   },
   "devDependencies": {
@@ -40,6 +42,7 @@
     "@types/node": "^20.11.6",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
+    "@vitest/ui": "^0.34.6",
     "autoprefixer": "^10.4.14",
     "eslint": "^8.56.0",
     "eslint-plugin-qwik": "^1.4.3",
@@ -52,6 +55,10 @@
     "typescript": "5.3.3",
     "undici": "*",
     "vite": "^5.0.12",
-    "vite-tsconfig-paths": "^4.2.1"
+    "vite-tsconfig-paths": "^4.2.1",
+    "vitest": "^0.34.6"
+  },
+  "dependencies": {
+    "chevrotain": "^11.0.3"
   }
 }

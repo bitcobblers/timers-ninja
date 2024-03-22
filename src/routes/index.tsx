@@ -17,7 +17,7 @@ export default component$(() => {
             <TimerCard id="stopwatch" label="Stopwatch" >
               Count up with w/ Laps
             </TimerCard>            
-            <TimerCard id="tabada" label="Tabada">
+            <TimerCard id="tabata" label="Tabata">
               The typical tabata timer, 20 second of work, 10 seconds of rest.
             </TimerCard>
             <TimerCard id="custom" label="Build Your Own">
