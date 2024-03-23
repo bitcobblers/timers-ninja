@@ -71,18 +71,8 @@ test(`parseYears`, async () => {
 
 test(`parseMultipleLines`, async () => {    
     const runtime = new MdTimerRuntime();
-    const { tokens, syntax, outcome } = runtime.read(`11
-    22`);
-    
-    console.log(tokens)
-    console.log(syntax)
-    console.log(outcome);
+    const { outcome } = runtime.read(`11\r\n-22`);
 
-    const timer1 = outcome[0].timer as Duration;
-    const timer2 = outcome[1].timer as Duration;
-    
-    
-
-    expect(timer1.seconds).toBe(11);    
-    expect(timer2.seconds).toBe(22);    
+    expect(outcome[0].timer.seconds).toBe(11);
+    expect(outcome[1].timer.seconds).toBe(22);    
 });
