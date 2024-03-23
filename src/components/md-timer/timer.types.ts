@@ -1,25 +1,29 @@
-import moment from "moment";
+import { Duration } from "luxon";
 
 export type TimeSegment = {
     current?: number;
     next?: TimeSegment;
 }
 
+export type TimerInstance = {
+    direction: string;
+    timer: Duration
+}
+
 export class SegmentComposer {
     
-    compose(item:TimeSegment): any{ 
+    compose(item:TimeSegment): Duration{ 
         const result = this.c(item);
         while(result.length < 6) {
             result.push(0);
         }
-        return moment(0,)
-            .add(result[5], 'years')
-            .add(result[4], 'months')
-            .add(result[3], 'days')
-            .add(result[2], 'hours')
-            .add(result[1], 'minutes')
-            .add(result[0], 'seconds')
-            .utc();
+        return Duration.fromObject({
+            'years': result[5], 
+            'months': result[4], 
+            'days': result[3], 
+            'hours': result[2], 
+            'minutes': result[1], 
+            'seconds': result[0]});
     }
     
     private c(item: TimeSegment): number[] {

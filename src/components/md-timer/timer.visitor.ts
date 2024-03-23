@@ -14,13 +14,13 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       this.validateVisitor();
     }
 
-    markdownstep() {
-        return []
+    markdownExpression(ctx: any) {
+        return [this.visit(ctx.timerExpression)]
     }
 
     timerExpression(ctx: any) {
         const composer = new SegmentComposer();
-        return{ 
+        return { 
             direction: ctx.timerDirection ? this.visit(ctx.timerDirection) : "count up", 
             timer: composer.compose(this.visit(ctx.timeSpanExpression))
         }

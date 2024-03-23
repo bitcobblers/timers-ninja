@@ -7,7 +7,8 @@ export class MdTimerParse extends CstParser {
         super(allTokens);
         const $ = this as any;       
 
-        $.RULE("markdownstep",()=> {
+        $.RULE("markdownExpression",()=> {
+            $.SUBRULE($.timerExpression)
         })
 
         $.RULE("timerExpression", () => {

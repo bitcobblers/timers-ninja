@@ -14,7 +14,7 @@ export class MdTimerRuntime {
     read(inputText: string) {
         const { tokens } = this.lexer.tokenize(inputText);
         const parser = new MdTimerParse(tokens) as any;        
-        const cst = parser.timerExpression();    
+        const cst = parser.markdownExpression();    
         return  {
             source: inputText,
             tokens,

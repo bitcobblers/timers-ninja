@@ -39,6 +39,7 @@
     "@storybook/html": "^7.4.6",
     "@storybook/html-vite": "^7.4.6",
     "@types/eslint": "^8.56.2",
+    "@types/luxon": "^3.4.2",
     "@types/node": "^20.11.6",
     "@typescript-eslint/eslint-plugin": "^6.19.1",
     "@typescript-eslint/parser": "^6.19.1",
@@ -46,6 +47,7 @@
     "autoprefixer": "^10.4.14",
     "eslint": "^8.56.0",
     "eslint-plugin-qwik": "^1.4.3",
+    "luxon": "^3.4.4",
     "postcss": "^8.4.31",
     "prettier": "^3.2.4",
     "prettier-plugin-tailwindcss": "^0.5.4",
@@ -59,7 +61,6 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "chevrotain": "^11.0.3",
-    "moment": "^2.30.1"
+    "chevrotain": "^11.0.3"
   }
 }
