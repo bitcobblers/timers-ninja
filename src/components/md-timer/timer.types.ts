@@ -12,13 +12,14 @@ export class SegmentComposer {
         while(result.length < 6) {
             result.push(0);
         }
-        return moment(0)
+        return moment(0,)
             .add(result[5], 'years')
             .add(result[4], 'months')
             .add(result[3], 'days')
             .add(result[2], 'hours')
             .add(result[1], 'minutes')
-            .add(result[0], 'seconds');
+            .add(result[0], 'seconds')
+            .utc();
     }
     
     private c(item: TimeSegment): number[] {
@@ -26,7 +27,7 @@ export class SegmentComposer {
             return [item.current||0];
         }
         const result = this.c(item.next);
-        result?.push(item.current || 0);
+        result.push(item.current || 0);
         return result;
     }
 }
