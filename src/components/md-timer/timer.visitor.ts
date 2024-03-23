@@ -14,8 +14,11 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       this.validateVisitor();
     }
 
-    markdownExpression(ctx: any) {
-        return [this.visit(ctx.timerExpression)]
+    markdownExpression(ctx: any) {                
+        return {
+            current: this.visit(ctx.lhs),
+            next: ctx.rhs && this.visit(ctx.rhs)
+        };
     }
 
     timerExpression(ctx: any) {
@@ -39,7 +42,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     timeSpan(cxt:any): TimeSegment{                        
         return {
            current : this.visit(cxt.lhs),
-           next: cxt.timeSpan && this.visit(cxt.timeSpan)
+           next: cxt.rhs && this.visit(cxt.rhs)
         };
     }
 

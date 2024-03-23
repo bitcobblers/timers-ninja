@@ -8,8 +8,12 @@ export class MdTimerParse extends CstParser {
         const $ = this as any;       
 
         $.RULE("markdownExpression",()=> {
-            $.SUBRULE($.timerExpression)
+            $.SUBRULE($.timerExpression, { LABEL: "lhs"})
+            $.MANY(() => {                
+                $.SUBRULE2($.markdownExpression, { LABEL: "rhs"})
+            })
         })
+
 
         $.RULE("timerExpression", () => {
             $.SUBRULE($.timerDirection);
@@ -30,7 +34,7 @@ export class MdTimerParse extends CstParser {
             $.SUBRULE($.numericExpression, { LABEL: "lhs"});
             $.MANY(() => {
                 $.CONSUME(Colon);
-                $.SUBRULE2($.timeSpan)                    
+                $.SUBRULE2($.timeSpan, { LABEL: "rhs"})                    
             });
         });
 
