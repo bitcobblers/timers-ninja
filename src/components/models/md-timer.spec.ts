@@ -1,6 +1,7 @@
 import { Lexer, createToken } from "chevrotain";
 import { test, expect } from "vitest";
 
+
 class MdTimer {
     steps:MdSpan[] = []
  }
@@ -54,8 +55,8 @@ let allTokens = [
     Integer    
   ];  
 
-  import { CstParser } from "chevrotain";
-import { Result } from "postcss";
+import { CstParser } from "chevrotain";
+import moment from "moment";
 
   // ----------------- parser -----------------
 class MdTimerParse extends CstParser {
@@ -73,6 +74,11 @@ class MdTimerParse extends CstParser {
         //         $.SUBRULE($.multiple);
         //     });
         // });
+
+        $.RULE("markdownstep",()=> {
+
+
+        })
 
         $.RULE("timerExpression", () => {
             $.SUBRULE($.timerDirection);
@@ -133,18 +139,22 @@ class MdTimerInterpreter extends BaseCstVisitor {
       this.validateVisitor();
     }
 
+    markdownstep(ctx:any) {
+        return []
+    }
+
     timerExpression(ctx: any) {
         let composer = new SegmentComposer();
         return{ 
-            direction: ctx.timerDirection ? this.visit(ctx.timerDirection) : "countup", 
+            direction: ctx.timerDirection ? this.visit(ctx.timerDirection) : "count up", 
             timer: composer.compose(this.visit(ctx.timeSpanExpression))
         }
     }
 
     timerDirection(ctx:any) {                
         return ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
-            ? "countdown"
-            : "countup";
+            ? "count down"
+            : "count up";
     }
 
     timeSpanExpression(ctx: any) {        
@@ -169,13 +179,18 @@ class MdTimerInterpreter extends BaseCstVisitor {
 
 class SegmentComposer {
     
-    compose(item:TimeSegment): Date{ 
+    compose(item:TimeSegment): any{ 
         var result = this.c(item);
         while(result.length < 6) {
             result.push(0);
         }
-        result = result.reverse();
-        return new Date(result[0], result[1], result[2], result[3], result[4], result[5], 0)
+        return moment(0)
+            .add(result[5], 'years')
+            .add(result[4], 'months')
+            .add(result[3], 'days')
+            .add(result[2], 'hours')
+            .add(result[1], 'minutes')
+            .add(result[0], 'seconds');
     }
     
     private c(item: TimeSegment): number[] {
@@ -188,30 +203,17 @@ class SegmentComposer {
     }
 }
 
-test(`ExpectingTokenToWork`, async () => {
-    let SelectLexer = new Lexer(allTokens);    
-    let inputText = "3:10:00";
-    let { tokens } = SelectLexer.tokenize(inputText);
-    parser.input = tokens;
-    let cst = parser.timerExpression();            
-    let visitor = new MdTimerInterpreter();
-    let result = visitor.visit(cst)
-    
-    console.log(result);
-
-  });
 
   test(`ExpectingTokenToWorkNegative`, async () => {
     let SelectLexer = new Lexer(allTokens);    
-    let inputText = "-3:10:00";
+    let inputText = "+1:80:5:3:10:00";
     let { tokens } = SelectLexer.tokenize(inputText);
     parser.input = tokens;
     let cst = parser.timerExpression();            
     let visitor = new MdTimerInterpreter();
     let result = visitor.visit(cst)
     
-    console.log(result);
-
+    expect(result.timer).toBeTruthy();
   });
 
 
@@ -219,7 +221,5 @@ test(`ExpectingTokenToWork`, async () => {
     var item: TimeSegment = { current: 3, next: { current: 10, next: { current: 0 } } };
     var composer = new SegmentComposer();
     var result = composer.compose(item);    
-
-    console.log(result);
     expect(result).toBeTruthy();
   });

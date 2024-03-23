@@ -59,6 +59,7 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "chevrotain": "^11.0.3"
+    "chevrotain": "^11.0.3",
+    "moment": "^2.30.1"
   }
 }
