@@ -1,19 +1,32 @@
 import type { IToken } from "chevrotain";
 import { CstParser } from "chevrotain";
-import { Colon, CountDirection, Integer, allTokens } from "./timer.tokens";
+import { Colon, CountDirection, GroupClose, GroupOpen, Identifier, Integer, allTokens } from "./timer.tokens";
 
 export class MdTimerParse extends CstParser {
     constructor(tokens?: IToken[]) {
         super(allTokens);
         const $ = this as any;       
-
-        $.RULE("markdownExpression",()=> {
-            $.SUBRULE($.timerExpression, { LABEL: "lhs"})
+        
+        $.RULE("markdown",()=> {                        
             $.MANY(() => {                
-                $.SUBRULE2($.markdownExpression, { LABEL: "rhs"})
+                $.SUBRULE($.markdownBlock, { LABEL: "blocks"})
             })
-        })
+        });
 
+        $.RULE("markdownBlock", () => {
+            $.OR([
+                { ALT: () => $.SUBRULE($.timerExpression) },
+                { ALT: () => $.SUBRULE($.compoundExpression) },
+            ]);                
+        });
+        
+        $.RULE("compoundExpression", () => {
+            $.CONSUME(GroupOpen);                 
+            $.MANY(() => {                
+                $.SUBRULE($.markdownBlock, { LABEL: "blocks"})
+            })         
+            $.CONSUME(GroupClose);
+        });
 
         $.RULE("timerExpression", () => {
             $.SUBRULE($.timerDirection);
@@ -40,6 +53,10 @@ export class MdTimerParse extends CstParser {
 
         $.RULE("numericExpression", ()=> {
             $.CONSUME(Integer)
+        })
+
+        $.RULE("labelExpression", () => {
+            $.CONSUME(Identifier)
         })
         
         $.performSelfAnalysis();

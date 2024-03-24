@@ -15,6 +15,9 @@ export const CountDirection = createToken({ name: "CountDirection", pattern: Lex
 export const Minus = createToken({ name: "Minus", pattern: /-/, categories: CountDirection });
 export const Plus = createToken({ name: "Plus", pattern: /\+/, categories: CountDirection});
 
+export const GroupOpen = createToken({ name: "LabelOpen", pattern: /\[/ });
+export const GroupClose = createToken({ name: "LabelClose", pattern: /\]/ });
+
 export const LabelOpen = createToken({ name: "LabelOpen", pattern: /\(/ });
 export const LabelClose = createToken({ name: "LabelClose", pattern: /\)/ });
 
@@ -22,6 +25,8 @@ export const allTokens = [
     WhiteSpace,
     Return,
     // "keywords" appear before the Identifier
+    GroupOpen,
+    GroupClose,
     
     LabelOpen,
     LabelClose,

@@ -14,21 +14,15 @@ export class MdTimerRuntime {
     read(inputText: string) {
         const { tokens } = this.lexer.tokenize(inputText);
         const parser = new MdTimerParse(tokens) as any;        
-        const cst = parser.markdownExpression();    
-        const outcome = [];
-        let raw = this.visitor.visit(cst);
-        do {
-            outcome.push(raw.current);
-            raw = raw.next;
-        }
-        while (raw)
-
+        const cst = parser.markdown();            
+        const raw = this.visitor.visit(cst);
+        
         return  {
             source: inputText,
             tokens,
             parser,
             syntax: cst,
-            outcome       
+            outcome : raw.flat(Infinity)      
         };
     }
 }

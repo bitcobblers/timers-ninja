@@ -13,12 +13,19 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       
       this.validateVisitor();
     }
+    //<markdownBlock>
+    //<compoundExpression>
+    //<labelExpression>
+    markdown(ctx: any) {                
+        return ctx.blocks.map((block:any) => this.visit(block));
+    }
+    markdownBlock(ctx:any) {        
+        return this.visit(ctx.timerExpression || ctx.compoundExpression);
+    }
 
-    markdownExpression(ctx: any) {                
-        return {
-            current: this.visit(ctx.lhs),
-            next: ctx.rhs && this.visit(ctx.rhs)
-        };
+    compoundExpression(ctx:any) {
+        console.log("TEST:", ctx.blocks)
+        return ctx.blocks.map((block:any) => this.visit(block));
     }
 
     timerExpression(ctx: any) {
@@ -49,5 +56,8 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     numericExpression(ctx: any) {  
         const value = ctx.Integer[0].image;
         return Number(value);
+    }
+    labelExpression(ctx:any) {
+        return ctx.Identifier[0].image;
     }
 }
