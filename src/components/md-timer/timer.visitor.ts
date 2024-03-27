@@ -1,6 +1,6 @@
+import { Duration } from "luxon";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import { SegmentComposer, type TimeSegment } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -13,51 +13,86 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       
       this.validateVisitor();
     }
-    //<markdownBlock>
-    //<compoundExpression>
-    //<labelExpression>
-    markdown(ctx: any) {                
-        return ctx.blocks.map((block:any) => this.visit(block));
+    
+    /// High level entry point, contains any number of simple of compound timers.
+    timerMarkdown(ctx: any) {                
+        return ctx.blocks.map((block:any) => block && this.visit(block)).flat(Infinity);
     }
-    markdownBlock(ctx:any) {        
-        return this.visit(ctx.timerExpression || ctx.compoundExpression);
+    
+    timerBlock(ctx:any) {                        
+        const blocks = [];
+        if (ctx.compoundExpression)
+        {
+            blocks.push(this.visit(ctx.compoundExpression))
+        }
+        else { 
+            blocks.push(this.visit(ctx.timerExpression));
+        }
+                        
+        return blocks;
+    }
+    
+    compoundTimer(ctx:any) {        
+        // TODO needs to handle the timerMultiplier
+        return ctx.blocks.map((block:any) => this.visit(block)).flat(Infinity) ;
     }
 
-    compoundExpression(ctx:any) {
-        console.log("TEST:", ctx.blocks)
-        return ctx.blocks.map((block:any) => this.visit(block));
-    }
-
-    timerExpression(ctx: any) {
-        const composer = new SegmentComposer();
+    simpleTimer(ctx: any) {        
+        // TODO needs to handle the timerMultiplier
         return { 
             direction: ctx.timerDirection ? this.visit(ctx.timerDirection) : "count up", 
-            timer: composer.compose(this.visit(ctx.timeSpanExpression))
+            timer: this.visit(ctx.timeSpanExpression)
         }
     }
 
-    timerDirection(ctx:any) {                
-        return ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
-            ? "count down"
-            : "count up";
+    timerValue(cxt:any): Duration{                                
+        const segments = cxt.segments != null 
+        ? cxt.segments.map((block:any) => this.visit(block))
+        : [];
+        while(segments.length < 6) {
+            segments.push(0);
+        }
+        
+        return Duration.fromObject({
+            'years': segments[5], 
+            'months': segments[4], 
+            'days': segments[3], 
+            'hours': segments[2], 
+            'minutes': segments[1], 
+            'seconds': segments[0]});          
     }
 
-    timeSpanExpression(ctx: any) {        
-        return this.visit(ctx.timeSpan);
+    timerMultiplier(ctx:any) {        
+        return ctx.valueExpression.map((value:any)=> this.visit(value));
     }
+    multiplierValue(ctx:any) {        
+        const outcome = [];
+        if (ctx.numericExpression) {
+            const count = this.visit(ctx.numericExpression);            
+            for(let index = 0; index < count; index++) {
+                outcome.push({label: '', index: index})
+            }
+        }
 
-    timeSpan(cxt:any): TimeSegment{                        
-        return {
-           current : this.visit(cxt.lhs),
-           next: cxt.rhs && this.visit(cxt.rhs)
-        };
+        if (ctx.labelExpression) {
+            const label = this.visit(ctx.labelExpression);                        
+            outcome.push({label: label});
+        }        
+        return outcome;
     }
-
-    numericExpression(ctx: any) {  
+       
+    numericValue(ctx: any) : number {  
         const value = ctx.Integer[0].image;
         return Number(value);
     }
-    labelExpression(ctx:any) {
+    
+    stringValue(ctx:any): string {
         return ctx.Identifier[0].image;
     }
+
+    directionValue(ctx:any) {                
+        return ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
+            ? "count down"
+            : "count up";
+    }    
 }

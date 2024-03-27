@@ -14,7 +14,7 @@ export class MdTimerRuntime {
     read(inputText: string) {
         const { tokens } = this.lexer.tokenize(inputText);
         const parser = new MdTimerParse(tokens) as any;        
-        const cst = parser.markdown();            
+        const cst = parser.timerMarkdown();            
         const raw = this.visitor.visit(cst);
         
         return  {
@@ -22,7 +22,7 @@ export class MdTimerRuntime {
             tokens,
             parser,
             syntax: cst,
-            outcome : raw.flat(Infinity)      
+            outcome : raw     
         };
     }
 }

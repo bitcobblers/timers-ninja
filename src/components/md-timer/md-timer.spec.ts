@@ -11,8 +11,9 @@ test(`parsedDirectionUpDefault`, async () => {
 
 test(`parsedDirectionUpExplicit`, async () => {    
     const runtime = new MdTimerRuntime();
-    const { outcome } = runtime.read("+11");    
+    const {syntax,  outcome } = runtime.read("+11");    
     
+    console.log("OUTCOME:" , outcome ,  syntax.children.blocks[1])
     expect(outcome[0].direction).toBe("count up");    
 });
 
@@ -96,3 +97,16 @@ test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {
     expect(outcome[1].timer.seconds).toBe(22);    
     expect(outcome[2].timer.seconds).toBe(33);    
 });
+
+
+test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read(`[\r\n11\r\n-22\r\n](test,test)\r\n33`);
+    
+    expect(outcome[0].timer.seconds).toBe(11);
+    expect(outcome[1].timer.seconds).toBe(22);    
+    expect(outcome[2].timer.seconds).toBe(11);
+    expect(outcome[3].timer.seconds).toBe(22);        
+    expect(outcome[4].timer.seconds).toBe(33);    
+});
+
