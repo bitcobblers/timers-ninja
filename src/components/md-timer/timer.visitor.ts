@@ -30,7 +30,10 @@ export class MdTimerInterpreter extends BaseCstVisitor {
             for (const label of labels) {
                 for (const index of outcome) {                
                     if (index != null) {                    
-                        blocks.push({ ...index, label})
+                        blocks.push({ ...index, 
+                            label : index.label ? label.label + " - " + index.label
+                            : label.label
+                        })
                     }
                 }
             }
@@ -81,7 +84,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
         if (ctx.numericValue) {
             const count = this.visit(ctx.numericValue);            
             for(let index = 0; index < count; index++) {
-                outcome.push({label: '', index: index})
+                outcome.push({label: 'Round '+ (index + 1), index: index})
             }
         }
 

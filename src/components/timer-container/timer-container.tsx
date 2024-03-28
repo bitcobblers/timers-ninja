@@ -8,8 +8,8 @@ export type timerArgs = {
 }
 
 export default component$((args:any) => {        
-    //console.log(args);
-    const store = useStore({ ...args.timer});
+   
+    const store = useStore({ ...args.timer, direction: args.direction, label: args.label });
 
     
     // eslint-disable-next-line qwik/no-use-visible-task

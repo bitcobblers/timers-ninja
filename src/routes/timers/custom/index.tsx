@@ -4,8 +4,8 @@ import TimerContainer from "~/components/timer-container/timer-container";
 
 
 export default component$(() => {           
-    const markdown = useStore({value: "11(2)"});    
-    const init = useStore({value: markdown.value });
+    const init = "11(2)";
+    const markdown = useStore({value: init});        
     const result = useSignal([]);   
        
     useTask$(({ track }) => {
@@ -13,6 +13,7 @@ export default component$(() => {
         const input = markdown.value;
         try {
             const { outcome} = new MdTimerRuntime().read(input);                        
+            console.log(outcome)
             result.value = outcome;        
         }
         catch (ex) {
@@ -28,10 +29,10 @@ export default component$(() => {
     });
     
     return <> 
-        <textarea value={init.value} onKeyUp$={keyPress} onBlur$={blur} rows={10} class="bg-slate-50 w-full" />            
+        <textarea value={init} onKeyUp$={keyPress} onBlur$={blur} rows={10} class="bg-slate-50 w-full" />            
         <div>
             {result.value.map((timer :any, index:number) => { 
-                return <TimerContainer key={index} {...timer} /> })}
+                return <TimerContainer key={[index, timer.direction, timer.label, timer.timer.seconds].join("-")} {...timer} /> })}
         </div>        
     </>
 });
