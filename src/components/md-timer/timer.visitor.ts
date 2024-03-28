@@ -1,4 +1,3 @@
-import { Duration } from "luxon";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
 
@@ -56,7 +55,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
         }]
     }
 
-    timerValue(cxt:any): Duration{                                        
+    timerValue(cxt:any): any{                                        
         const segments = cxt.segments != null         
         ? cxt.segments.map((block:any) => this.visit(block)).reverse()
         : [];
@@ -65,13 +64,13 @@ export class MdTimerInterpreter extends BaseCstVisitor {
             segments.push(0);
         }
 
-        return Duration.fromObject({
+        return {
             'years': segments[5], 
             'months': segments[4], 
             'days': segments[3], 
             'hours': segments[2], 
             'minutes': segments[1], 
-            'seconds': segments[0]});          
+            'seconds': segments[0]};          
     }
 
     timerMultiplier(ctx:any) {        

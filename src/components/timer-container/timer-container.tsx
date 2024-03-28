@@ -2,13 +2,15 @@ import { component$, useStore, useVisibleTask$} from "@builder.io/qwik";
 import TimerDisplay from "../timer-display/timer-display";
 import Action from "../action/action";
 
-export default component$(() => {        
-    const store = useStore({    
-        count: 0,        
-        hour: -1,
-        minute: -1,
-        second: -1,    
-    });
+export type timerArgs = {
+    timer : any,
+    label : string,
+    direction : string,
+}
+
+export default component$((args:any) => {        
+    //console.log(args);
+    const store = useStore({ ...args.timer});
 
     
     // eslint-disable-next-line qwik/no-use-visible-task
@@ -30,8 +32,7 @@ export default component$(() => {
     
     return <div>        
          <TimerDisplay {...store} />
-         <div class="flex">
-            <Action label="Action"/>                            
+         <div class="flex">           
         </div>
     </div>
 });
