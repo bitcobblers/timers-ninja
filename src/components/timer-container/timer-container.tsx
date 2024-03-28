@@ -1,4 +1,4 @@
-import { component$, useStore, useVisibleTask$} from "@builder.io/qwik";
+import { component$, useStore} from "@builder.io/qwik";
 import TimerDisplay from "../timer-display/timer-display";
 
 export type timerArgs = {
