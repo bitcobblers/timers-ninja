@@ -20,39 +20,40 @@ export class MdTimerInterpreter extends BaseCstVisitor {
         return result;
     }
     
-    timerBlock(ctx:any) {                        
+    timerBlock(ctx:any) {                                        
         const blocks = [];
-        if (ctx.compoundTimer)
+        if (ctx.compoundTimer || ctx.simpleTimer)
         {
-            const outcome = this.visit(ctx.compoundTimer);        
-            for (const index of outcome) {
-                if (index != null) {
-                    blocks.push(index)
+            const outcome = this.visit(ctx.compoundTimer || ctx.simpleTimer).flat(Infinity);        
+            const labels = ctx.timerMultiplier 
+            ? this.visit(ctx.timerMultiplier) 
+            : [ { label: '' }]            
+            for (const label of labels) {
+                for (const index of outcome) {                
+                    if (index != null) {                    
+                        blocks.push({ ...index, label})
+                    }
                 }
             }
-        }
-        if (ctx.simpleTimer) { 
-            const singOutcome = this.visit(ctx.simpleTimer);            
-            blocks.push(singOutcome);
         }
                         
         return blocks;
     }
     
-    compoundTimer(ctx:any) {        
-        // TODO needs to handle the timerMultiplier
-        return ctx.blocks.map((block:any) => this.visit(block));
+    compoundTimer(ctx:any) {                       
+        return ctx.blocks
+            .map((block:any) => this.visit(block));
     }
 
-    simpleTimer(ctx: any) {        
-        // TODO needs to handle the timerMultiplier
+    simpleTimer(ctx: any) {                
         const direction = ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
             ? "count down"
             : "count up";        
-        return { 
+                
+        return [{ 
             direction,
             timer: this.visit(ctx.timerValue)
-        }
+        }]
     }
 
     timerValue(cxt:any): Duration{                                        
@@ -74,19 +75,19 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     }
 
     timerMultiplier(ctx:any) {        
-        return ctx.valueExpression.map((value:any)=> this.visit(value));
+        return ctx.multiplierValue?.flatMap((value:any)=> this.visit(value)) || [];
     }
     multiplierValue(ctx:any) {        
         const outcome = [];
-        if (ctx.numericExpression) {
-            const count = this.visit(ctx.numericExpression);            
+        if (ctx.numericValue) {
+            const count = this.visit(ctx.numericValue);            
             for(let index = 0; index < count; index++) {
                 outcome.push({label: '', index: index})
             }
         }
 
-        if (ctx.labelExpression) {
-            const label = this.visit(ctx.labelExpression);                        
+        if (ctx.stringValue) {
+            const label = this.visit(ctx.stringValue);                        
             outcome.push({label: label});
         }        
         return outcome;

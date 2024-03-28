@@ -81,8 +81,7 @@ test(`parseMultipleLines`, async () => {
 
 test(`parseMultipleLinesInGroup`, async () => {    
     const runtime = new MdTimerRuntime();
-    const { outcome } = runtime.read(`[11\r\n-22]`);
-    
+    const { outcome } = runtime.read(`[11\r\n-22]`);    
     expect(outcome[0].timer.seconds).toBe(11);
     expect(outcome[1].timer.seconds).toBe(22);    
 });
@@ -100,7 +99,7 @@ test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {
 
 test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {    
     const runtime = new MdTimerRuntime();
-    const { outcome } = runtime.read(`[\r\n11\r\n-22\r\n](test,test)\r\n33`);
+    const { outcome } = runtime.read(`[\r\n11\r\n-22\r\n](test1,test2)\r\n33`);
     
     expect(outcome[0].timer.seconds).toBe(11);
     expect(outcome[1].timer.seconds).toBe(22);    
@@ -109,3 +108,10 @@ test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {
     expect(outcome[4].timer.seconds).toBe(33);    
 });
 
+test(`multiplierOnTimer`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("11(2)");        
+    const timer = outcome[1].timer as Duration;
+    
+    expect(timer.seconds).toBe(11);    
+});

@@ -17,7 +17,10 @@ export class MdTimerParse extends CstParser {
             $.OR([                
                 { ALT: () => $.SUBRULE($.compoundTimer) },
                 { ALT: () => $.SUBRULE($.simpleTimer) }
-            ]);                                
+            ]);   
+            $.OPTION(() => {
+                $.SUBRULE($.timerMultiplier)
+            })                             
         });
         
         $.RULE("compoundTimer", () => {
@@ -25,20 +28,14 @@ export class MdTimerParse extends CstParser {
             $.MANY(() => {                
                 $.SUBRULE($.timerBlock, { LABEL: "blocks"})
             })         
-            $.CONSUME(GroupClose);
-            $.OPTION(() => {
-                $.SUBRULE($.timerMultiplier)
-            })
+            $.CONSUME(GroupClose);            
         });
        
     $.RULE("simpleTimer", () => {            
             $.OPTION(() => {
                 $.CONSUME(CountDirection, {label: 'directionValue'});            
               });
-            $.SUBRULE($.timerValue)
-            $.OPTION2(() => {
-                $.SUBRULE($.timerMultiplier)
-            })
+            $.SUBRULE($.timerValue)            
         })
 
     $.RULE("timerValue", () => {            
