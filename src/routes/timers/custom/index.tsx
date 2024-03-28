@@ -4,7 +4,12 @@ import TimerContainer from "~/components/timer-container/timer-container";
 
 
 export default component$(() => {           
-    const init = "11(2)";
+    const init = `[
+    [   
+        -20(Work)
+        -10(Rest)
+    ](8)
+](pushups, pullups)`;
     const markdown = useStore({value: init});        
     const result = useSignal([]);   
        
