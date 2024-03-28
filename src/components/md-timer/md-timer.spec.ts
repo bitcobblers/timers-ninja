@@ -11,9 +11,8 @@ test(`parsedDirectionUpDefault`, async () => {
 
 test(`parsedDirectionUpExplicit`, async () => {    
     const runtime = new MdTimerRuntime();
-    const {syntax,  outcome } = runtime.read("+11");    
+    const { outcome } = runtime.read("+11");    
     
-    console.log("OUTCOME:" , outcome ,  syntax.children.blocks[1])
     expect(outcome[0].direction).toBe("count up");    
 });
 
@@ -58,7 +57,7 @@ test(`parsedDays`, async () => {
 
 test(`parseMonths`, async () => {    
     const runtime = new MdTimerRuntime();
-    const { outcome } = runtime.read("11:00:00:00:00");
+    const {outcome} = runtime.read("11:00:00:00:00");
     const timer = outcome[0].timer as Duration    
     expect(timer.months).toBe(11);
 });

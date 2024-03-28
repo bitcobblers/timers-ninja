@@ -27,20 +27,22 @@ export class MdTimerParse extends CstParser {
             })         
             $.CONSUME(GroupClose);
             $.OPTION(() => {
-            $.SUBRULE($.timerMultiplier)
+                $.SUBRULE($.timerMultiplier)
             })
         });
        
-    $.RULE("simpleTimer", () => {
-            $.SUBRULE($.directionValue);
-            $.SUBRULE($.timerValue)
+    $.RULE("simpleTimer", () => {            
             $.OPTION(() => {
-            $.SUBRULE($.timerMultiplier)
+                $.CONSUME(CountDirection, {label: 'directionValue'});            
+              });
+            $.SUBRULE($.timerValue)
+            $.OPTION2(() => {
+                $.SUBRULE($.timerMultiplier)
             })
         })
 
     $.RULE("timerValue", () => {            
-            $.MANY_SEP({
+            $.AT_LEAST_ONE_SEP({
                 SEP: Colon,
                 DEF: () => {
                 $.SUBRULE($.numericValue, { LABEL: "segments"})
@@ -74,12 +76,7 @@ export class MdTimerParse extends CstParser {
         $.RULE("stringValue", () => {
             $.CONSUME(Identifier)
         })
-        $.RULE("directionValue", () => {
-          $.OPTION(() => {
-            $.CONSUME(CountDirection);            
-          });
-        })
-        
+     
         $.performSelfAnalysis();
 
         if (tokens) {

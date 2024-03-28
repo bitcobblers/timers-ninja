@@ -16,17 +16,24 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     
     /// High level entry point, contains any number of simple of compound timers.
     timerMarkdown(ctx: any) {                
-        return ctx.blocks.map((block:any) => block && this.visit(block)).flat(Infinity);
+        const result = ctx.blocks.flatMap((block:any) => block && this.visit(block));        
+        return result;
     }
     
     timerBlock(ctx:any) {                        
         const blocks = [];
-        if (ctx.compoundExpression)
+        if (ctx.compoundTimer)
         {
-            blocks.push(this.visit(ctx.compoundExpression))
+            const outcome = this.visit(ctx.compoundTimer);        
+            for (const index of outcome) {
+                if (index != null) {
+                    blocks.push(index)
+                }
+            }
         }
-        else { 
-            blocks.push(this.visit(ctx.timerExpression));
+        if (ctx.simpleTimer) { 
+            const singOutcome = this.visit(ctx.simpleTimer);            
+            blocks.push(singOutcome);
         }
                         
         return blocks;
@@ -34,25 +41,29 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     
     compoundTimer(ctx:any) {        
         // TODO needs to handle the timerMultiplier
-        return ctx.blocks.map((block:any) => this.visit(block)).flat(Infinity) ;
+        return ctx.blocks.map((block:any) => this.visit(block));
     }
 
     simpleTimer(ctx: any) {        
         // TODO needs to handle the timerMultiplier
+        const direction = ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
+            ? "count down"
+            : "count up";        
         return { 
-            direction: ctx.timerDirection ? this.visit(ctx.timerDirection) : "count up", 
-            timer: this.visit(ctx.timeSpanExpression)
+            direction,
+            timer: this.visit(ctx.timerValue)
         }
     }
 
-    timerValue(cxt:any): Duration{                                
-        const segments = cxt.segments != null 
-        ? cxt.segments.map((block:any) => this.visit(block))
+    timerValue(cxt:any): Duration{                                        
+        const segments = cxt.segments != null         
+        ? cxt.segments.map((block:any) => this.visit(block)).reverse()
         : [];
+
         while(segments.length < 6) {
             segments.push(0);
         }
-        
+
         return Duration.fromObject({
             'years': segments[5], 
             'months': segments[4], 
@@ -88,11 +99,5 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     
     stringValue(ctx:any): string {
         return ctx.Identifier[0].image;
-    }
-
-    directionValue(ctx:any) {                
-        return ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
-            ? "count down"
-            : "count up";
-    }    
+    }  
 }
