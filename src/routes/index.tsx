@@ -93,7 +93,7 @@ const TimerPage = component$((params: { init : string }) => {
     })
     const getKey = (index: number, timer:any) => {
         const t = timer.timer;
-        [index, timer.direction, timer.label, t.years, t.months, t.days, t.hours, t.minutes, t.seconds].join("-")
+        return [index, timer.direction, timer.label, t.years, t.months, t.days, t.hours, t.minutes, t.seconds].join("-")
     }
     return <Container>                                   
                 <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
