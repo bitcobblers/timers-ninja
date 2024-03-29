@@ -6,7 +6,7 @@ export interface TimeLineEntryProperties {
   highlights: string[],
   company: string,
   website?: string,
-  copmanyLogo?: string,
+  companyLogo?: string,
 }
 
 export default component$(() => {
