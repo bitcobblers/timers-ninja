@@ -10,9 +10,6 @@ export default component$((props: any) => {
   });
   const dateString = formatter.format(date);  
   const store = useStore({ ...props.timer, direction: props.direction, label: props.label });
-  useTask$(() =>{
-    console.log(props);
-  })
   return (
     <article id="commit-message-suggestions" class="">
       <div>    

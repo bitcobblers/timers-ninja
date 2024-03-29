@@ -44,11 +44,8 @@ export default component$(() => {
     useTask$(({ track }) => {
         track(() => markdown.value);
         const input = markdown.value;
-        try {
-            console.log("Task", input)
-            const { outcome} = new MdTimerRuntime().read(input);                        
-            console.log(outcome)
-                        
+        try {            
+            const { outcome} = new MdTimerRuntime().read(input);                                                            
             result.value = outcome.map((timer:any) => {
                 return { ...timer, startDate: DateTime.now().toString() }
             });        

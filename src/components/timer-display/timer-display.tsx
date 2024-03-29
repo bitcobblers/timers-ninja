@@ -1,8 +1,7 @@
 import { component$ } from "@builder.io/qwik";
 
 export default component$((args: {hours?:number, minutes:number, seconds:number, label: string, direction: string}) => {
-    const label = args.label || "unnamed";
-    console.log(args);
+    const label = args.label || "unnamed";    
     const padStart = (number: number) =>{        
         number = number || 0
         if (number < 0) {

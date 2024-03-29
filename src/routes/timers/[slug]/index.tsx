@@ -10,10 +10,8 @@ const metaGlobComponents: Record<string, any> = import.meta.glob(
       eager: isDev ? false : true,
     }
   );
-export default component$(() => {
-    
-    const { params } = useLocation();
-    console.log(params)
+export default component$(() => {    
+    const { params } = useLocation();    
     return <p>Example: {params.slug}</p>;
 })
 
