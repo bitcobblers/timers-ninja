@@ -61,6 +61,8 @@
     "vitest": "^0.34.6"
   },
   "dependencies": {
-    "chevrotain": "^11.0.3"
+    "@qwikest/icons": "^0.0.13",
+    "chevrotain": "^11.0.3",
+    "codemirror": "^6.0.1"
   }
 }
