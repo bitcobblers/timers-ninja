@@ -8,6 +8,7 @@ import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
 import Present from "~/components/Present";
 
+
 const Container = component$(() => {
     return <>
         <div class="relative flex-none overflow-hidden px-6 lg:pointer-events-none lg:fixed lg:inset-0 lg:flex lg:px-0 bg-gray-900 lg:bg-transparent" >
@@ -15,6 +16,13 @@ const Container = component$(() => {
             <div class="relative flex w-full lg:pointer-events-auto         
           lg:mr-[calc(max(2rem,50%-38rem))] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-2">
               <div class="mx-auto max-w-lg md:mx-64 lg:mx-[calc(max(2rem,50%-32rem))] lg:flex lg:w-96 lg:max-w-none lg:flex-col lg:before:flex-1 lg:before:pt-6">              
+              <img
+                    height={256}
+                    width={256}
+                    class="mx-auto h-64 w-64 rounded-full"
+                    src="timer-ninja.png"
+                    alt={`Timers Ninja Image`}
+                />
                 <Slot name="editor" />              
                 <div class="flex flex-1 items-end justify-center pb-4 lg:justify-center lg:pb-6 lg:z-40">
                   

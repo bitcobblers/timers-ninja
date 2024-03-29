@@ -4,6 +4,7 @@ import { EditorState } from "@codemirror/state"
 import { EditorView, } from "@codemirror/view"
 import { basicSetup } from "codemirror";
 import { ViewPlugin } from "@codemirror/view"
+import {oneDark} from "@codemirror/theme-one-dark"
 
 export type EditorProps = {
   value: string,
@@ -23,14 +24,14 @@ export default component$((params: EditorProps) => {
 
     const startState = EditorState.create({
       doc: params.value,
-      extensions: [basicSetup, notify]
+      extensions: [basicSetup, oneDark]
     })
 
 
     const view = new EditorView({
       state: startState,
       parent: args.target.getElementById("editor"),
-      extensions: [notify]
+      extensions: [notify ]
     })
     view.focus();
   }));
