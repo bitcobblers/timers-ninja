@@ -50,7 +50,7 @@ export default component$((params: EditorProps) => {
 
     const startState = EditorState.create({
       doc: params.value,
-      extensions: [basicSetup, oneDark]
+      extensions: [basicSetup, notify, oneDark]
     })
 
 

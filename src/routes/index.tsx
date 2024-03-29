@@ -78,7 +78,8 @@ const TimerPage = component$((params: { init : string }) => {
                     .toHuman({ unitDisplay: "short" });
 
                 return { ...timer, startDate:  display }
-            });        
+            });
+            console.log("Updated", result.value)        
         }
         catch (ex) {
             console.log(ex)
@@ -88,6 +89,7 @@ const TimerPage = component$((params: { init : string }) => {
     const onUpdate = $((input:string)=> {
         //console.log("update", input);
         markdown.value = input;
+        console.log(input);
     })
     const getKey = (index: number, timer:any) => {
         const t = timer.timer;
