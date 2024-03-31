@@ -18,7 +18,6 @@ export default component$((args: {hours?:number, minutes:number, seconds:number,
     return <>
         <div class="font-bold text-gray-800 
                     border-2 rounded-xl p-5 bg-green-50" >            
-            <div>{label} - {args.direction}</div>
             <div class="text-center text-8xl">
                 {padStart(args.minutes)}:{padStart(args.seconds)}
             </div>

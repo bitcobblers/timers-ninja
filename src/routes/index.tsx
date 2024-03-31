@@ -8,6 +8,7 @@ import ThemeToggle from "~/components/light-dark-toggle";
 import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
 import Present from "~/components/Present";
+import TimerDisplay from "~/components/timer-display/timer-display";
 
 const Container = component$(() => {
     return <>
@@ -19,10 +20,11 @@ const Container = component$(() => {
               <img
                     height={256}
                     width={256}
-                    class="mx-auto h-64 w-64 rounded-full"
-                    src="timer-ninja.png"
+                    class="mx-auto h-48 w-64 rounded-full"
+                    src="ninja-on-timer.png"
                     alt={`Timers Ninja Image`}
                 />
+                <TimerDisplay />
                 <Slot name="editor" />              
                 <div class="flex flex-1 items-end justify-center pb-4 lg:justify-center lg:pb-6 lg:z-40 text-xs">
                 <span class="text-white pb-2 pr-1">Enjoying TimersNinja?</span>
