@@ -11,6 +11,8 @@ import Present from "~/components/Present";
 import TimerDisplay from "~/components/timer-display/timer-display";
 
 const Container = component$(() => {
+    
+    
     return <>
         <div class="relative flex-none overflow-hidden px-6 lg:pointer-events-none lg:fixed lg:inset-0 lg:flex lg:px-0 bg-gray-900 lg:bg-transparent" >
             <Glow />
@@ -20,13 +22,31 @@ const Container = component$(() => {
               <img
                     height={256}
                     width={256}
-                    class="mx-auto h-48 w-64 rounded-full"
+                    class="mx-auto w-32 h-24 lg:h-48 lg:w-64 rounded-full"
                     src="ninja-on-timer.png"
                     alt={`Timers Ninja Image`}
                 />
                 <TimerDisplay />
-                <Slot name="editor" />              
-                <div class="flex flex-1 items-end justify-center pb-4 lg:justify-center lg:pb-6 lg:z-40 text-xs">
+                <div class="flex justify-center pt-6 space-x-6">
+      <button type="button" class="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        Start
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z" />
+        </svg>
+      </button>
+      <button type="button" class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
+        Stop
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z" />
+        </svg>
+
+      </button>
+
+    </div>
+                <Slot name="editor" />    
+                <div class="flex flex-1 items-end justify-center mt-4 pb-4 lg:justify-center lg:pb-6 lg:z-40 text-xs">
                 <span class="text-white pb-2 pr-1">Enjoying TimersNinja?</span>
                 <a href="https://www.buymeacoffee.com/sergeigolos" target="_blank" type="button" 
                 class="rounded-full bg-gray-600 p-2 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">                    
