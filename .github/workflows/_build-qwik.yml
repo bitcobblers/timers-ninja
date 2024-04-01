@@ -19,8 +19,12 @@ jobs:
             - name: NPM Dependencies      
               run: "npm install"
             
+            - name: Remove DEV version file
+              run: rm version.ts
+              working-directory: ./src
+
             - name: Update Publish Version
-              run: echo "export const Version = \"{version}\";" >> version.ts
+              run: echo "export const Version = \"${{inputs.version}}\";" >> version.ts
               working-directory: ./src
 
             - name: Generate Static Site
