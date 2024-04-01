@@ -34,7 +34,7 @@ export default component$((args: MdTimerBlock) => {
     // return <div>        
     //      <TimerDisplay {...store} label={store.label} direction={store.direction}  />         
     // </div>
-    return <div class="flex items-center justify-between gap-x-6 py-5">
+    return <div class="flex items-center justify-between gap-x-6 py-1">
         <div class="">
             <TimerDisplay {...store} size={"4xl"} />
         </div>

@@ -25,15 +25,17 @@ const Container = component$(() => {
         <div class="relative flex-none overflow-hidden px-6 lg:pointer-events-none lg:fixed lg:inset-0 lg:flex lg:px-0 bg-gray-900 lg:bg-transparent" >
             <Glow />
             <div class="relative flex w-full lg:pointer-events-auto         
-          lg:mr-[calc(max(2rem,50%-38rem))] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-2">
-                <div class="mx-auto max-w-lg md:mx-64 lg:mx-[calc(max(2rem,50%-32rem))] lg:flex lg:w-96 lg:max-w-none lg:flex-col lg:before:flex-1 lg:before:pt-6">
-                    <img
-                        height={256}
-                        width={256}
-                        class="mx-auto w-32 h-24 lg:h-48 lg:w-64 rounded-full"
-                        src="ninja-on-timer.png"
-                        alt={`Timers Ninja Image`}
-                    />
+          lg:mr-[calc(max(2rem,50%-38rem))] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-2">                
+                <div class="mx-auto max-w-lg md:mx-64 lg:mx-[calc(max(2rem,50%-32rem))] lg:flex lg:w-96 lg:max-w-none lg:flex-col lg:before:flex-1 lg:before:pt-6">                    
+                        <img
+                            height={256}
+                            width={256}
+                            class="mx-auto w-32 h-24 lg:h-48 lg:w-64 rounded-full"
+                            src="ninja-on-timer.png"
+                            alt={`Timers Ninja Image`}
+                        />                                               
+                    
+                    
                     <TimerDisplay {...demo} />
                     <div class="flex justify-center pt-6 space-x-6">
                         <button type="button" class="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
@@ -79,6 +81,8 @@ const Container = component$(() => {
                 </div>
             </div>
         </div>
+        
+        <div class="group absolute right-12 top-5 z-50 -m-2.5 p-2.5 text-slate-700 text-xs" >v1.0</div>        
         <ThemeToggle />
         <div class="relative flex-auto pointer-events-none">
             <Timeline />
@@ -95,7 +99,12 @@ const TimerPage = component$((params: { init: string }) => {
 
     useTask$(({ track }) => {
         track(() => markdown.value);
-        const input = markdown.value;        
+        const input = markdown.value;     
+        if (input.trim() == "") {
+            result.value = [];
+            return;              
+        }
+
         try {
             const { outcome } = new MdTimerRuntime().read(input);
             let counter = Duration.fromMillis(0);

@@ -10,7 +10,7 @@ export default component$((props: any) => {
         <div class="mx-auto max-w-7xl px-6 lg:flex lg:px-8 text-gray-500 dark:text-white-500" >
           <div class="lg:ml-96 lg:flex lg:w-full lg:justify-end lg:pl-32">
             <div class="pointer-events-auto mx-auto max-w-lg lg:mx-0 lg:w-0 lg:max-w-xl lg:flex-auto leading-8" data-mdx-content="true">
-              <div class="relative mt-8 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-900 [&amp;+*]:mt-8">               
+              <div class="relative mt-2 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-900 [&amp;+*]:mt-2">               
                 <div
                   class="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-white/10">
                 </div>
@@ -20,7 +20,7 @@ export default component$((props: any) => {
             </div>            
           </div>          
         </div>
-        <header class="relative mt-2 sm:mt-8 xl:mb-0">
+        <header class="relative mt-1 sm:mt-2 xl:mb-0">
           {/* <div
             class="pointer-events-none absolute left-[max(-0.5rem,calc(50%-18.625rem))] top-0 z-50 flex h-4 items-center justify-end gap-x-2 lg:left-0 lg:right-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] xl:h-8">            
               <time 
