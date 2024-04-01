@@ -1,0 +1,33 @@
+name: Build-Qwik
+on: 
+    workflow_call:
+        inputs:
+          version:
+            description: "The version type (major, minor, or patch)"
+            required: true
+            type: string
+jobs:
+    create-release:
+        runs-on: ubuntu-latest
+
+        # Steps represent a sequence of tasks that will be executed as part of the job
+        steps:
+            # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+            - uses: actions/checkout@v3
+
+            # Runs a single command using the runners shell
+            - name: NPM Dependencies      
+              run: "npm install"
+            
+            - name: Update Publish Version
+              run: echo "export const Version = \"{version}\";" >> version.ts
+              working-directory: ./src
+
+            - name: Generate Static Site
+              run: npm run build            
+
+            - uses: actions/upload-artifact@master
+              with:
+                name: page
+                path: dist    
+    
