@@ -119,8 +119,8 @@ export class MdTimerInterpreter extends BaseCstVisitor {
 
     simpleTimer(ctx: any): MdTimerBlock[] {                        
         const type = ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
-            ? {label: "count down", step: -1 }
-            : {label: "count up", step: 1 };        
+            ? {label: "down", step: -1 }
+            : {label: "up", step: 1 };        
         const sources = [];
         if(ctx.CountDirection) {
             sources.push(ctx.CountDirection[0]);

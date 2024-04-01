@@ -3,7 +3,7 @@ import TimerContainer from "~/components/timer-container/timer-container";
 
 export default component$((props: any) => {  
   const dateString = props.startDate;  
-  const store = useStore({ ...props.timer, direction: props.direction, label: props.label });
+  const store = useStore({ ...props });
   return (
     <article id="commit-message-suggestions" class="">
       <div>    
