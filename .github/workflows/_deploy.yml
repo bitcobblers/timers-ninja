@@ -1,4 +1,4 @@
-name: Build-Qwik
+name: deploy-qwik
 on: 
     workflow_call:
              

@@ -1,4 +1,4 @@
-name: Build-Qwik
+name: build-qwik
 on: 
     workflow_call:
         inputs:

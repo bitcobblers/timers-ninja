@@ -16,9 +16,15 @@ on:
 jobs:
   # This workflow contains a single job called "build"
   calc-variables:
-    if: github.ref_type == 'tag' || github.ref_name == 'main'
+    if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
     uses: ./.github/workflows/_calc-variables.yml
     
+# This workflow contains a single job called "build"
+  qodana:
+    if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
+    uses: ./.github/workflows/_code_quality.yml
+    secrets: inherit
+
   build:  
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
     needs: [calc-variables]
@@ -35,7 +41,7 @@ jobs:
 
   create-release:
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
-    needs: [calc-variables, deploy]
+    needs: [calc-variables, qodana, build, deploy]
     uses: ./.github/workflows/_create-release.yml
     with:
       tag-name: ${{ github.tag_name || needs.calc-variables.outputs.version }}
