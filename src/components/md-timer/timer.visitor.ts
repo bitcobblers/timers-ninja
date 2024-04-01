@@ -8,12 +8,12 @@ const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
 
 export class MdTimerSignificant {
     private order = [
-        "years",
-        "months",
-        "days",
-        "hours",
-        "minutes",
-        "seconds"
+        { key: "years", max : 10 },
+        { key: "months", max : 12 },
+        { key: "days", max : 31 },
+        { key: "hours", max : 24 },
+        { key: "minutes", max : 60 },
+        { key: "seconds", max : 60 }
     ];
     private obj: MdTimerOptional;
     private digits: string;
@@ -22,16 +22,28 @@ export class MdTimerSignificant {
         const list = [];
         this.obj = {} as any;
         for (const index of this.order) {            
-            const val = value ? (this.value as any)[index] : 0;                        
+            const val = value ? (this.value as any)[index.key] : 0;                        
             if (val != 0) {
                 found = true;
             }
 
-            if (found || index == "seconds" || index =="minutes") {                                
+            if (found || index.key == "seconds") {                                
                 list.push(val.toString());
-                (this.obj as any)[index] = val;
+                (this.obj as any)[index.key] = val;
+            }            
+        }   
+        let carry = 0;
+        for (const index of this.order.reverse()) {
+            let val = (this.obj as any)[index.key];
+            if (carry > 0) {
+                val = (val || 0) + carry;
             }
-        }        
+            if (!val) { continue; }
+            carry = Math.floor(val / index.max);
+            val = val % index.max;
+            (this.obj as any)[index.key] = val;
+        }      
+
         this.digits = list.map(item => item.length < 2 ? "0" + item : item).join(":");
     }
     toDigits():string {
