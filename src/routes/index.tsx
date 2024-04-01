@@ -10,6 +10,7 @@ import Present from "~/components/Present";
 import TimerDisplay from "~/components/timer-display/timer-display";
 import type { MdTimerBlock, MdTimerValue} from "~/components/md-timer/timer.visitor";
 import { MdTimerSignificant  } from "~/components/md-timer/timer.visitor";
+import { Version } from "~/version"
 
 const Container = component$(() => {
     const demo =  {
@@ -57,7 +58,7 @@ const Container = component$(() => {
                     </div>
                     <Slot name="editor" />
                     <div class="flex flex-1 items-end justify-center mt-4 pb-4 lg:justify-center lg:pb-6 lg:z-40 text-xs">
-                        <span class="text-white pb-2 pr-1">Enjoying TimersNinja?</span>
+                        <span class="text-slate-500 pb-2 pr-1">Enjoying Timers.Ninja? Buy us a</span>
                         <a href="https://www.buymeacoffee.com/sergeigolos" target="_blank" type="button"
                             class="rounded-full bg-gray-600 p-2 text-white shadow-sm hover:bg-gray-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 884 1279" fill="currentColor">
@@ -82,7 +83,7 @@ const Container = component$(() => {
             </div>
         </div>
         
-        <div class="group absolute right-12 top-5 z-50 -m-2.5 p-2.5 text-slate-700 text-xs" >v1.0</div>        
+        <div class="group absolute right-12 top-5 z-50 -m-2.5 p-2.5 text-slate-700 text-xs" >v{Version}</div>        
         <ThemeToggle />
         <div class="relative flex-auto pointer-events-none">
             <Timeline />
