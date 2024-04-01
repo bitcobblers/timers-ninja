@@ -7,7 +7,7 @@ export type MdTimerBlockArgs = MdTimerBlock & {
 }
 
 export default component$((args: MdTimerBlockArgs) => {      
-    const timer = new MdTimerSignificant(args.timer);
+    const timer = new MdTimerSignificant(args.timer, ["minutes"]);
     return <>
         <div class="font-bold text-gray-800 
                     border-2 rounded-xl 

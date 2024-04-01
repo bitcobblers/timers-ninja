@@ -17,7 +17,8 @@ export class MdTimerSignificant {
     ];
     private obj: MdTimerOptional;
     private digits: string;
-    constructor(private value?: MdTimerValue) {
+    constructor(private value?: MdTimerValue, min?: string[]) {
+        const _min = ["seconds", ...(min || [])]
         let found = false;
         const list = [];
         this.obj = {} as any;
@@ -27,7 +28,7 @@ export class MdTimerSignificant {
                 found = true;
             }
 
-            if (found || index.key == "seconds") {                                
+            if (found || _min.includes(index.key)) {                                
                 list.push(val.toString());
                 (this.obj as any)[index.key] = val;
             }            
