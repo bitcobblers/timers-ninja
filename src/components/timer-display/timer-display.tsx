@@ -3,7 +3,7 @@ import type { MdTimerBlock} from "../md-timer/timer.visitor";
 import { MdTimerSignificant } from "../md-timer/timer.visitor";
 
 export type MdTimerBlockArgs = MdTimerBlock & {
-    size: string;    
+    size?: string;    
 }
 
 export default component$((args: MdTimerBlockArgs) => {      
