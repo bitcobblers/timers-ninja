@@ -32,3 +32,11 @@ jobs:
     needs: [build]
     uses: ./.github/workflows/_deploy.yml
     secrets: inherit 
+
+  create-release:
+    if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
+    needs: [calc-variables]
+    uses: ./.github/workflows/_create-release.yml
+    with:
+      tag-name: ${{ github.tag_name || needs.calc-variables.outputs.version }}
+      version: ${{ needs.calc-variables.outputs.version }}
