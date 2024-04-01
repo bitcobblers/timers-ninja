@@ -1,5 +1,4 @@
 import { component$, useStore, useSignal, useTask$, Slot, $ } from "@builder.io/qwik";
-import type { DurationUnit } from "luxon";
 import { Duration } from "luxon";
 import Page from "~/components/Page";
 import Editor from "~/components/editor";
@@ -9,9 +8,18 @@ import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
 import Present from "~/components/Present";
 import TimerDisplay from "~/components/timer-display/timer-display";
+import type { MdTimerBlock, MdTimerValue} from "~/components/md-timer/timer.visitor";
+import { MdTimerSignificant  } from "~/components/md-timer/timer.visitor";
 
 const Container = component$(() => {
-
+    const demo =  {
+        timer: {
+            years:0, months:0, days: 0, hours: 0, minutes:0, seconds: 1
+        },type: { label: "up", step: 1},
+         label:"test",
+         round:1,
+         sources:[] 
+    }
 
     return <>
         <div class="relative flex-none overflow-hidden px-6 lg:pointer-events-none lg:fixed lg:inset-0 lg:flex lg:px-0 bg-gray-900 lg:bg-transparent" >
@@ -26,7 +34,7 @@ const Container = component$(() => {
                         src="ninja-on-timer.png"
                         alt={`Timers Ninja Image`}
                     />
-                    <TimerDisplay hours={0} minutes={0} seconds={0} direction="up" label="tet"  />
+                    <TimerDisplay {...demo} />
                     <div class="flex justify-center pt-6 space-x-6">
                         <button type="button" class="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600">
                             Start
@@ -83,23 +91,21 @@ const Container = component$(() => {
 
 const TimerPage = component$((params: { init: string }) => {
     const markdown = useStore({ value: params.init });
-    const result = useSignal([]);
+    const result = useSignal([]) as any;
 
     useTask$(({ track }) => {
         track(() => markdown.value);
-        const input = markdown.value;
-        const printValues = ['hours', "minutes", "seconds"] as DurationUnit[];
+        const input = markdown.value;        
         try {
             const { outcome } = new MdTimerRuntime().read(input);
             let counter = Duration.fromMillis(0);
-            result.value = outcome.map((timer: any) => {
-                const current = Duration.fromObject(timer.timer);
+            result.value = outcome.map((block: MdTimerBlock) => {                
+                new MdTimerSignificant()
+                const current = Duration.fromObject(block.timer);
                 counter = counter.plus(current);
-                const display = counter
-                    .shiftTo(...printValues)
-                    .toHuman({ unitDisplay: "short" });
+                const timer = new MdTimerSignificant(counter.toObject() as MdTimerValue)                
 
-                return { ...timer, startDate: display }
+                return { ...block, startDate: timer.toString() }
             });
             console.log("Updated", result.value)
         }

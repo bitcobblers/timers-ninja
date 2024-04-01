@@ -1,8 +1,78 @@
+import type { IToken } from "chevrotain";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
+import { Duration } from "luxon";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
+
+export class MdTimerSignificant {
+    private order = [
+        "years",
+        "months",
+        "days",
+        "hours",
+        "minutes",
+        "seconds"
+    ];
+    private obj: MdTimerOptional;
+    private digits: string;
+    constructor(private value?: MdTimerValue) {
+        let found = false;
+        const list = [];
+        this.obj = {} as any;
+        for (const index of this.order) {            
+            const val = value ? (this.value as any)[index] : 0;                        
+            if (val != 0) {
+                found = true;
+            }
+
+            if (found || index == "seconds" || index =="minutes") {                                
+                list.push(val.toString());
+                (this.obj as any)[index] = val;
+            }
+        }        
+        this.digits = list.map(item => item.length < 2 ? "0" + item : item).join(":");
+    }
+    toDigits():string {
+        return this.digits;
+    }
+    toString():string {
+        return Duration.fromObject(this.toObject()).toHuman({unitDisplay: "short"});
+    }
+    toObject():MdTimerOptional {
+        return this.obj;
+    }
+}
+
+
+export type MdTimerOptional= {
+    years?: number,
+    months?: number,
+    days?: number,
+    hours?: number,
+    minutes?: number,
+    seconds?: number 
+}
+export type MdTimerValue = {
+    years: number,
+    months: number,
+    days: number,
+    hours: number,
+    minutes: number,
+    seconds: number 
+}
+
+export type MdTimerBlock = {
+    timer:MdTimerValue,
+    type: {
+        step: number,
+        label: string
+    },
+    round?: number,
+    label?: string
+    sources: IToken[]
+}
 
 export class MdTimerInterpreter extends BaseCstVisitor {
     constructor() {
@@ -14,8 +84,8 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     }
     
     /// High level entry point, contains any number of simple of compound timers.
-    timerMarkdown(ctx: any) {                
-        const result = ctx.blocks.flatMap((block:any) => block && this.visit(block));        
+    timerMarkdown(ctx: any) : MdTimerBlock[] {                
+        const result = ctx.blocks.flatMap((block:any) => block && this.visit(block)) as MdTimerBlock[];        
         return result;
     }
     
@@ -26,7 +96,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
             const outcome = this.visit(ctx.compoundTimer || ctx.simpleTimer).flat(Infinity);        
             const labels = ctx.timerMultiplier 
             ? this.visit(ctx.timerMultiplier) 
-            : [ { label: '' }]            
+            : [ { round:1, label: '' }]            
             for (const label of labels) {
                 for (const index of outcome) {                
                     if (index != null) {                    
@@ -47,14 +117,22 @@ export class MdTimerInterpreter extends BaseCstVisitor {
             .map((block:any) => this.visit(block));
     }
 
-    simpleTimer(ctx: any) {                
-        const direction = ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
-            ? "count down"
-            : "count up";        
-                
+    simpleTimer(ctx: any): MdTimerBlock[] {                        
+        const type = ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus 
+            ? {label: "count down", step: -1 }
+            : {label: "count up", step: 1 };        
+        const sources = [];
+        if(ctx.CountDirection) {
+            sources.push(ctx.CountDirection[0]);
+        }
+        for (const segment of ctx.timerValue[0].children.segments)
+        {
+            sources.push(segment.children.Integer[0]);            
+        }
         return [{ 
-            direction,
-            timer: this.visit(ctx.timerValue)
+            type,
+            timer: this.visit(ctx.timerValue),
+            sources
         }]
     }
 

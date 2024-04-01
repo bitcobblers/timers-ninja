@@ -9,19 +9,19 @@ export default meta;
 type Story = StoryObj<typeof TimerDisplay>; 
  
 export const Primary: Story = {
-  args: {
+  args: {timer: {
     second: 1,
     minute: 1
-  }
+  }}
 };
 
 export const Empty: Story = {
-  args: {}
+  args: {timer: {}}
 };
 
 export const Negative: Story = {
-  args: {
+  args: {timer: {
     second: -1,
     minute: -1
-  }
+  }}
 };
