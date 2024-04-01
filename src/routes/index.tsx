@@ -16,7 +16,7 @@ const Container = component$(() => {
     const demo =  {
         timer: {
             years:0, months:0, days: 0, hours: 0, minutes:0, seconds: 1
-        },type: { label: "up", step: 1},
+        },type: { label: "", step: 1},
          label:"test",
          round:1,
          sources:[] 
