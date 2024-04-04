@@ -1,4 +1,4 @@
-import { component$, useStore, useSignal, useTask$, Slot, $ } from "@builder.io/qwik";
+import { component$, useStore, useSignal, useTask$,  Slot, $ } from "@builder.io/qwik";
 import { Duration } from "luxon";
 import Page from "~/components/Page";
 import Editor from "~/components/editor";
@@ -11,8 +11,13 @@ import TimerDisplay from "~/components/timer-display/timer-display";
 import type { MdTimerBlock, MdTimerValue} from "~/components/md-timer/timer.visitor";
 import { MdTimerSignificant  } from "~/components/md-timer/timer.visitor";
 import { Version } from "~/version"
+import { DocumentHead } from "@builder.io/qwik-city";
 // import Intro from "~/components/Intro";
 
+// declare let cast: any;
+// declare let chrome: any;
+
+const applicationId = "0507F78F";
 const Container = component$(() => {
     const demo =  {
         timer: {
@@ -22,6 +27,33 @@ const Container = component$(() => {
          round:1,
          sources:[] 
     }
+    console.log(applicationId);
+    // eslint-disable-next-line qwik/no-use-visible-task
+    // useVisibleTask$(() => {
+        
+    //     window['__onGCastApiAvailable'] = function(isAvailable: boolean) {
+    //         if (isAvailable) {
+    //           initializeCastApi();
+    //         }
+    //       };
+        
+        // const initializeCastApi = $(() => {
+        //     const instance  = cast.framework.CastContext.getInstance();
+        //     instance.setOptions({
+        //         receiverApplicationId: applicationId,
+        //         autoJoinPolicy: chrome.cast.AutoJoinPolicy.PAGE_SCOPED,
+        //         androidReceiverCompatible: true
+        //     });
+
+        //     const session = instance.getCurrentSession();
+        //     console.log("App:", applicationId)
+        //     console.log("instance:", instance)
+        //     console.log("session:", session)
+        // })
+
+    //     initializeCastApi();
+    //     return () => {}
+    // })
 
     return <>
         <div class="relative flex-none overflow-hidden px-6 lg:pointer-events-none lg:fixed lg:inset-0 lg:flex lg:px-0 bg-gray-900 lg:bg-transparent" >
@@ -53,9 +85,9 @@ const Container = component$(() => {
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z" />
                             </svg>
-
                         </button>
-
+                        
+                        {/* <button onClick$={initializeCastApi}> <google-cast-launcher></google-cast-launcher></button> */}
                     </div>
                     <Slot name="editor" />
                     <div class="flex flex-1 items-end justify-center mt-4 pb-4 lg:justify-center lg:pb-6 lg:z-40 text-xs">
@@ -153,3 +185,17 @@ export default component$(() => {
 ](pushups, pullups)`;
     return <TimerPage init={init} />
 });
+
+export const head: DocumentHead = {
+    // This will be used to resolve the <title> of the page
+    title: 'Timers.Ninja',
+    meta: [],
+    scripts: [
+      {             
+        props: {
+            type: "text/javascript",
+            src: '//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1' 
+        }
+      },
+    ],
+  };

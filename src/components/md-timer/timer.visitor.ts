@@ -78,7 +78,7 @@ export type MdTimerValue = {
 
 export type MdTimerBlock = {
     timer:MdTimerValue,
-    type: {
+    type?: {
         step: number,
         label: string
     },

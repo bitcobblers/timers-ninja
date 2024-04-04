@@ -9,7 +9,7 @@ export default component$(()=>{
         const instance = cast.framework.CastReceiverContext.getInstance();
         console.log(instance);
         console.log(instance.start());
-    })
+    }, { "strategy": "document-ready"})
     return <div>ChromeCast</div>
 });
 
