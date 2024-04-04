@@ -1,5 +1,5 @@
 import type { QRL } from "@builder.io/qwik";
-import { component$, useStore /*, useVisibleTask$*/ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import type { MdTimerBlock } from "../md-timer/timer.visitor";
 import TimerDisplay from "../timer-display/timer-display";
 

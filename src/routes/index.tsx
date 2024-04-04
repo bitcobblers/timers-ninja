@@ -11,6 +11,7 @@ import TimerDisplay from "~/components/timer-display/timer-display";
 import type { MdTimerBlock, MdTimerValue} from "~/components/md-timer/timer.visitor";
 import { MdTimerSignificant  } from "~/components/md-timer/timer.visitor";
 import { Version } from "~/version"
+// import Intro from "~/components/Intro";
 
 const Container = component$(() => {
     const demo =  {
@@ -135,7 +136,7 @@ const TimerPage = component$((params: { init: string }) => {
     }
     return <Container>
         <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
-        <Present />
+        {result.value.length > 0 ? <Present /> : <div />}
         {result.value.map((timer: any, index: number) => {
             return <Page
                 {...timer}
