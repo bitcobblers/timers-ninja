@@ -1,17 +1,17 @@
 import type { QRL } from "@builder.io/qwik";
 import { component$, $, useOnDocument } from "@builder.io/qwik";
-import { EditorState } from "@codemirror/state"
-import { EditorView, } from "@codemirror/view"
+import { EditorState } from "@codemirror/state";
+import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
-import { ViewPlugin } from "@codemirror/view"
-import { oneDark } from "@codemirror/theme-one-dark"
+import { ViewPlugin } from "@codemirror/view";
+import { oneDark } from "@codemirror/theme-one-dark";
 
 export type EditorProps = {
-  value: string,
+  value: string;
   onUpdate$: QRL<(value: string) => void>;
 };
 
-// const ComboBox = component$((args: { selected: string })=> {  
+// const ComboBox = component$((args: { selected: string })=> {
 //   return <div>
 //   <label for="combobox" class="block text-sm font-medium leading-6 text-gray-900">Assigned to</label>
 //   <div class="relative mt-2">
@@ -23,9 +23,9 @@ export type EditorProps = {
 //     </button>
 
 //     <ul class="absolute hidden z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm" id="options" role="listbox">
-      
-//       <li class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900" id="option-0" role="option" tabIndex={-1}>        
-//         <span class="block truncate">Leslie Alexander</span>        
+
+//       <li class="relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900" id="option-0" role="option" tabIndex={-1}>
+//         <span class="block truncate">Leslie Alexander</span>
 //         <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600">
 //           <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
 //             <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
@@ -38,34 +38,36 @@ export type EditorProps = {
 // });
 
 export default component$((params: EditorProps) => {
+  useOnDocument(
+    "DOMContentLoaded",
+    $((args: any) => {
+      const notify = ViewPlugin.fromClass(
+        class EventPlugin {
+          update(update: any) {
+            console.log(update.state.doc);
+            if (update.docChanged)
+              params.onUpdate$(update.state.doc.text.join("\n\r"));
+          }
+        },
+      );
 
-  useOnDocument("DOMContentLoaded", $((args: any) => {
-    const notify = ViewPlugin.fromClass(class EventPlugin {
-      update(update: any) {
-        console.log(update.state.doc)
-        if (update.docChanged)
-          params.onUpdate$(update.state.doc.text.join("\n\r"))
-      }
-    })
+      const startState = EditorState.create({
+        doc: params.value,
+        extensions: [basicSetup, notify, oneDark],
+      });
 
-    const startState = EditorState.create({
-      doc: params.value,
-      extensions: [basicSetup, notify, oneDark]
-    })
+      const view = new EditorView({
+        state: startState,
+        parent: args.target.getElementById("editor"),
+        extensions: [notify],
+      });
+      view.focus();
+    }),
+  );
 
-
-    const view = new EditorView({
-      state: startState,
-      parent: args.target.getElementById("editor"),
-      extensions: [notify]
-    })
-    view.focus();
-  }));
-
-
-  return (<>
-    <div id="editor" class="relative content-center mt-4 bg-slate-50">
-    </div>    
-  </>
-  )
-});  
+  return (
+    <>
+      <div id="editor" class="relative mt-4 content-center bg-slate-50"></div>
+    </>
+  );
+});

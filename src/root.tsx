@@ -26,13 +26,16 @@ export default component$(() => {
       <head>
         <meta charSet="utf-8" />
         <link rel="manifest" href="/manifest.json" />
-        <QwikPartytown forward={['dataLayer.push']} />        
-        <script async 
+        <QwikPartytown forward={["dataLayer.push"]} />
+        <script
+          async
           type="text/partytown"
-          src="https://www.googletagmanager.com/gtag/js?id=G-DWBSLZ66LY"></script>
-        <script 
-          type="text/partytown" dangerouslySetInnerHTML={scriptTag}>          
-        </script>        
+          src="https://www.googletagmanager.com/gtag/js?id=G-DWBSLZ66LY"
+        ></script>
+        <script
+          type="text/partytown"
+          dangerouslySetInnerHTML={scriptTag}
+        ></script>
         <RouterHead />
       </head>
       <body lang="en">

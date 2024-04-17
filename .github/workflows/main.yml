@@ -5,9 +5,9 @@ name: CI
 on:
   # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -18,26 +18,26 @@ jobs:
   calc-variables:
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
     uses: ./.github/workflows/_calc-variables.yml
-    
-# This workflow contains a single job called "build"
+
+  # This workflow contains a single job called "build"
   qodana:
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
     uses: ./.github/workflows/_code_quality.yml
     secrets: inherit
 
-  build:  
+  build:
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
     needs: [calc-variables]
     uses: ./.github/workflows/_build-qwik.yml
     secrets: inherit
     with:
-      version: ${{ needs.calc-variables.outputs.package-version }}      
-              
+      version: ${{ needs.calc-variables.outputs.package-version }}
+
   deploy:
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
     needs: [build]
     uses: ./.github/workflows/_deploy.yml
-    secrets: inherit 
+    secrets: inherit
 
   create-release:
     if: ${{ github.ref_type=='tag' || github.ref_name=='main' }}
