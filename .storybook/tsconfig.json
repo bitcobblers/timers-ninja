@@ -20,5 +20,5 @@
     "*.ts",
     "*.js",
     "preview.tsx"
-  ]
+, "../src/components/timer-display/timer-display.mdx"  ]
 }

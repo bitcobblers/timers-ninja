@@ -1,8 +1,12 @@
 import { component$ } from "@builder.io/qwik";
-import type { MdTimerBlock } from "../md-timer/timer.types";
 import { MdTimerSignificant } from "../md-timer/timer.visitor";
+import type { MdTimerValue } from "../md-timer/timer.types";
 
-export type MdTimerBlockArgs = MdTimerBlock & {  
+export type MdTimerBlockArgs = {  
+  timer: MdTimerValue;  
+  icon: "up"| "down";    
+  round?: number;
+  label?: string;  
   size?: string;
 };
 
@@ -36,9 +40,9 @@ const DownArrow = component$(() => {
 </svg>
 })
 
-export default component$((args: MdTimerBlockArgs) => {
-  
+export default component$((args: MdTimerBlockArgs) => {  
   const timer = new MdTimerSignificant(args.timer, ["minutes"]);
+  const sizedTimer = args.size != undefined ? "text-" + args.size : "text-6xl";
   return (
     <>
       <div
@@ -52,14 +56,11 @@ export default component$((args: MdTimerBlockArgs) => {
       >
         <div class="mx-auto flex gap-x-2">
           <div class="-ml-2 pt-1">
-            {args.type && args.type.label == "up" && <UpArrow/>}
-            {args.type && args.type.label == "down" && <DownArrow/>}
+            {args.icon == "up" && <UpArrow/>}
+            {args.icon == "down" && <DownArrow/>}
           </div>
           <div
-            class={
-              "flex-grow text-center " +
-              (args.size != undefined ? "text-" + args.size : "text-6xl")
-            }
+            class={"flex-grow text-center " + sizedTimer}
           >
             {timer.toDigits()}
           </div>

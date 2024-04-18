@@ -1,0 +1,25 @@
+import { Canvas, Meta } from '@storybook/blocks';
+
+import * as TimerDisplayStories from './timer-display.stories';
+
+<Meta of={TimerDisplayStories} />
+
+# Timer Display
+
+The goal of timer display is to display:
+
+- the time left/elapsed
+- the direction/type of the count  (up / down / date)
+- Labels / Rounds information
+
+A typical timer looks like this:
+
+<Canvas of={TimerDisplayStories.Primary} />
+
+An empty timer with no values looks like this:
+
+<Canvas of={TimerDisplayStories.Empty} />
+
+Negative values???
+
+<Canvas of={TimerDisplayStories.Negative} />

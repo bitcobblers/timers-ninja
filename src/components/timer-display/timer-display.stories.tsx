@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "storybook-framework-qwik";
 import TimerDisplay from "~/components/timer-display/timer-display";
 
 const meta: Meta<typeof TimerDisplay> = {
-  component: TimerDisplay  
+  component: TimerDisplay,
 };
 
 export default meta;
@@ -14,7 +14,10 @@ export const Primary: Story = {
       seconds: 1,
       minutes: 1,
     },
-  } ,
+    icon: "up",
+    label: "Label",
+    round: 1
+  }
 };
 
 export const Empty: Story = {
