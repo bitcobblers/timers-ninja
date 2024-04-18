@@ -4,7 +4,7 @@ import {
   useSignal,
   useTask$,
   Slot,
-  $,
+  $
 } from "@builder.io/qwik";
 import { Duration } from "luxon";
 import Page from "~/components/Page";
@@ -21,7 +21,7 @@ import type {
 } from "~/components/md-timer/timer.types";
 import { MdTimerSignificant } from "~/components/md-timer/timer.visitor";
 import { Version } from "~/version";
-import { DocumentHead } from "@builder.io/qwik-city";
+import type { DocumentHead } from "@builder.io/qwik-city";
 // import Intro from "~/components/Intro";
 
 // declare let cast: any;
