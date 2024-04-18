@@ -18,7 +18,7 @@ import TimerDisplay from "~/components/timer-display/timer-display";
 import type {
   MdTimerBlock,
   MdTimerValue,
-} from "~/components/md-timer/timer.visitor";
+} from "~/components/md-timer/timer.types";
 import { MdTimerSignificant } from "~/components/md-timer/timer.visitor";
 import { Version } from "~/version";
 import { DocumentHead } from "@builder.io/qwik-city";

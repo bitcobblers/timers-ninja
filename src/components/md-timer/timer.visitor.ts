@@ -1,7 +1,7 @@
-import type { IToken } from "chevrotain";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
 import { Duration } from "luxon";
+import type { MdTimerBlock, MdTimerOptional, MdTimerValue } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -25,12 +25,13 @@ export class MdTimerSignificant {
     let found = false;
     const list = [];
     this.obj = {} as any;
+
     for (const index of this.order) {
-      const val = value ? (this.value as any)[index.key] : 0;
+      const val = (value ? (this.value as any)[index.key] : 0) ?? 0;
       if (val != 0) {
         found = true;
       }
-
+      
       if (found || _min.includes(index.key)) {
         list.push(val.toString());
         (this.obj as any)[index.key] = val;
@@ -66,34 +67,6 @@ export class MdTimerSignificant {
     return this.obj;
   }
 }
-
-export type MdTimerOptional = {
-  years?: number;
-  months?: number;
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-};
-export type MdTimerValue = {
-  years: number;
-  months: number;
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-};
-
-export type MdTimerBlock = {
-  timer: MdTimerValue;
-  type?: {
-    step: number;
-    label: string;
-  };
-  round?: number;
-  label?: string;
-  sources: IToken[];
-};
 
 export class MdTimerInterpreter extends BaseCstVisitor {
   constructor() {

@@ -1,4 +1,33 @@
+import type { IToken } from "chevrotain";
 import { Duration } from "luxon";
+
+export type MdTimerOptional = {
+  years?: number;
+  months?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+};
+export type MdTimerValue = {
+  years: number;
+  months: number;
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+};
+
+export type MdTimerBlock = {
+  timer: MdTimerValue;
+  type?: {
+    step: number;
+    label: string;
+  };
+  round?: number;
+  label?: string;
+  sources: IToken[];
+};
 
 export type TimerInstance = {
   direction: string;

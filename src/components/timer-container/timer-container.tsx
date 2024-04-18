@@ -1,12 +1,13 @@
-import type { QRL } from "@builder.io/qwik";
 import { component$ } from "@builder.io/qwik";
-import type { MdTimerBlock } from "../md-timer/timer.visitor";
+import type { MdTimerBlock } from "../md-timer/timer.types";
 import TimerDisplay from "../timer-display/timer-display";
 
+export type TimeContainerCommand = {
+  step: any;
+  timer: any;
+}
 export type timerArgs = {
-  start$: QRL<(fn: QRL<() => void>) => void>;
-  stop$: QRL<(fn: QRL<() => void>) => void>;
-  rest$: QRL<(fn: QRL<() => void>) => void>;
+
 };
 
 export default component$((args: MdTimerBlock) => {
