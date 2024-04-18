@@ -6,19 +6,19 @@ Defining timers using user interfaces can get cumbersome especially for the more
 
 To start with development run the following commands:
 
-1. Tests
+1. Run the unit tests
 
 ```shell
 npm run test.unit  
 ```
 
-2. Storybook (Testing / Examples / Documentation)
+2. Storybook ( Examples / Documentation )
 
 ```shell
 npm run storybook
 ```
 
-3. Running the app
+Start up a local server
 
 ```shell
 npm run start
