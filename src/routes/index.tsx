@@ -261,8 +261,7 @@ const TimerPage = component$((params: { init: string }) => {
         );
 
         return { ...block, startDate: timer.toString() };
-      });
-      console.log("Updated", result.value);
+      });      
     } catch (ex) {
       console.log(ex);
     }
@@ -270,8 +269,7 @@ const TimerPage = component$((params: { init: string }) => {
 
   const onUpdate = $((input: string) => {
     //console.log("update", input);
-    markdown.value = input;
-    console.log(input);
+    markdown.value = input;    
   });
   const getKey = (index: number, timer: any) => {
     const t = timer.timer;

@@ -43,8 +43,7 @@ export default component$((params: EditorProps) => {
     $((args: any) => {
       const notify = ViewPlugin.fromClass(
         class EventPlugin {
-          update(update: any) {
-            console.log(update.state.doc);
+          update(update: any) {            
             if (update.docChanged)
               params.onUpdate$(update.state.doc.text.join("\n\r"));
           }

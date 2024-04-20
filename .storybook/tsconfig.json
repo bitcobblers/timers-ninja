@@ -19,6 +19,5 @@
     "../src/**/*.stories.mdx",
     "*.ts",
     "*.js",
-    "preview.tsx"
-, "../src/components/timer-display/timer-display.mdx"  ]
+    "preview.tsx"  ]
 }

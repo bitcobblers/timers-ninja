@@ -1,15 +1,23 @@
 import { StorybookConfig } from "storybook-framework-qwik";
 
 const config: StorybookConfig = {
-  addons: ["@storybook/addon-links", "@storybook/addon-essentials"],
+  addons: [
+    "@storybook/addon-links",
+    "@storybook/addon-essentials",
+    "@storybook/addon-mdx-gfm",   
+  ],
+
   framework: {
     name: "storybook-framework-qwik",
   },
+
   core: {
     renderer: "storybook-framework-qwik",
   },
+
   stories: [
     // ...rootMain.stories,
+    "../src/docs/**/*.mdx",
     "../src/components/**/*.mdx",
     "../src/components/**/*.stories.@(js|jsx|ts|tsx)",
   ],
@@ -17,6 +25,10 @@ const config: StorybookConfig = {
   viteFinal: async (config: any) => {
     return config;
   },
+
+  docs: {
+    autodocs: true
+  }
 };
 
 export default config;

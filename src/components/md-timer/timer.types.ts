@@ -10,11 +10,11 @@ export type MdTimerOptional = {
   seconds?: number;
 };
 export type MdTimerValue = {
-  years: number;
-  months: number;
-  days: number;
-  hours: number;
-  minutes: number;
+  years?: number;
+  months?: number;
+  days?: number;
+  hours?: number;
+  minutes?: number;
   seconds: number;
 };
 

@@ -2,7 +2,7 @@ import type { IToken, CstNode } from "chevrotain";
 import { Lexer } from "chevrotain";
 import { allTokens } from "./timer.tokens";
 import { MdTimerParse } from "./timer.parser";
-import type { MdTimerBlock } from "./timer.visitor";
+import type { MdTimerBlock } from "./timer.types";
 import { MdTimerInterpreter } from "./timer.visitor";
 
 export type MdTimeRuntimeResult = {

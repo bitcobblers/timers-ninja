@@ -21,8 +21,7 @@ export const onStaticGenerate: StaticGenerateHandler = async () => {
   // every implementation will be different
   const args = [] as PathParams[];
   for (const i in metaGlobComponents) {
-    const item = metaGlobComponents[i];
-    //console.log(item);
+    const item = metaGlobComponents[i];    
     const page = {
       slug: i.replace("/timers/", "").replace(".md", ""),
       value: isDev
@@ -30,8 +29,7 @@ export const onStaticGenerate: StaticGenerateHandler = async () => {
         : // We need to call `await metaGlobComponents[componentPath]()` in development as it is `eager:false`
           item,
       // We need to directly access the `metaGlobComponents[componentPath]` expression in preview/production as it is `eager:true`
-    };
-    console.log(page);
+    };    
     args.push(page);
   }
   return {

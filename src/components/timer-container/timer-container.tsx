@@ -1,6 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import type { MdTimerBlock } from "../md-timer/timer.types";
-import TimerDisplay from "../timer-display/timer-display";
+import TimerDigits from "../timer-digits/timer-digits";
 
 export type TimeContainerCommand = {
   step: any;
@@ -14,7 +14,7 @@ export default component$((args: MdTimerBlock) => {
   return (
     <div class="flex items-center justify-between gap-x-6 py-1">
       <div class="">
-        <TimerDisplay {...args} size={"4xl"} />
+        <TimerDigits {...args.timer} />
       </div>
       <div class="min-w-0">
         <div class="flex items-start gap-x-3">
