@@ -60,27 +60,27 @@ export default component$((args: MdTimerBlockArgs) => {
   return (
     <>
       <div
-        class="rounded-xl border-2
-                    bg-green-50 pb-1                     
+        class="rounded-xl
+                    bg-green-50 pb-2                     
                     font-bold
                      text-gray-800"
       >
         {(args.round || args.label) &&
           <div class="mx-auto flex">
-            <div class="text-center flex-grow bg-forest rounded-t-md text-green-50">
+            <div class="text-center flex-grow bg-forest rounded-t-lg text-green-50">
               {args.round && "Round " + args.round}
               {args.round && args.label && " - "}
               {args.label}
             </div>
           </div>}
-        <div class="mx-auto flex gap-x-2 px-5">
-          <div >
+        <div class="mx-auto flex gap-x-2 px-5  ">
+          <div class="text-forest">
             {args.icon == "up" && <CountUpIcon />}
             {args.icon == "down" && <CountDownIcon />}
             {args.icon == "date" && <DateCounterIcon />}
           </div>
           <div
-            class={"flex-grow text-center " + sizedTimer}
+            class={"flex-grow text-center text-forest-600 " + sizedTimer}
           >
             <TimerDigits {...args.timer} />
           </div>

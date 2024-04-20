@@ -27,6 +27,16 @@ import type { DocumentHead } from "@builder.io/qwik-city";
 // declare let cast: any;
 // declare let chrome: any;
 
+const NinjaImage = component$(() => {
+  return <img
+    height={256}
+    width={256}
+    class="mx-auto h-24 w-32 rounded-full lg:h-48 lg:w-64"
+    src="ninja-on-timer.png"
+    alt={`Timers Ninja Image`}
+  />
+});
+
 const applicationId = "0507F78F";
 const Container = component$(() => {
   const demo = {
@@ -39,7 +49,7 @@ const Container = component$(() => {
       seconds: 1,
     },
     type: { label: "", step: 1 },
-    label: "test",
+    label: "",
     round: 1,
     sources: [],
   };
@@ -80,14 +90,7 @@ const Container = component$(() => {
           lg:mr-[calc(max(2rem,50%-38rem))] lg:min-w-[32rem] lg:overflow-y-auto lg:overflow-x-hidden lg:pl-2"
         >
           <div class="mx-auto max-w-lg md:mx-64 lg:mx-[calc(max(2rem,50%-32rem))] lg:flex lg:w-96 lg:max-w-none lg:flex-col lg:before:flex-1 lg:before:pt-6">
-            <img
-              height={256}
-              width={256}
-              class="mx-auto h-24 w-32 rounded-full lg:h-48 lg:w-64"
-              src="ninja-on-timer.png"
-              alt={`Timers Ninja Image`}
-            />
-
+            <NinjaImage />
             <TimerDisplay {...demo} />
             <div class="flex justify-center space-x-6 pt-6">
               <button
@@ -261,7 +264,7 @@ const TimerPage = component$((params: { init: string }) => {
         );
 
         return { ...block, startDate: timer.toString() };
-      });      
+      });
     } catch (ex) {
       console.log(ex);
     }
@@ -269,7 +272,7 @@ const TimerPage = component$((params: { init: string }) => {
 
   const onUpdate = $((input: string) => {
     //console.log("update", input);
-    markdown.value = input;    
+    markdown.value = input;
   });
   const getKey = (index: number, timer: any) => {
     const t = timer.timer;
