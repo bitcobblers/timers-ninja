@@ -30,8 +30,9 @@ jobs:
       - name: Generate Static Site
         run: npm run build
 
-      - name: Generate Storybook
-        run: npm run build-storybook
+      # removed this for now unitll i can build the build process  
+      # - name: Generate Storybook
+      #   run: npm run build-storybook 
 
       - uses: actions/upload-artifact@master
         with:
