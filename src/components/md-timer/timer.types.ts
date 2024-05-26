@@ -1,6 +1,30 @@
 import type { IToken } from "chevrotain";
 import { Duration } from "luxon";
 
+/*
+ 
+ 
+
+ 
+
+*/
+
+export type MdTimerStack = {  
+  
+  blocks: MdTimerBlock[];  
+}
+
+export type MdTimerTrace = {
+  events: MdTimerBlockEvent[];
+}
+
+export type MdTimerBlockEvent = {
+  eventId: number;
+  timestamp: Date;
+  type: string;
+  metadata : any;
+}
+
 export type MdTimerOptional = {
   years?: number;
   months?: number;

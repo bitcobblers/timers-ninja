@@ -1,12 +1,12 @@
 import type { Meta, StoryObj } from "storybook-framework-qwik";
-import TimerContainer from "~/components/timer-container/timer-container";
+import TimerCard from "~/components/timer-card/timer-card";
 
-const meta: Meta<typeof TimerContainer> = {
-  component: TimerContainer,
+const meta: Meta<typeof TimerCard> = {
+  component: TimerCard,
 };
 
 export default meta;
-type Story = StoryObj<typeof TimerContainer>;
+type Story = StoryObj<typeof TimerCard>;
 
 export const CountUp: Story = {
   args: {

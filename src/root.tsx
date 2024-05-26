@@ -16,7 +16,8 @@ export default component$(() => {
    *
    * Don't remove the `<head>` and `<body>` elements.
    */
-  const scriptTag = `window.dataLayer = window.dataLayer || [];
+  const scriptTag = `window = window || {}
+  window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
 
@@ -35,7 +36,7 @@ export default component$(() => {
         <script
           type="text/partytown"
           dangerouslySetInnerHTML={scriptTag}
-        ></script>
+        ></script> 
         <RouterHead />
       </head>
       <body lang="en">

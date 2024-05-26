@@ -1,5 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import IntoMD from "~/components/IntoMD.md";
+import IntoMD from "~/docs/IntoMD.md";
 export interface TimeLineEntryProperties {
   summary: string;
   position: string;

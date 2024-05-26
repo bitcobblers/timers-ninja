@@ -1,3 +1,98 @@
+---
+slug: introduction
+---
+
+import ReadmeTimer from "~/components/readme-timer/readme-timer"
+
 # Introduction
 
-Something
+Welcome to timers.ninja, the goal of this project is to make it easy to generate work out timers base on free text entry of the work and rest sets in the work out.
+
+No more convoluted UI!!!
+
+Key Features:
+
+- Count Up/ Down timers
+- Timers To/From Date
+- Labeled & Unlabeled Rounds 
+- Grouping and Looping
+
+# Timers Basic Syntax
+
+A timer is a collon delimited numbers such as `days:hh:mm:ss` with implicit 0 values for all missing fields except seconds.  This means a timer is only one numeric part will assume a default of 0 days 0 hours and 0 minutes and treat the number as a seconds value.  In the example bellow we create a 30 second timer, which when started will count from 0 to 30 and stop. 
+
+```
+30
+```
+
+Need multiple timers to run one after the other?  Put a second timer on the next line
+
+```
+20
+10
+```
+
+The first timer will count up to 20 stop and a second timer will start counting up to 10 before the whole 'program' is executed.
+
+### Count Up Timers
+
+Another way to write the same 30 second timer would be to use the explicit "Count Up" modifier `+` before the number.  Counting up is treated as the default in the timers.ninja markdown.
+
+```
++30
+```
+
+When doing count up timres, there is a edge case that allows you to do a count up without automatically stopping the timer, the syntax for that is to explicity define the count up timer of 0 seconds.
+
+```
++0
+```
+
+Note that in this case the `+` operator can be skipped and will be implicitly applied on a timer of `0`. 
+
+### Count Down Timers
+
+Timers can also count down, a use case that is much more common in the solution space timers ninja tries to occupy.  The syntax for a countdown is however never implicit, so it must be defined. A count down from 5 minutes down to 0 can be defined with this markdown.
+
+```
+-5:00
+```
+
+Note the impotance of the `-` countdown operator.
+
+### Anchored Timers
+
+Finally the 3rd type of timer that can be expressed in the timers.ninja markdown is an anchered date timer which counts up or down from a set date/time.  
+
+Format: `@yyyy.mm.dd hh:mm:ss`
+
+Note the `@` operator leading the format, which missing fields defaulting to what ever value can be populated from now.
+
+# Multipliers, Labels & Groupings
+
+As described up to this point, there is little additional value in timers.ninja over the typical stopwatch or timer function in any app.  A single timer that counts up or down is a core feature of the timers in all our phones, and the UI driven timers apps have a simple enough design to make the examples from above all really easy to create.
+
+This is why timers.ninja takes takes it up a notch and get some efficencies of repeating timers. A common workout stratagy would be to keep track of a round/index of a timer, allowing workout patterns like "Every Minute On the Minute" (EMOM) for a given length of time.  If we were to hand write this, we could express it as 20 lines of code with `1:00` on each line, but the concept of multipliers lets us express that as a single line of code.  The value inside `(` & `)` is counted as a multiplier. 
+
+```
+1:00(20)
+```
+
+Rounds can be expressed as a multiplier like in the example above or can be represented by the concept of labels, which are `,` delimited strings that represent the name of each round.
+
+```
+1:00(pushups, pullups, squats, rest)
+```
+
+
+Lets take a another typical example of a work out timer, the Tabada.  One way to write that out would be to explicitly define each of the 20 and 10 second intervals.  This would result in a 16 line program which will execute 16 different timers, but there is a better way.
+
+```
+[
+    -20
+    -10
+](8)
+```
+
+There is a lot going on here, so lets tease it apparet a bit.  Here we are wrapping our two timers inside a `grouping` block using the `[` and `]` brackets.  This allows us to treat the content of the grouping as a single block.  This means the multiplier `(8)` is working on the group.
+
