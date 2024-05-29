@@ -1,5 +1,5 @@
 import { component$, useStore } from "@builder.io/qwik";
-import TimerContainer from "~/components/timer-container/timer-container";
+import TimerContainer from "~/components/timer-row/timer-container";
 
 export default component$((props: any) => {
   const dateString = props.startDate;
