@@ -1,15 +1,47 @@
 import { test, expect } from "vitest";
 import { MdTimerRuntime } from "./md-timer";
-import { Duration } from "luxon";
+import { DateTime, Interval, Duration, DateInput } from "luxon";
 
 import { Subject, interval, lastValueFrom, withLatestFrom, takeUntil, of, map } from 'rxjs';
+
+class RuntimeTimerSpan {
+    public Event: string | undefined;
+    public Start: DateTime | undefined;
+    public End: DateTime | undefined;    
+}
+
+class RuntimeTimer {
+    public Current : RuntimeTimerSpan | undefined
+    public Spans: RuntimeTimerSpan[] = []
+    
+    public onNext(eventName: string) : void {
+        if (!!this.Current && this.Current.Event != eventName) {
+            this.Current.End = DateTime.utc();
+            this.Current = undefined;
+        }
+        if (!this.Current) {            
+            this.Current = new RuntimeTimerSpan();
+            this.Spans.push(this.Current);
+            this.Current.Event = eventName;
+            this.Current.Start = DateTime.utc();
+        }
+    }
+
+    public Ellapsed (): any {
+        return this.Spans
+            .filter(n=>n.Event == "running")
+            .map(span => span.Start!.diff(span.End!))
+            .reduce((sum, current)=> sum + current.milliseconds, 0);            
+    }
+}
+
 
 test(`observableTakeUnit`, async () => {    
 // Create a subject as the notifier
     const stopSignal$ = new Subject<void>();
-    const counter: string[] = [];
+    const counter = new RuntimeTimer();
     // Main observable (e.g., emitting values every second)
-    const mainObservable$ = interval(100); // Emits 0, 1, 2, ... every second
+    const mainObservable$ = interval(25); // Emits 0, 1, 2, ... every second
 
     // Combine with takeUntil
     const controlledObservable$ = mainObservable$.pipe(
@@ -26,19 +58,19 @@ test(`observableTakeUnit`, async () => {
       );
 
       combined$.subscribe({
-        next: (value) => counter.push(value[0].toString() + value[1]),
-        complete: () => counter.push("done")
+        next: (value) => counter.onNext(value[1].toString()),
+        complete: () => counter.onNext("done")
     });
 
-    userInput$.next("start");
+    userInput$.next("running");
     setTimeout(() => {
         console.log('Stopping the main observable...');
-        userInput$.next("pause");
+        userInput$.next("paused");
     }, 150);
 
     setTimeout(() => {
         console.log('Stopping the main observable...');
-        userInput$.next("start");
+        userInput$.next("running");
     }, 350);
 
     // Simulate an external event after 5 seconds
@@ -48,7 +80,7 @@ test(`observableTakeUnit`, async () => {
     }, 550);
     
     await lastValueFrom(controlledObservable$);
-    expect(counter.length).toBe(6);
+    expect(counter.Spans.length).toBe(3);
 });
 test(`parsedDirectionUpDefault`, async () => {    
     const runtime = new MdTimerRuntime();
