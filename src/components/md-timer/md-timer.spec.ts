@@ -2,6 +2,54 @@ import { test, expect } from "vitest";
 import { MdTimerRuntime } from "./md-timer";
 import { Duration } from "luxon";
 
+import { Subject, interval, lastValueFrom, withLatestFrom, takeUntil, of, map } from 'rxjs';
+
+test(`observableTakeUnit`, async () => {    
+// Create a subject as the notifier
+    const stopSignal$ = new Subject<void>();
+    const counter: string[] = [];
+    // Main observable (e.g., emitting values every second)
+    const mainObservable$ = interval(100); // Emits 0, 1, 2, ... every second
+
+    // Combine with takeUntil
+    const controlledObservable$ = mainObservable$.pipe(
+    takeUntil(stopSignal$)
+    );
+
+    const userInput$ = new Subject<string>();
+    
+
+    // Subscribe to the controlled observable
+    const combined$ = controlledObservable$.pipe(
+        withLatestFrom(userInput$),
+        map(([intervalValue, latestUserInput]) => [intervalValue, latestUserInput]) // Create tuple
+      );
+
+      combined$.subscribe({
+        next: (value) => counter.push(value[0].toString() + value[1]),
+        complete: () => counter.push("done")
+    });
+
+    userInput$.next("start");
+    setTimeout(() => {
+        console.log('Stopping the main observable...');
+        userInput$.next("pause");
+    }, 150);
+
+    setTimeout(() => {
+        console.log('Stopping the main observable...');
+        userInput$.next("start");
+    }, 350);
+
+    // Simulate an external event after 5 seconds
+    setTimeout(() => {
+        console.log('Stopping the main observable...');
+        stopSignal$.next(); // Emit a value to stop the main observable
+    }, 550);
+    
+    await lastValueFrom(controlledObservable$);
+    expect(counter.length).toBe(6);
+});
 test(`parsedDirectionUpDefault`, async () => {    
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read("11");    
