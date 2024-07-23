@@ -69,6 +69,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@qwikest/icons": "^0.0.13",
     "chevrotain": "^11.0.3",
-    "codemirror": "^6.0.1"
+    "codemirror": "^6.0.1",
+    "rxjs": "^7.8.1"
   }
 }

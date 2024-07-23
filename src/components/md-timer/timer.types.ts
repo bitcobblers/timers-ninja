@@ -1,14 +1,6 @@
 import type { IToken } from "chevrotain";
 import { Duration } from "luxon";
 
-/*
- 
- 
-
- 
-
-*/
-
 export type MdTimerStack = {  
   
   blocks: MdTimerBlock[];  
