@@ -4,36 +4,61 @@ import { DateTime, Interval, Duration, DateInput } from "luxon";
 
 import { Subject, interval, lastValueFrom, withLatestFrom, takeUntil, of, map } from 'rxjs';
 
-class RuntimeTimerSpan {
-    public Event: string | undefined;
-    public Start: DateTime | undefined;
-    public End: DateTime | undefined;    
+type RuntimeTimerSpan = {
+    Event: string;
+    Start: DateTime;
+    End?: DateTime;    
+}
+type RuntimeTimerEvent = {
+    Name: "start" | "stop" | "reset" | string;       
+    Source: string;
+    TimeStamp: DateTime;
+}
+
+type RuntimeTimerStatus = {
 }
 
 class RuntimeTimer {
     public Current : RuntimeTimerSpan | undefined
     public Spans: RuntimeTimerSpan[] = []
     
-    public onNext(eventName: string) : void {
-        if (!!this.Current && this.Current.Event != eventName) {
-            this.Current.End = DateTime.utc();
+    public onNextNow(evntName:string, source:string) {
+        this.onNext({Name: evntName, Source: source, TimeStamp: DateTime.utc() })
+    }
+
+    public onNext(evnt: RuntimeTimerEvent) : void {
+        if (!!this.Current && evnt.Name == "stop") {
+            this.Current.End = evnt.TimeStamp;
             this.Current = undefined;
+            return;
         }
         if (!this.Current) {            
-            this.Current = new RuntimeTimerSpan();
+            this.Current = { Event : `${evnt.Name}:${evnt.Source}`, Start : evnt.TimeStamp }
             this.Spans.push(this.Current);
-            this.Current.Event = eventName;
-            this.Current.Start = DateTime.utc();
+            
+            if (evnt.Name == "reset") {
+                this.Current.End = evnt.TimeStamp;
+                this.Current == undefined;
+            }            
         }
     }
 
-    public Ellapsed (): any {
-        return this.Spans
-            .filter(n=>n.Event == "running")
-            .map(span => span.Start!.diff(span.End!))
-            .reduce((sum, current)=> sum + current.milliseconds, 0);            
+    public Ellapsed (): Duration {
+        return this.Spans            
+            .map(span => [span, (span.End || DateTime.utc()).diff(span.Start)] as [RuntimeTimerSpan, Duration])
+            .reduce((sum, [span, current])=> span.Event.startsWith("reset") ? Duration.fromMillis(0) :  sum.plus({ milliseconds : current.milliseconds}), Duration.fromMillis(0));      
     }
 }
+
+test("RuntimeTimer", async() => {
+    const now = DateTime.utc();
+    const secondLater = now.plus({ seconds: 1});
+    const timer = new RuntimeTimer();
+    timer.onNext({Name: "start", TimeStamp: now, Source: "test"})
+    timer.onNext({Name: "stop", TimeStamp: secondLater, Source: "test"})
+    const result = timer.Ellapsed();
+    expect(result.as("seconds")).toBe(1);
+});
 
 
 test(`observableTakeUnit`, async () => {    
@@ -45,7 +70,7 @@ test(`observableTakeUnit`, async () => {
 
     // Combine with takeUntil
     const controlledObservable$ = mainObservable$.pipe(
-    takeUntil(stopSignal$)
+        takeUntil(stopSignal$)
     );
 
     const userInput$ = new Subject<string>();
@@ -58,19 +83,19 @@ test(`observableTakeUnit`, async () => {
       );
 
       combined$.subscribe({
-        next: (value) => counter.onNext(value[1].toString()),
-        complete: () => counter.onNext("done")
+        next: (value) => counter.onNextNow(value[1].toString(), "test"),
+        complete: () => counter.onNextNow("stop", "test")
     });
 
-    userInput$.next("running");
+    userInput$.next("start");
     setTimeout(() => {
         console.log('Stopping the main observable...');
-        userInput$.next("paused");
+        userInput$.next("stop");
     }, 150);
 
     setTimeout(() => {
         console.log('Stopping the main observable...');
-        userInput$.next("running");
+        userInput$.next("start");
     }, 350);
 
     // Simulate an external event after 5 seconds
