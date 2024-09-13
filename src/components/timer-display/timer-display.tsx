@@ -1,6 +1,38 @@
 import { component$ } from "@builder.io/qwik";
-import type { MdTimerValue } from "../md-timer/timer.types";
+import { MdTimerFromSeconds, type MdTimerValue } from "../md-timer/timer.types";
 import TimerDigits from "../timer-digits/timer-digits";
+
+
+import { $, QRL, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { start } from "repl";
+
+export interface TimeSpan {
+    start: Date;
+    end?: Date;
+}
+
+
+// Helper function for padding numbers
+const pad = (num: number, size: number = 2) => {
+    let s = num + "";
+    while (s.length < size) s = "0" + s;
+    return s;
+}
+
+const calculateElapsedTime = (spans: TimeSpan[]) => {
+    return spans.reduce((total, span) => {
+        const endTime = span.end || new Date(); // If no end, use current time
+        return total + (endTime.getTime() - span.start.getTime()) / 1000;
+    }, 0);
+};
+
+export type TimerProps = {
+    onStart$?: QRL<(spans: TimeSpan[]) => void>;
+    onStop$?: QRL<(spans: TimeSpan[]) => void>;
+    onComplete$?: QRL<(spans: TimeSpan[]) => void>;
+    onReset$?: QRL<() => void>;
+};
+
 
 export type MdTimerBlockArgs = {
   timer: MdTimerValue;
@@ -10,18 +42,98 @@ export type MdTimerBlockArgs = {
   size?: string;
 };
 
+export type ButtonArgs  = {
+  onClick$ : QRL<() => void>;
+}
+
+const StartButton = component$((args : ButtonArgs) => {
+  return <button {...args}
+  type="button"
+  class="items-center inline-flex gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+>
+  Start
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    class="h-6 w-6"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+    />
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z"
+    />
+  </svg>
+</button>    
+})
+
+const PauseButton = component$((args : ButtonArgs) => {
+  return <button {...args}
+  type="button"
+  class="items-center inline-flex gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+>
+  Pause
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    class="h-6 w-6"
+  >
+    <path stroke-linecap="round" stroke-linejoin="round" d="M14.25 9v6m-4.5 0V9M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+  </svg>
+</button>
+});
+
+const ResetButton = component$((args : ButtonArgs ) => {
+  return <button {...args}
+  type="button"
+  class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+>
+  Reset
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
+    class="h-6 w-6"
+  >
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
+    />
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z"
+    />
+  </svg>
+</button>
+})
+
+
 const DateCounterIcon = component$(() => {
-  return <svg 
+  return <svg
     width="24"
-    xmlns="http://www.w3.org/2000/svg" 
-    fill="none" 
-    viewBox="0 0 24 24" 
-    stroke-width="1.5" 
-    stroke="currentColor" 
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke-width="1.5"
+    stroke="currentColor"
     class="h-5 w-5">
-    <path stroke-linecap="round" 
-    stroke-linejoin="round" 
-    d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
+    <path stroke-linecap="round"
+      stroke-linejoin="round"
+      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
   </svg>
 })
 
@@ -55,8 +167,56 @@ const CountDownIcon = component$(() => {
   </svg>
 })
 
-export default component$((args: MdTimerBlockArgs) => {  
-  const sizedTimer = args.size != undefined ? "text-" + args.size : "text-6xl";
+export default component$((args: MdTimerBlockArgs) => {
+  const sizedTimer = args.size != undefined ? "text-" + args.size : "text-5xl";
+  const refreshReate = 10;
+  const elapsedTime = useSignal(0);
+  const started = useSignal(false);
+  const timeSpans = useSignal<TimeSpan[]>([]);    
+
+    // eslint-disable-next-line qwik/no-use-visible-task
+    useVisibleTask$(({ track }) => {      
+      track(() => timeSpans.value);
+        let intervalId: NodeJS.Timeout | undefined;  
+        if (intervalId) {
+            clearInterval(intervalId);
+        }
+
+        // If there's an active time span (last one without an end time)
+        if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
+            intervalId = setInterval(() => {
+                // Calculate elapsed time based on time spans
+                elapsedTime.value = calculateElapsedTime(timeSpans.value);
+            }, refreshReate);
+        }
+
+        return () => {
+            if (intervalId) {
+                clearInterval(intervalId);
+            }
+        };
+    });
+
+    const startTimer = $(() => {
+        timeSpans.value = [...timeSpans.value, { start: new Date() }];
+        started.value = true;
+    });
+
+    const stopTimer = $(() => {
+        if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
+            const updatedTimeSpans = [...timeSpans.value]; // Create a copy
+            updatedTimeSpans[updatedTimeSpans.length - 1].end = new Date();
+            timeSpans.value = updatedTimeSpans; // Update the signal's value
+            started.value = false;
+        }
+    });
+
+    const resetTimer = $(() => {
+        elapsedTime.value = 0;
+        timeSpans.value = [];
+        started.value = false;
+    });
+  
   return (
     <>
       <div
@@ -82,9 +242,14 @@ export default component$((args: MdTimerBlockArgs) => {
           <div
             class={"flex-grow text-center text-forest-600 " + sizedTimer}
           >
-            <TimerDigits {...args.timer} />
+            <TimerDigits seconds={elapsedTime.value} />
           </div>
         </div>
+      </div>
+      <div class="flex justify-center space-x-6 pt-6">        
+        {!started.value && <StartButton onClick$={startTimer} />}
+        {started.value && <PauseButton onClick$={stopTimer} /> }
+        <ResetButton onClick$={resetTimer} />
       </div>
     </>
   );
