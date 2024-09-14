@@ -1,22 +1,14 @@
 import { component$ } from "@builder.io/qwik";
-import { MdTimerFromSeconds, type MdTimerValue } from "../md-timer/timer.types";
+import { type MdTimerValue } from "../md-timer/timer.types";
 import TimerDigits from "../timer-digits/timer-digits";
-
-
 import { $, QRL, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { start } from "repl";
+import { ContainerArgs } from "~/routes";
 
 export interface TimeSpan {
-    start: Date;
-    end?: Date;
-}
-
-
-// Helper function for padding numbers
-const pad = (num: number, size: number = 2) => {
-    let s = num + "";
-    while (s.length < size) s = "0" + s;
-    return s;
+    
+  start: Date;
+  end?: Date;
 }
 
 const calculateElapsedTime = (spans: TimeSpan[]) => {
@@ -40,6 +32,7 @@ export type MdTimerBlockArgs = {
   round?: number;
   label?: string;
   size?: string;
+  status?: string;
 };
 
 export type ButtonArgs  = {
@@ -167,12 +160,21 @@ const CountDownIcon = component$(() => {
   </svg>
 })
 
-export default component$((args: MdTimerBlockArgs) => {
-  const sizedTimer = args.size != undefined ? "text-" + args.size : "text-5xl";
+export type TimerDigitsArgs = ContainerArgs & {
+  size: string  
+} 
+
+export default component$((args?: TimerDigitsArgs) => {
+  const blankTimer: MdTimerBlockArgs = {
+    timer : { seconds: 0},
+     label: "Click Start."
+  }
+  const sizedTimer = args?.size != undefined ? "text-" + args.size : "text-5xl";
   const refreshReate = 10;
   const elapsedTime = useSignal(0);
   const started = useSignal(false);
-  const timeSpans = useSignal<TimeSpan[]>([]);    
+  const timeSpans = useSignal<TimeSpan[]>([]);
+  const activeTimer = useSignal<MdTimerBlockArgs|undefined>(blankTimer);
 
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(({ track }) => {      
@@ -187,6 +189,14 @@ export default component$((args: MdTimerBlockArgs) => {
             intervalId = setInterval(() => {
                 // Calculate elapsed time based on time spans
                 elapsedTime.value = calculateElapsedTime(timeSpans.value);
+
+                if (elapsedTime.value > (activeTimer?.value?.timer?.seconds || 0)) {
+                  args?.complete$();
+                  args?.next$().then(n=> { 
+                    timeSpans.value = [ { start: new Date() }];
+                    activeTimer.value = n;
+                  });
+                }
             }, refreshReate);
         }
 
@@ -198,8 +208,10 @@ export default component$((args: MdTimerBlockArgs) => {
     });
 
     const startTimer = $(() => {
-        timeSpans.value = [...timeSpans.value, { start: new Date() }];
-        started.value = true;
+      args?.next$().then(n=> activeTimer.value = n);
+      
+      timeSpans.value = [...timeSpans.value, { start: new Date() }];
+      started.value = true;
     });
 
     const stopTimer = $(() => {
@@ -215,8 +227,10 @@ export default component$((args: MdTimerBlockArgs) => {
         elapsedTime.value = 0;
         timeSpans.value = [];
         started.value = false;
+        activeTimer.value = blankTimer;
+        args?.reset$();
     });
-  
+      
   return (
     <>
       <div
@@ -225,24 +239,24 @@ export default component$((args: MdTimerBlockArgs) => {
                     font-bold
                      text-gray-800"
       >
-        {(args.round || args.label) &&
+        {(activeTimer.value?.round || activeTimer.value?.label) &&
           <div class="mx-auto flex">
             <div class="text-center flex-grow bg-forest rounded-t-lg text-green-50">
-              {args.round && "Round " + args.round}
-              {args.round && args.label && " - "}
-              {args.label}
+              {activeTimer.value.round && "Round " + activeTimer.value.round}
+              {activeTimer.value.round && activeTimer.value.label && " - "}
+              {activeTimer.value.label}
             </div>
           </div>}
         <div class="mx-auto flex gap-x-2 px-5  ">
           <div class="text-forest">
-            {args.icon == "up" && <CountUpIcon />}
-            {args.icon == "down" && <CountDownIcon />}
-            {args.icon == "date" && <DateCounterIcon />}
+            {activeTimer.value?.icon == "up" && <CountUpIcon />}
+            {activeTimer.value?.icon == "down" && <CountDownIcon />}
+            {activeTimer.value?.icon == "date" && <DateCounterIcon />}
           </div>
           <div
             class={"flex-grow text-center text-forest-600 " + sizedTimer}
           >
-            <TimerDigits seconds={elapsedTime.value} />
+            <TimerDigits seconds={elapsedTime.value} showMills={true} />
           </div>
         </div>
       </div>

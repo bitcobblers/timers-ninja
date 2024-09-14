@@ -25,7 +25,7 @@ export default component$((props: any) => {
                 </div>
                 <div class="flex flex-none items-center gap-x-4">
                   <p class="mt-0.5 whitespace-nowrap rounded-md bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
-                    Queued
+                    {props.status || "Queued"}
                   </p>
                 </div>
               </div>

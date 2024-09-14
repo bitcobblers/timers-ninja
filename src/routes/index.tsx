@@ -4,8 +4,10 @@ import {
   useSignal,
   useTask$,
   Slot,
-  $
+  $,
+  QRL
 } from "@builder.io/qwik";
+
 import { Duration } from "luxon";
 import Page from "~/components/Page";
 import Editor from "~/components/editor";
@@ -14,7 +16,7 @@ import ThemeToggle from "~/components/light-dark-toggle";
 import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
 import Present from "~/components/Present";
-import TimerDisplay from "~/components/timer-display/timer-display";
+import TimerDisplay, { MdTimerBlockArgs } from "~/components/timer-display/timer-display";
 import type {
   MdTimerBlock,
   MdTimerValue,
@@ -37,23 +39,16 @@ const NinjaImage = component$(() => {
   />
 });
 
-const applicationId = "0507F78F";
-const Container = component$(() => {
-  const demo = {
-    timer: {
-      years: 0,
-      months: 0,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 1,
-    },
-    type: { label: "", step: 1 },
-    label: "",
-    round: 1,
-    sources: [],
-  };
 
+export type ContainerArgs  = {
+  next$ : QRL<() => MdTimerBlockArgs | undefined>;
+  reset$ : QRL<() => void>;  
+  complete$: QRL<() => void>;
+}
+
+
+
+const Container = component$((args : ContainerArgs) => {
   // eslint-disable-next-line qwik/no-use-visible-task
   // useVisibleTask$(() => {
 
@@ -91,7 +86,7 @@ const Container = component$(() => {
         >
           <div class="mx-auto max-w-lg md:mx-64 lg:mx-[calc(max(2rem,50%-32rem))] lg:flex lg:w-96 lg:max-w-none lg:flex-col lg:before:flex-1 lg:before:pt-6">
             <NinjaImage />
-            <TimerDisplay {...demo} />
+            <TimerDisplay {...args} size="5xl"/>
             <Slot name="editor" />
             <div class="mt-4 flex flex-1 items-end justify-center pb-4 text-xs lg:z-40 lg:justify-center lg:pb-6">
               <span class="pb-2 pr-1 text-slate-500">
@@ -188,7 +183,28 @@ const Container = component$(() => {
 
 const TimerPage = component$((params: { init: string }) => {
   const markdown = useStore({ value: params.init });
-  const result = useSignal([]) as any;
+  const result = useSignal<MdTimerBlockArgs[]>([]);
+  const index = useSignal<number>(-1);
+
+  const next = $(() => {            
+    index.value++;
+    return index.value <= result.value.length
+      ? result.value[index.value]
+      : undefined;
+  });
+
+  const complete = $(() => {
+    result.value = result.value.map((item, i) => {
+      if (item.status == "Started") {
+        item.status = "Done";        
+      }
+      return item;
+    });
+  }) 
+
+  const reset = $(() => {
+    index.value = -1;
+  })
 
   useTask$(({ track }) => {
     track(() => markdown.value);
@@ -218,27 +234,27 @@ const TimerPage = component$((params: { init: string }) => {
 
   const onUpdate = $((input: string) => {
     //console.log("update", input);
-    markdown.value = input;
+    markdown.value = input;    
+
   });
-  const getKey = (index: number, timer: any) => {
+  const getKey = (index: number, timer: MdTimerBlockArgs) => {
     const t = timer.timer;
     return [
       index,
-      timer.type.label,
-      timer.label,
-      t.years,
-      t.months,
+      timer.label,            
+      timer.status,
+      timer.icon || "",
       t.days,
       t.hours,
       t.minutes,
-      t.seconds,
+      t.seconds      
     ].join("-");
   };
   return (
-    <Container>
+    <Container next$={next} reset$={reset} complete$={complete}>
       <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
       {result.value.length > 0 ? <Present /> : <div />}
-      {result.value.map((timer: any, index: number) => {
+      {result.value.map((timer: MdTimerBlockArgs, index: number) => {
         return <Page {...timer} key={getKey(index, timer)} />;
       })}
     </Container>

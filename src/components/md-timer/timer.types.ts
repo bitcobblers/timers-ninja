@@ -60,13 +60,14 @@ export class MdTimerFromSeconds implements MdTimerValue {
     
     this.milliseconds = Math.round((remaining - this.seconds) * multiplier);
   }
+
   days?: number | undefined;
   hours?: number | undefined;
   minutes?: number | undefined;
   seconds?: number | undefined;
   milliseconds?: number | undefined;
 
-  toString(): string { 
+  toClock(): [string, string] { 
     var result = [];
     if (this.days != null && this.days != 0) {
       result.push(this.days.toString())
@@ -81,12 +82,14 @@ export class MdTimerFromSeconds implements MdTimerValue {
     if (sec.length == 1) {
       sec = "0" + sec;
     }
+    result.push(sec);
+    
     var mill = this.milliseconds?.toString() || "0";
     while (mill.length < 3) {
       mill = mill + "0";
     }        
-    result.push(sec + "." + mill);  
-    return result.join(":");
+     
+    return [result.join(":"),  mill];
   }
 }
 
