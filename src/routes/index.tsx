@@ -9,13 +9,14 @@ import {
 } from "@builder.io/qwik";
 
 import { Duration } from "luxon";
-import Page from "~/components/Page";
+
 import Editor from "~/components/editor";
+import TimelineEntry from "~/components/timeline-panel/timeline-entry";
 import { MdTimerRuntime } from "~/components/md-timer/md-timer";
 import ThemeToggle from "~/components/light-dark-toggle";
 import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
-import Present from "~/components/Present";
+import TimelineHeader from "~/components/timeline-panel/timeline-header";
 import TimerDisplay, { type MdTimerBlockArgs } from "~/components/timer-display/timer-display";
 import type {
   MdTimerBlock,
@@ -46,36 +47,7 @@ export type ContainerArgs  = {
   complete$: QRL<() => void>;
 }
 
-
-
-const Container = component$((args : ContainerArgs) => {
-  // eslint-disable-next-line qwik/no-use-visible-task
-  // useVisibleTask$(() => {
-
-  //     window['__onGCastApiAvailable'] = function(isAvailable: boolean) {
-  //         if (isAvailable) {
-  //           initializeCastApi();
-  //         }
-  //       };
-
-  // const initializeCastApi = $(() => {
-  //     const instance  = cast.framework.CastContext.getInstance();
-  //     instance.setOptions({
-  //         receiverApplicationId: applicationId,
-  //         autoJoinPolicy: chrome.cast.AutoJoinPolicy.PAGE_SCOPED,
-  //         androidReceiverCompatible: true
-  //     });
-
-  //     const session = instance.getCurrentSession();
-  //     console.log("App:", applicationId)
-  //     console.log("instance:", instance)
-  //     console.log("session:", session)
-  // })
-
-  //     initializeCastApi();
-  //     return () => {}
-  // })
-
+const Container = component$((args : ContainerArgs) => {  
   return (
     <>
       <div class="relative flex-none overflow-hidden bg-gray-900 px-6 lg:pointer-events-none lg:fixed lg:inset-0 lg:flex lg:bg-transparent lg:px-0">
@@ -185,12 +157,18 @@ const TimerPage = component$((params: { init: string }) => {
   const markdown = useStore({ value: params.init });
   const result = useSignal<MdTimerBlockArgs[]>([]);
   const index = useSignal<number>(-1);
+  const active = useSignal<MdTimerBlockArgs|undefined>();
 
   const next = $(() => {            
     index.value++;
-    return index.value <= result.value.length
+    active.value = index.value <= result.value.length
       ? result.value[index.value]
       : undefined;
+    
+      if (active.value) {
+        active.value.status = "Running"
+      }
+    return active.value;
   });
 
   const complete = $(() => {
@@ -199,6 +177,7 @@ const TimerPage = component$((params: { init: string }) => {
 
   const reset = $(() => {
     index.value = -1;
+    active.value = undefined;
   })
 
   useTask$(({ track }) => {
@@ -248,9 +227,12 @@ const TimerPage = component$((params: { init: string }) => {
   return (
     <Container next$={next} reset$={reset} complete$={complete}>
       <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
-      {result.value.length > 0 ? <Present /> : <div />}
-      {result.value.map((timer: MdTimerBlockArgs, index: number) => {
-        return <Page {...timer} key={getKey(index, timer)} />;
+      {result.value.length > 0 ? <TimelineHeader /> : <div />}
+      {active.value && < TimelineEntry {...active.value} status="Running"/>}
+      {result.value.map((timer: MdTimerBlockArgs, i: number) => {
+        if (index.value == -1 || index.value < i) {
+          return  <TimelineEntry {...timer} key={getKey(i, timer)} />;
+        }
       })}
     </Container>
   );
