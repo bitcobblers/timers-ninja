@@ -68,7 +68,7 @@ export class MdTimerFromSeconds implements MdTimerValue {
   milliseconds?: number | undefined;
 
   toClock(): [string, string] { 
-    var result = [];
+    const result = [];
     if (this.days != null && this.days != 0) {
       result.push(this.days.toString())
     }
@@ -78,13 +78,13 @@ export class MdTimerFromSeconds implements MdTimerValue {
     if (this.minutes != null && this.minutes != 0) {
       result.push(this.minutes.toString())
     }    
-    var sec = this.seconds?.toString() || "0";
+    let sec = this.seconds?.toString() || "0";
     if (sec.length == 1) {
       sec = "0" + sec;
     }
     result.push(sec);
     
-    var mill = this.milliseconds?.toString() || "0";
+    let mill = this.milliseconds?.toString() || "0";
     while (mill.length < 3) {
       mill = mill + "0";
     }        

@@ -5,7 +5,7 @@ import {
   useTask$,
   Slot,
   $,
-  QRL
+  type QRL
 } from "@builder.io/qwik";
 
 import { Duration } from "luxon";
@@ -16,7 +16,7 @@ import ThemeToggle from "~/components/light-dark-toggle";
 import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
 import Present from "~/components/Present";
-import TimerDisplay, { MdTimerBlockArgs } from "~/components/timer-display/timer-display";
+import TimerDisplay, { type MdTimerBlockArgs } from "~/components/timer-display/timer-display";
 import type {
   MdTimerBlock,
   MdTimerValue,
@@ -194,12 +194,7 @@ const TimerPage = component$((params: { init: string }) => {
   });
 
   const complete = $(() => {
-    result.value = result.value.map((item, i) => {
-      if (item.status == "Started") {
-        item.status = "Done";        
-      }
-      return item;
-    });
+    
   }) 
 
   const reset = $(() => {

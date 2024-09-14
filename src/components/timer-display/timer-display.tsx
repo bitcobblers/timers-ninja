@@ -1,9 +1,9 @@
 import { component$ } from "@builder.io/qwik";
 import { type MdTimerValue } from "../md-timer/timer.types";
 import TimerDigits from "../timer-digits/timer-digits";
-import { $, QRL, useSignal, useVisibleTask$ } from '@builder.io/qwik';
-import { start } from "repl";
-import { ContainerArgs } from "~/routes";
+import { $, useSignal, useVisibleTask$ } from '@builder.io/qwik';
+import { type QRL} from '@builder.io/qwik';
+import { type ContainerArgs } from "~/routes";
 
 export interface TimeSpan {
     
@@ -190,7 +190,7 @@ export default component$((args?: TimerDigitsArgs) => {
                 // Calculate elapsed time based on time spans
                 elapsedTime.value = calculateElapsedTime(timeSpans.value);
 
-                if (elapsedTime.value > (activeTimer?.value?.timer?.seconds || 0)) {
+                if (elapsedTime.value > (activeTimer.value?.timer.seconds || 0)) {
                   args?.complete$();
                   args?.next$().then(n=> { 
                     timeSpans.value = [ { start: new Date() }];
