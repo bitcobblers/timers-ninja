@@ -1,6 +1,5 @@
 import { component$ } from "@builder.io/qwik";
-import { MdTimerSignificant } from "../md-timer/timer.visitor";
-import { MdTimerFromSeconds, type MdTimerValue } from "../md-timer/timer.types";
+import { MdTimerFromSeconds } from "../md-timer/timer.types";
 
 
 export type TimerDigitsArgs = {
