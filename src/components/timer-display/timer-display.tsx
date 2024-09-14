@@ -193,7 +193,16 @@ export default component$((args?: TimerDigitsArgs) => {
                 if (elapsedTime.value > (activeTimer.value?.timer.seconds || 0)) {
                   args?.complete$();
                   args?.next$().then(n=> { 
-                    timeSpans.value = [ { start: new Date() }];
+                    
+                    if (n == undefined) {
+                      timeSpans.value = [];  
+                      elapsedTime.value = 0;
+                      activeTimer.value = blankTimer;                      
+                      $(resetTimer);
+                      return;
+                    }
+                    
+                    timeSpans.value = [ { start: new Date() }];                    
                     activeTimer.value = n;
                   });
                 }
