@@ -223,7 +223,7 @@ export default component$((args?: TimerDigitsArgs) => {
                       timeSpans.value = [];
                       started.value = false;
                       activeTimer.value = blankTimer;
-                      args?.reset$();      
+                      args.reset$();                      
                       return;
                     }
                     
