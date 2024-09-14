@@ -176,6 +176,30 @@ export default component$((args?: TimerDigitsArgs) => {
   const timeSpans = useSignal<TimeSpan[]>([]);
   const activeTimer = useSignal<MdTimerBlockArgs|undefined>(blankTimer);
 
+  const startTimer = $(() => {
+    args?.next$().then(n=> activeTimer.value = n);
+    
+    timeSpans.value = [...timeSpans.value, { start: new Date() }];
+    started.value = true;
+  });
+
+  const stopTimer = $(() => {
+      if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
+          const updatedTimeSpans = [...timeSpans.value]; // Create a copy
+          updatedTimeSpans[updatedTimeSpans.length - 1].end = new Date();
+          timeSpans.value = updatedTimeSpans; // Update the signal's value
+          started.value = false;
+      }
+  });
+
+  const resetTimer = $(() => {
+      elapsedTime.value = 0;
+      timeSpans.value = [];
+      started.value = false;
+      activeTimer.value = blankTimer;
+      args?.reset$();
+  });
+
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(({ track }) => {      
       track(() => timeSpans.value);
@@ -195,10 +219,11 @@ export default component$((args?: TimerDigitsArgs) => {
                   args?.next$().then(n=> { 
                     
                     if (n == undefined) {
-                      timeSpans.value = [];  
                       elapsedTime.value = 0;
-                      activeTimer.value = blankTimer;                      
-                      $(resetTimer);
+                      timeSpans.value = [];
+                      started.value = false;
+                      activeTimer.value = blankTimer;
+                      args.reset$();                      
                       return;
                     }
                     
@@ -215,30 +240,7 @@ export default component$((args?: TimerDigitsArgs) => {
             }
         };
     });
-
-    const startTimer = $(() => {
-      args?.next$().then(n=> activeTimer.value = n);
-      
-      timeSpans.value = [...timeSpans.value, { start: new Date() }];
-      started.value = true;
-    });
-
-    const stopTimer = $(() => {
-        if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
-            const updatedTimeSpans = [...timeSpans.value]; // Create a copy
-            updatedTimeSpans[updatedTimeSpans.length - 1].end = new Date();
-            timeSpans.value = updatedTimeSpans; // Update the signal's value
-            started.value = false;
-        }
-    });
-
-    const resetTimer = $(() => {
-        elapsedTime.value = 0;
-        timeSpans.value = [];
-        started.value = false;
-        activeTimer.value = blankTimer;
-        args?.reset$();
-    });
+    
       
   return (
     <>

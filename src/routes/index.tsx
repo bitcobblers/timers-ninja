@@ -231,7 +231,7 @@ const TimerPage = component$((params: { init: string }) => {
       {active.value && < TimelineEntry {...active.value} status="Running"/>}
       {result.value.map((timer: MdTimerBlockArgs, i: number) => {
         if (index.value == -1 || index.value < i) {
-          return  <TimelineEntry {...timer} key={getKey(i, timer)} />;
+          return  <TimelineEntry {...timer} key={getKey(i, timer)}  status=""/>;
         }
       })}
     </Container>
