@@ -219,8 +219,11 @@ export default component$((args?: TimerDigitsArgs) => {
                   args?.next$().then(n=> { 
                     
                     if (n == undefined) {
-                      resetTimer();
-                      activeTimer.value = blankTimer;                                            
+                      elapsedTime.value = 0;
+                      timeSpans.value = [];
+                      started.value = false;
+                      activeTimer.value = blankTimer;
+                      args?.reset$();      
                       return;
                     }
                     

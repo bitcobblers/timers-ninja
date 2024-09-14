@@ -3,7 +3,7 @@ import TimerDigits from "../timer-digits/timer-digits";
 
 export default component$((props: any) => {
   return (
-    <article id="commit-message-suggestions" class="bg-gray">
+    <article id="commit-message-suggestions" class="">
       <div>
         <div class="dark:text-white-500 mx-auto max-w-7xl px-6 text-gray-500 lg:flex lg:px-8">
           <div class="lg:ml-96 lg:flex lg:w-full lg:justify-end lg:pl-32">
