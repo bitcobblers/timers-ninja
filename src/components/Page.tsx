@@ -1,9 +1,7 @@
-import { component$, useStore } from "@builder.io/qwik";
-import TimerContainer from "~/components/timer-container/timer-container";
+import { component$ } from "@builder.io/qwik";
+import TimerDigits from "./timer-digits/timer-digits";
 
 export default component$((props: any) => {
-  const dateString = props.startDate;
-  const store = useStore({ ...props });
   return (
     <article id="commit-message-suggestions" class="">
       <div>
@@ -13,34 +11,27 @@ export default component$((props: any) => {
               class="pointer-events-auto mx-auto max-w-lg leading-8 lg:mx-0 lg:w-0 lg:max-w-xl lg:flex-auto"
               data-mdx-content="true"
             >
-              <div class="[&amp;+*]:mt-2 relative mt-2 overflow-hidden rounded-xl bg-gray-50 dark:bg-gray-900">
-                <div class="pointer-events-none absolute inset-0 rounded-xl ring-1 ring-inset ring-gray-900/10 dark:ring-white/10"></div>
-              </div>
-
-              <TimerContainer {...store} />
-            </div>
-          </div>
-        </div>
-        <header class="relative mt-1 sm:mt-2 xl:mb-0">
-          {/* <div
-            class="pointer-events-none absolute left-[max(-0.5rem,calc(50%-18.625rem))] top-0 z-50 flex h-4 items-center justify-end gap-x-2 lg:left-0 lg:right-[calc(max(2rem,50%-38rem)+40rem)] lg:min-w-[32rem] xl:h-8">            
-              <time 
-                class="hidden xl:pointer-events-auto xl:block xl:text-2xs/4 xl:font-medium xl:text-white/50">{dateString} </time>            
-            <div class="h-[0.0625rem] w-3.5 bg-gray-400 lg:-mr-3.5 xl:mr-0 xl:bg-gray-300">              
-            </div>            
-          </div>           */}
-          <div class="mx-auto max-w-7xl px-6 lg:flex lg:px-8">
-            <div class="lg:ml-96 lg:flex lg:w-full lg:justify-end lg:pl-32">
-              <div class="mx-auto max-w-lg lg:mx-0 lg:w-0 lg:max-w-xl lg:flex-auto">
-                <div class="flex">
-                  <time class="text-2xs/4 font-medium text-gray-500 dark:text-white/50">
-                    {dateString}
-                  </time>
+              <div class="flex items-center justify-between gap-x-6">
+                <div class="">
+                  <TimerDigits {...props.timer} />
+                </div>
+                <div class="min-w-0">
+                  <div class="flex items-start gap-x-3">
+                    <p class="text-sm font-semibold leading-6 text-gray-900"></p>
+                  </div>
+                  <div class="mt-1 flex items-center gap-x-2 text-xs leading-5 text-gray-500">
+                    <p class="text-md">{props.label}</p>
+                  </div>
+                </div>
+                <div class="flex flex-none items-center gap-x-4">
+                  <p class="mt-0.5 whitespace-nowrap rounded-md bg-gray-50 px-1.5 py-0.5 text-xs font-medium text-gray-600 ring-1 ring-inset ring-gray-500/10">
+                    {props.status || "Queued"}
+                  </p>
                 </div>
               </div>
             </div>
           </div>
-        </header>
+        </div>
       </div>
     </article>
   );

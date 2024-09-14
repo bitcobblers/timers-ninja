@@ -4,8 +4,10 @@ import {
   useSignal,
   useTask$,
   Slot,
-  $
+  $,
+  QRL
 } from "@builder.io/qwik";
+
 import { Duration } from "luxon";
 import Page from "~/components/Page";
 import Editor from "~/components/editor";
@@ -14,7 +16,7 @@ import ThemeToggle from "~/components/light-dark-toggle";
 import Glow from "~/components/glow";
 import Timeline from "~/components/timeline";
 import Present from "~/components/Present";
-import TimerDisplay from "~/components/timer-display/timer-display";
+import TimerDisplay, { MdTimerBlockArgs } from "~/components/timer-display/timer-display";
 import type {
   MdTimerBlock,
   MdTimerValue,
@@ -37,23 +39,16 @@ const NinjaImage = component$(() => {
   />
 });
 
-const applicationId = "0507F78F";
-const Container = component$(() => {
-  const demo = {
-    timer: {
-      years: 0,
-      months: 0,
-      days: 0,
-      hours: 0,
-      minutes: 0,
-      seconds: 1,
-    },
-    type: { label: "", step: 1 },
-    label: "",
-    round: 1,
-    sources: [],
-  };
-  console.log(applicationId);
+
+export type ContainerArgs  = {
+  next$ : QRL<() => MdTimerBlockArgs | undefined>;
+  reset$ : QRL<() => void>;  
+  complete$: QRL<() => void>;
+}
+
+
+
+const Container = component$((args : ContainerArgs) => {
   // eslint-disable-next-line qwik/no-use-visible-task
   // useVisibleTask$(() => {
 
@@ -91,61 +86,7 @@ const Container = component$(() => {
         >
           <div class="mx-auto max-w-lg md:mx-64 lg:mx-[calc(max(2rem,50%-32rem))] lg:flex lg:w-96 lg:max-w-none lg:flex-col lg:before:flex-1 lg:before:pt-6">
             <NinjaImage />
-            <TimerDisplay {...demo} />
-            <div class="flex justify-center space-x-6 pt-6">
-              <button
-                type="button"
-                class="inline-flex items-center gap-x-1.5 rounded-md bg-green-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-green-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Start
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="h-6 w-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M15.91 11.672a.375.375 0 0 1 0 .656l-5.603 3.113a.375.375 0 0 1-.557-.328V8.887c0-.286.307-.466.557-.327l5.603 3.112Z"
-                  />
-                </svg>
-              </button>
-              <button
-                type="button"
-                class="inline-flex items-center gap-x-1.5 rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Stop
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke-width="1.5"
-                  stroke="currentColor"
-                  class="h-6 w-6"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
-                  />
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z"
-                  />
-                </svg>
-              </button>
-
-              {/* <button onClick$={initializeCastApi}> <google-cast-launcher></google-cast-launcher></button> */}
-            </div>
+            <TimerDisplay {...args} size="5xl"/>
             <Slot name="editor" />
             <div class="mt-4 flex flex-1 items-end justify-center pb-4 text-xs lg:z-40 lg:justify-center lg:pb-6">
               <span class="pb-2 pr-1 text-slate-500">
@@ -242,7 +183,28 @@ const Container = component$(() => {
 
 const TimerPage = component$((params: { init: string }) => {
   const markdown = useStore({ value: params.init });
-  const result = useSignal([]) as any;
+  const result = useSignal<MdTimerBlockArgs[]>([]);
+  const index = useSignal<number>(-1);
+
+  const next = $(() => {            
+    index.value++;
+    return index.value <= result.value.length
+      ? result.value[index.value]
+      : undefined;
+  });
+
+  const complete = $(() => {
+    result.value = result.value.map((item, i) => {
+      if (item.status == "Started") {
+        item.status = "Done";        
+      }
+      return item;
+    });
+  }) 
+
+  const reset = $(() => {
+    index.value = -1;
+  })
 
   useTask$(({ track }) => {
     track(() => markdown.value);
@@ -272,27 +234,27 @@ const TimerPage = component$((params: { init: string }) => {
 
   const onUpdate = $((input: string) => {
     //console.log("update", input);
-    markdown.value = input;
+    markdown.value = input;    
+
   });
-  const getKey = (index: number, timer: any) => {
+  const getKey = (index: number, timer: MdTimerBlockArgs) => {
     const t = timer.timer;
     return [
       index,
-      timer.type.label,
-      timer.label,
-      t.years,
-      t.months,
+      timer.label,            
+      timer.status,
+      timer.icon || "",
       t.days,
       t.hours,
       t.minutes,
-      t.seconds,
+      t.seconds      
     ].join("-");
   };
   return (
-    <Container>
+    <Container next$={next} reset$={reset} complete$={complete}>
       <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
       {result.value.length > 0 ? <Present /> : <div />}
-      {result.value.map((timer: any, index: number) => {
+      {result.value.map((timer: MdTimerBlockArgs, index: number) => {
         return <Page {...timer} key={getKey(index, timer)} />;
       })}
     </Container>
