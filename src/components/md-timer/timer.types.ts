@@ -1,5 +1,4 @@
 import type { IToken } from "chevrotain";
-import { Duration } from "luxon";
 
 /*
  
@@ -82,19 +81,19 @@ export class MdTimerFromSeconds implements MdTimerValue {
     if (sec.length == 1) {
       sec = "0" + sec;
     }
+    
     result.push(sec);
     
     let mill = this.milliseconds?.toString() || "0";
     while (mill.length < 3) {
       mill = mill + "0";
-    }        
-     
+    }             
     return [result.join(":"),  mill];
   }
 }
 
 export type MdTimerBlock = {
-  timer: MdTimerValue;
+  timer: number;
   type?: {
     step: number;
     label: string;
@@ -106,21 +105,5 @@ export type MdTimerBlock = {
 
 export type TimerInstance = {
   direction: string;
-  timer: Duration;
+  timer: number;
 };
-
-export class SegmentComposer {
-  compose(segments: number[]): Duration {
-    while (segments.length < 6) {
-      segments.push(0);
-    }
-    return Duration.fromObject({
-      years: segments[5],
-      months: segments[4],
-      days: segments[3],
-      hours: segments[2],
-      minutes: segments[1],
-      seconds: segments[0],
-    });
-  }
-}

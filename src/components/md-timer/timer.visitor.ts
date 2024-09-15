@@ -1,72 +1,9 @@
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import { Duration } from "luxon";
-import type { MdTimerBlock, MdTimerOptional, MdTimerValue } from "./timer.types";
+import type { MdTimerBlock } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
-
-export class MdTimerSignificant {
-  private order = [
-    { key: "years", max: 10 },
-    { key: "months", max: 12 },
-    { key: "days", max: 31 },
-    { key: "hours", max: 24 },
-    { key: "minutes", max: 60 },
-    { key: "seconds", max: 60 },
-  ];
-  private obj: MdTimerOptional;
-  private digits: string;
-  constructor(
-    private value?: MdTimerValue,
-    min?: string[],
-  ) {
-    const _min = ["seconds", ...(min || [])];
-    let found = false;
-    const list = [];
-    this.obj = {} as any;
-
-    for (const index of this.order) {
-      const val = (value ? (this.value as any)[index.key] : 0) ?? 0;
-      if (val != 0) {
-        found = true;
-      }
-      
-      if (found || _min.includes(index.key)) {
-        list.push(val.toString());
-        (this.obj as any)[index.key] = val;
-      }
-    }
-    let carry = 0;
-    for (const index of this.order.reverse()) {
-      let val = (this.obj as any)[index.key];
-      if (carry > 0) {
-        val = (val || 0) + carry;
-      }
-      if (!val) {
-        continue;
-      }
-      carry = Math.floor(val / index.max);
-      val = val % index.max;
-      (this.obj as any)[index.key] = val;
-    }
-
-    this.digits = list
-      .map((item) => (item.length < 2 ? "0" + item : item))
-      .join(":");
-  }
-  toDigits(): string {
-    return this.digits;
-  }
-  toString(): string {
-    return Duration.fromObject(this.toObject()).toHuman({
-      unitDisplay: "short",
-    });
-  }
-  toObject(): MdTimerOptional {
-    return this.obj;
-  }
-}
 
 export class MdTimerInterpreter extends BaseCstVisitor {
   constructor() {
@@ -129,7 +66,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     return [
       {
         type,
-        timer: this.visit(ctx.timerValue),
+        timer: (this.visit(ctx.timerValue) as number),
         sources,
       },
     ];
@@ -141,18 +78,21 @@ export class MdTimerInterpreter extends BaseCstVisitor {
         ? cxt.segments.map((block: any) => this.visit(block)).reverse()
         : [];
 
-    while (segments.length < 6) {
+    while (segments.length < 4) {
       segments.push(0);
     }
 
-    return {
-      years: segments[5],
-      months: segments[4],
+    const time = {
       days: segments[3],
       hours: segments[2],
       minutes: segments[1],
       seconds: segments[0],
     };
+
+    return time.seconds * 1 +
+      time.minutes * 60 +
+      time.hours * 60 * 60 +
+      time.days * 60 * 60 * 24;
   }
 
   timerMultiplier(ctx: any) {

@@ -13,7 +13,7 @@ export default component$((props: any) => {
             >
               <div class="flex items-center justify-between gap-x-6">
                 <div class="">
-                  <TimerDigits {...props.timer} />
+                  <TimerDigits seconds={props.timer} />
                 </div>
                 <div class="min-w-0">
                   <div class="flex items-start gap-x-3">

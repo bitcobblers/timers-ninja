@@ -1,5 +1,4 @@
 import { component$ } from "@builder.io/qwik";
-import { type MdTimerValue } from "../md-timer/timer.types";
 import TimerDigits from "../timer-digits/timer-digits";
 import { $, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { type QRL} from '@builder.io/qwik';
@@ -27,7 +26,7 @@ export type TimerProps = {
 
 
 export type MdTimerBlockArgs = {
-  timer: MdTimerValue;
+  timer: number;
   icon?: "up" | "down" | "date";
   round?: number;
   label?: string;
@@ -166,9 +165,9 @@ export type TimerDigitsArgs = ContainerArgs & {
 
 export default component$((args?: TimerDigitsArgs) => {
   const blankTimer: MdTimerBlockArgs = {
-    timer : { seconds: 0},
+    timer : 0,
      label: "Click Start."
-  }
+  }  
   const sizedTimer = args?.size != undefined ? "text-" + args.size : "text-5xl";
   const refreshReate = 10;
   const elapsedTime = useSignal(0);
@@ -178,7 +177,6 @@ export default component$((args?: TimerDigitsArgs) => {
 
   const startTimer = $(() => {
     args?.next$().then(n=> activeTimer.value = n);
-    
     timeSpans.value = [...timeSpans.value, { start: new Date() }];
     started.value = true;
   });
@@ -213,8 +211,8 @@ export default component$((args?: TimerDigitsArgs) => {
             intervalId = setInterval(() => {
                 // Calculate elapsed time based on time spans
                 elapsedTime.value = calculateElapsedTime(timeSpans.value);
-
-                if (elapsedTime.value > (activeTimer.value?.timer.seconds || 0)) {
+                args?.tick$(elapsedTime.value);
+                if (elapsedTime.value > (activeTimer.value?.timer || 0)) {                  
                   args?.complete$();
                   args?.next$().then(n=> { 
                     
@@ -225,8 +223,7 @@ export default component$((args?: TimerDigitsArgs) => {
                       activeTimer.value = blankTimer;
                       args.reset$();                      
                       return;
-                    }
-                    
+                    }                    
                     timeSpans.value = [ { start: new Date() }];                    
                     activeTimer.value = n;
                   });
@@ -250,6 +247,7 @@ export default component$((args?: TimerDigitsArgs) => {
                     font-bold
                      text-gray-800"
       >
+        {/* <audio id="bell" src="boxing-bell.mp3"></audio> */}
         {(activeTimer.value?.round || activeTimer.value?.label) &&
           <div class="mx-auto flex">
             <div class="text-center flex-grow bg-forest rounded-t-lg text-green-50">
