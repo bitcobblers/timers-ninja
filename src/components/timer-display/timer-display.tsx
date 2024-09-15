@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import TimerDigits from "../timer-digits/timer-digits";
 import { $, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { type QRL} from '@builder.io/qwik';
-import { type ContainerArgs } from "~/routes";
+import { type ContainerArgs } from "../timer-page/timer-page";
 
 export interface TimeSpan {
     
