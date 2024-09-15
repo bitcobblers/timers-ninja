@@ -8,8 +8,6 @@ import {
   type QRL
 } from "@builder.io/qwik";
 
-import { Duration } from "luxon";
-
 import Editor from "~/components/editor";
 import TimelineEntry from "~/components/timeline-panel/timeline-entry";
 import { MdTimerRuntime } from "~/components/md-timer/md-timer";
@@ -20,9 +18,7 @@ import TimelineHeader from "~/components/timeline-panel/timeline-header";
 import TimerDisplay, { type MdTimerBlockArgs } from "~/components/timer-display/timer-display";
 import type {
   MdTimerBlock,
-  MdTimerValue,
 } from "~/components/md-timer/timer.types";
-import { MdTimerSignificant } from "~/components/md-timer/timer.visitor";
 import { Version } from "~/version";
 import type { DocumentHead } from "@builder.io/qwik-city";
 // import Intro from "~/components/Intro";
@@ -45,6 +41,7 @@ export type ContainerArgs  = {
   next$ : QRL<() => MdTimerBlockArgs | undefined>;
   reset$ : QRL<() => void>;  
   complete$: QRL<() => void>;
+  tick$: QRL<(n: number) =>void>;
 }
 
 const Container = component$((args : ContainerArgs) => {  
@@ -145,7 +142,7 @@ const Container = component$((args : ContainerArgs) => {
       <ThemeToggle />
       <div class="pointer-events-none relative flex-auto">
         <Timeline />
-        <main class="space-y-2 py-8 sm:space-y-2 sm:py-8 lg:py-20">
+        <main class="space-y-2 py-4 sm:space-y-2 sm:py-8 lg:py-10">
           <Slot />
         </main>
       </div>
@@ -157,28 +154,38 @@ const TimerPage = component$((params: { init: string }) => {
   const markdown = useStore({ value: params.init });
   const result = useSignal<MdTimerBlockArgs[]>([]);
   const index = useSignal<number>(-1);
+  const elapsted = useSignal<number>(0);
+  const currentTimer = useSignal<number>(0);  
+  const total = useSignal<number>(0);
   const active = useSignal<MdTimerBlockArgs|undefined>();
 
   const next = $(() => {            
     index.value++;
+    elapsted.value += active.value?.timer || 0;
     active.value = index.value <= result.value.length
       ? result.value[index.value]
       : undefined;
     
       if (active.value) {
-        active.value.status = "Running"
+        active.value.status = "Running"        
       }
     return active.value;
   });
 
-  const complete = $(() => {
-    
+  const complete = $(() => {    
   }) 
 
   const reset = $(() => {
     index.value = -1;
     active.value = undefined;
+    elapsted.value = 0;
+    currentTimer.value = 0;
   })
+
+  const tick = $((elaps : number) => {
+    currentTimer.value = elaps;
+  })
+
 
   useTask$(({ track }) => {
     track(() => markdown.value);
@@ -190,16 +197,10 @@ const TimerPage = component$((params: { init: string }) => {
 
     try {
       const { outcome } = new MdTimerRuntime().read(input);
-      let counter = Duration.fromMillis(0);
-      result.value = outcome.map((block: MdTimerBlock) => {
-        new MdTimerSignificant();
-        const current = Duration.fromObject(block.timer);
-        counter = counter.plus(current);
-        const timer = new MdTimerSignificant(
-          counter.toObject() as MdTimerValue,
-        );
-
-        return { ...block, startDate: timer.toString() };
+      total.value = 0;
+      result.value = outcome.map((block: MdTimerBlock) => {                
+        total.value += block.timer;        
+        return block;
       });
     } catch (ex) {
       console.log(ex);
@@ -208,7 +209,7 @@ const TimerPage = component$((params: { init: string }) => {
 
   const onUpdate = $((input: string) => {
     //console.log("update", input);
-    markdown.value = input;    
+    markdown.value = input;   
 
   });
   const getKey = (index: number, timer: MdTimerBlockArgs) => {
@@ -218,16 +219,13 @@ const TimerPage = component$((params: { init: string }) => {
       timer.label,            
       timer.status,
       timer.icon || "",
-      t.days,
-      t.hours,
-      t.minutes,
-      t.seconds      
+      t      
     ].join("-");
   };
   return (
-    <Container next$={next} reset$={reset} complete$={complete}>
+    <Container next$={next} reset$={reset} complete$={complete} tick$={tick}>
       <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
-      {result.value.length > 0 ? <TimelineHeader /> : <div />}
+      {result.value.length > 0 ? <TimelineHeader  index={index.value} length={result.value.length} title={"Playground"} elapsted={elapsted.value + currentTimer.value} total={total.value} /> : <div />}
       {active.value && < TimelineEntry {...active.value} status="Running"/>}
       {result.value.map((timer: MdTimerBlockArgs, i: number) => {
         if (index.value == -1 || index.value < i) {
