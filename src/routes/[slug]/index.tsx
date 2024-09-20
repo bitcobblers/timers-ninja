@@ -4,21 +4,9 @@ import {
   type StaticGenerateHandler,
   type PathParams,
 } from "@builder.io/qwik-city";
-import fs from 'fs';
-import path from 'path';
-import matter from 'gray-matter';
-import timers from '~/../public/timers.json'
 
-import { isDev } from "@builder.io/qwik/build";
 import TimerPage from "~/components/timer-page/timer-page";
-
-const metaGlobComponents: Record<string, any> = import.meta.glob("/timers/*", {
-  import: "default",
-  query: "?raw",
-  eager: isDev ? false : true,
-});
-
-
+import timers from "~/timers.json"
 
 export default component$(() => {  
 
@@ -33,35 +21,15 @@ export default component$(() => {
 
 export const onStaticGenerate: StaticGenerateHandler = async () => {
   // example of loading params for this use case
-  // every implementation will be different  
-  const pagefile = "~/../public/timers.json";
-  const pages = [] as any[]
+  // every implementation will be different    
   const args = [] as PathParams[];  
-  for (const i in metaGlobComponents) {    
+  for (const i in timers) {    
     if (i.endsWith("json")) continue;
-    const slug = i.replace("/timers/", "").replace(".md", "");
-    const filePath = path.resolve(`timers/${slug}.md`);
-    const file = fs.readFileSync(filePath, 'utf8');
-    const { content } = matter(file);  
-    const titleMatch = new RegExp("# (.*)", "g");
-    const codeMatch = new RegExp("```clock([\\s\\S]*?)```", "g");
-    const title = titleMatch.exec(content);
-    const clock = codeMatch.exec(content);        
     
-    pages.push({      
-      slug,
-      title: (title![1] || "Unknown"),
-      seed: (clock![1] || ""),
-      raw: content,      
-    })
-
     args.push({    
-      slug      
-    })
-        
-   
-  }  
-  fs.writeFileSync(pagefile, JSON.stringify(pages))
+      slug: timers[i].slug      
+    })           
+  }    
   return {
     params: args,
   };

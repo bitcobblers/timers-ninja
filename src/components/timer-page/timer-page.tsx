@@ -187,7 +187,7 @@ export default component$((params: { init: string, title: string }) => {
     useTask$(({ track }) => {
       track(() => markdown.value);
       const input = markdown.value;
-      if ((input?.trim() || "") == "") {
+      if ((input.trim() || "") == "") {
         result.value = [];
         return;
       }
