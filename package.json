@@ -72,6 +72,7 @@
     "codemirror": "^6.0.1",
     "gray-matter": "^4.0.3",
     "remark-frontmatter": "^5.0.0",
+    "tone": "^15.0.4",
     "ts-node": "^10.9.2"
   }
 }
