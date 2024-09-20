@@ -3,6 +3,7 @@ import TimerDigits from "../timer-digits/timer-digits";
 import { $, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { type QRL} from '@builder.io/qwik';
 import { type ContainerArgs } from "../timer-page/timer-page";
+import * as Tone from "tone";
 
 export interface TimeSpan {
     
@@ -174,11 +175,15 @@ export default component$((args?: TimerDigitsArgs) => {
   const started = useSignal(false);
   const timeSpans = useSignal<TimeSpan[]>([]);
   const activeTimer = useSignal<MdTimerBlockArgs|undefined>(blankTimer);
-
+  
   const startTimer = $(() => {
-    args?.next$().then(n=> activeTimer.value = n);
+    args?.next$().then(n=> {
+      const synth = new Tone.Synth().toDestination();
+      synth.triggerAttackRelease("C4", "8n");               
+      activeTimer.value = n}
+    );
     timeSpans.value = [...timeSpans.value, { start: new Date() }];
-    started.value = true;
+    started.value = true;    
   });
 
   const stopTimer = $(() => {
@@ -201,11 +206,12 @@ export default component$((args?: TimerDigitsArgs) => {
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(({ track }) => {      
       track(() => timeSpans.value);
+        
         let intervalId: NodeJS.Timeout | undefined;  
         if (intervalId) {
             clearInterval(intervalId);
         }
-
+       
         // If there's an active time span (last one without an end time)
         if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
             intervalId = setInterval(() => {
@@ -214,8 +220,10 @@ export default component$((args?: TimerDigitsArgs) => {
                 args?.tick$(elapsedTime.value);
                 if (elapsedTime.value > (activeTimer.value?.timer || 0)) {                  
                   args?.complete$();
+                            
                   args?.next$().then(n=> { 
-                    
+                    const synth = new Tone.Synth().toDestination();
+                    synth.triggerAttackRelease("C4", "8n");     
                     if (n == undefined) {
                       elapsedTime.value = 0;
                       timeSpans.value = [];
@@ -223,7 +231,7 @@ export default component$((args?: TimerDigitsArgs) => {
                       activeTimer.value = blankTimer;
                       args.reset$();                      
                       return;
-                    }                    
+                    }                         
                     timeSpans.value = [ { start: new Date() }];                    
                     activeTimer.value = n;
                   });
