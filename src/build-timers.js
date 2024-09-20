@@ -5,6 +5,8 @@ import path from 'path';
 const pages = [];
 const timersfile = "./src/timers.json";
 const directoryPath = "./timers"
+console.log("Building Timers");
+console.log("--------------------------------");
 fs.readdir(directoryPath, (err, files) => {
     if (err) {
       console.error('Error reading directory:', err);
@@ -20,14 +22,16 @@ fs.readdir(directoryPath, (err, files) => {
       const codeMatch = new RegExp("```clock([\\s\\S]*?)```", "g");
       const title = titleMatch.exec(content);
       const clock = codeMatch.exec(content);        
-      
+      console.log("Adding: " + slug); 
       pages.push({      
         slug,
         title: (title[1] || "Unknown"),
         seed: (clock[1] || ""),
         raw: content,      
       })
-    }
-    console.log(pages);
+    }        
+    console.log("--------------------------------");
+    console.log("Writing to:" + timersfile)    
     fs.writeFileSync(timersfile, JSON.stringify(pages))
+    console.log("--------------------------------");
 });
