@@ -69,6 +69,7 @@
     "@qwikest/icons": "^0.0.13",
     "chevrotain": "^11.0.3",
     "codemirror": "^6.0.1",
+    "gray-matter": "^4.0.3",
     "remark-frontmatter": "^5.0.0"
   }
 }
