@@ -28,7 +28,7 @@ export const head: DocumentHead = {
     {
       props: {
         type: "text/javascript",
-        src: "//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1",
+        // src: "//www.gstatic.com/cv/js/sender/v1/cast_sender.js?loadCastFramework=1",
       },
     },
   ],
