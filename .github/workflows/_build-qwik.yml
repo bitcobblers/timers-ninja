@@ -27,6 +27,9 @@ jobs:
         run: echo "export const Version = \"${{inputs.version}}\";" >> version.ts
         working-directory: ./src
 
+      - name: Parse Timers Pages
+        run: npm run build.timers
+        
       - name: Generate Static Site
         run: npm run build
 
