@@ -12,6 +12,7 @@
   "scripts": {
     "build": "qwik build",
     "build-storybook": "storybook build -o dist/storybook",
+    "build.timers": "node src/build-timers.js",
     "build.client": "vite build",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
     "build.server": "vite build -c adapters/static/vite.config.ts",
@@ -70,6 +71,7 @@
     "chevrotain": "^11.0.3",
     "codemirror": "^6.0.1",
     "gray-matter": "^4.0.3",
-    "remark-frontmatter": "^5.0.0"
+    "remark-frontmatter": "^5.0.0",
+    "ts-node": "^10.9.2"
   }
 }
