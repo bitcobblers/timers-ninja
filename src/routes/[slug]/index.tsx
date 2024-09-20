@@ -7,7 +7,7 @@ import {
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import timers from '~/../timers/timers.json'
+import timers from '~/../public/timers.json'
 
 import { isDev } from "@builder.io/qwik/build";
 import TimerPage from "~/components/timer-page/timer-page";
@@ -19,7 +19,9 @@ const metaGlobComponents: Record<string, any> = import.meta.glob("/timers/*", {
 });
 
 
-export default component$((params: any) => {  
+
+export default component$(() => {  
+
   const location = useLocation();
   const slug = location.url.pathname.replaceAll("/", "");
   const timer = timers.filter(n=>n.slug == slug)[0];
@@ -31,10 +33,12 @@ export default component$((params: any) => {
 
 export const onStaticGenerate: StaticGenerateHandler = async () => {
   // example of loading params for this use case
-  // every implementation will be different
+  // every implementation will be different  
+  const pagefile = "~/../public/timers.json";
   const pages = [] as any[]
-  const args = [] as PathParams[];
+  const args = [] as PathParams[];  
   for (const i in metaGlobComponents) {    
+    if (i.endsWith("json")) continue;
     const slug = i.replace("/timers/", "").replace(".md", "");
     const filePath = path.resolve(`timers/${slug}.md`);
     const file = fs.readFileSync(filePath, 'utf8');
@@ -57,7 +61,7 @@ export const onStaticGenerate: StaticGenerateHandler = async () => {
         
    
   }  
-  fs.writeFileSync("./public/timers.json", JSON.stringify(pages))
+  fs.writeFileSync(pagefile, JSON.stringify(pages))
   return {
     params: args,
   };
