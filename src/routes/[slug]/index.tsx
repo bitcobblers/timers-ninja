@@ -19,7 +19,9 @@ const metaGlobComponents: Record<string, any> = import.meta.glob("/timers/*", {
 });
 
 
+
 export default component$(() => {  
+
   const location = useLocation();
   const slug = location.url.pathname.replaceAll("/", "");
   const timer = timers.filter(n=>n.slug == slug)[0];
