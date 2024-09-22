@@ -5,21 +5,21 @@ test(`parsedDirectionUpDefault`, async () => {
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read("11");    
     
-    expect(outcome[0].type?.label).toBe("up");    
+    expect(outcome[0].icon).toBe("up");    
 });
  
 test(`parsedDirectionUpExplicit`, async () => {    
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read("+11");    
     
-    expect(outcome[0].type?.label).toBe("up");    
+    expect(outcome[0].icon).toBe("up");    
 });
 
 test(`parsedDirectionDownExplicit`, async () => {    
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read("-11");    
     
-    expect(outcome[0].type?.label).toBe("down");    
+    expect(outcome[0].icon).toBe("down");    
 });
 
 
