@@ -1,5 +1,0 @@
-# Countdown
-
-```clock
--300
-```
