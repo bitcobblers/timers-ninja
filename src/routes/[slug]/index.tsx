@@ -14,8 +14,6 @@ export default component$(() => {
   const slug = location.url.pathname.replaceAll("/", "");
   const timer = timers.filter(n=>n.slug == slug)[0];
   
-  console.log();
-  
   return <TimerPage init={timer.seed} title={timer.title} />;
 });
 

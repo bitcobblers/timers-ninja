@@ -1,5 +1,6 @@
 import { component$ } from "@builder.io/qwik";
 import TimerDigits from "../timer-digits/timer-digits";
+import { CountDownIcon, CountUpIcon } from "../timer-display/timer-display";
 
 export default component$((props: any) => {
   return (
@@ -12,7 +13,11 @@ export default component$((props: any) => {
               data-mdx-content="true"
             >
               <div class="flex items-center justify-between gap-x-6">
-                <div class="">
+                <div class="flex">
+                  <div class="pt-2 pr-5">
+                  {props?.icon == "up" && <CountUpIcon />}
+                  {props?.icon == "down" && <CountDownIcon />}         
+                  </div>
                   <TimerDigits seconds={props.timer} />
                 </div>
                 <div class="min-w-0">

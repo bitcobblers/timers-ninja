@@ -114,23 +114,7 @@ const ResetButton = component$((args : ButtonArgs ) => {
 </button>
 })
 
-
-const DateCounterIcon = component$(() => {
-  return <svg
-    width="24"
-    xmlns="http://www.w3.org/2000/svg"
-    fill="none"
-    viewBox="0 0 24 24"
-    stroke-width="1.5"
-    stroke="currentColor"
-    class="h-5 w-5">
-    <path stroke-linecap="round"
-      stroke-linejoin="round"
-      d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5m-9-6h.008v.008H12v-.008ZM12 15h.008v.008H12V15Zm0 2.25h.008v.008H12v-.008ZM9.75 15h.008v.008H9.75V15Zm0 2.25h.008v.008H9.75v-.008ZM7.5 15h.008v.008H7.5V15Zm0 2.25h.008v.008H7.5v-.008Zm6.75-4.5h.008v.008h-.008v-.008Zm0 2.25h.008v.008h-.008V15Zm0 2.25h.008v.008h-.008v-.008Zm2.25-4.5h.008v.008H16.5v-.008Zm0 2.25h.008v.008H16.5V15Z" />
-  </svg>
-})
-
-const CountUpIcon = component$(() => {
+export const CountUpIcon = component$(() => {
   return <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -145,7 +129,7 @@ const CountUpIcon = component$(() => {
   </svg>
 })
 
-const CountDownIcon = component$(() => {
+export const CountDownIcon = component$(() => {
   return <svg
     xmlns="http://www.w3.org/2000/svg"
     viewBox="0 0 24 24"
@@ -172,6 +156,7 @@ export default component$((args?: TimerDigitsArgs) => {
   const sizedTimer = args?.size != undefined ? "text-" + args.size : "text-5xl";
   const refreshReate = 10;
   const elapsedTime = useSignal(0);
+  const displayTime = useSignal(0);
   const started = useSignal(false);
   const timeSpans = useSignal<TimeSpan[]>([]);
   const activeTimer = useSignal<MdTimerBlockArgs|undefined>(blankTimer);
@@ -180,7 +165,9 @@ export default component$((args?: TimerDigitsArgs) => {
     args?.next$().then(n=> {
       const synth = new Tone.Synth().toDestination();
       synth.triggerAttackRelease("C4", "8n");               
-      activeTimer.value = n}
+      activeTimer.value = n;      
+      }
+      
     );
     timeSpans.value = [...timeSpans.value, { start: new Date() }];
     started.value = true;    
@@ -205,8 +192,7 @@ export default component$((args?: TimerDigitsArgs) => {
 
     // eslint-disable-next-line qwik/no-use-visible-task
     useVisibleTask$(({ track }) => {      
-      track(() => timeSpans.value);
-        
+      track(() => timeSpans.value);      
         let intervalId: NodeJS.Timeout | undefined;  
         if (intervalId) {
             clearInterval(intervalId);
@@ -216,7 +202,9 @@ export default component$((args?: TimerDigitsArgs) => {
         if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
             intervalId = setInterval(() => {
                 // Calculate elapsed time based on time spans
-                elapsedTime.value = calculateElapsedTime(timeSpans.value);
+                elapsedTime.value = calculateElapsedTime(timeSpans.value)                
+                displayTime.value = activeTimer.value?.icon == "up" ? elapsedTime.value : (activeTimer.value?.timer || 0) - elapsedTime.value;
+                displayTime.value = displayTime.value < 0 ? 0: displayTime.value;
                 args?.tick$(elapsedTime.value);
                 if (elapsedTime.value > (activeTimer.value?.timer || 0)) {                  
                   args?.complete$();
@@ -230,9 +218,11 @@ export default component$((args?: TimerDigitsArgs) => {
                       started.value = false;
                       activeTimer.value = blankTimer;
                       args.reset$();                      
+                      
                       return;
                     }                         
                     timeSpans.value = [ { start: new Date() }];                    
+                    
                     activeTimer.value = n;
                   });
                 }
@@ -265,15 +255,14 @@ export default component$((args?: TimerDigitsArgs) => {
             </div>
           </div>}
         <div class="mx-auto flex gap-x-2 px-5  ">
-          <div class="text-forest">
+          <div class="text-forest pt-5">
             {activeTimer.value?.icon == "up" && <CountUpIcon />}
-            {activeTimer.value?.icon == "down" && <CountDownIcon />}
-            {activeTimer.value?.icon == "date" && <DateCounterIcon />}
+            {activeTimer.value?.icon == "down" && <CountDownIcon />}            
           </div>
           <div
             class={"flex-grow text-center text-forest-600 " + sizedTimer}
           >
-            <TimerDigits seconds={elapsedTime.value} showMills={true} />
+            <TimerDigits seconds={displayTime.value} showMills={true} />
           </div>
         </div>
       </div>
