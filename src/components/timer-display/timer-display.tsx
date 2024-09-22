@@ -175,11 +175,10 @@ export default component$((args?: TimerDigitsArgs) => {
   const started = useSignal(false);
   const timeSpans = useSignal<TimeSpan[]>([]);
   const activeTimer = useSignal<MdTimerBlockArgs|undefined>(blankTimer);
-  
+  const beep = useSignal(new Tone.Synth().toDestination());
   const startTimer = $(() => {
-    args?.next$().then(n=> {
-      const synth = new Tone.Synth().toDestination();
-      synth.triggerAttackRelease("C4", "8n");               
+    args?.next$().then(n=> {      
+      beep.value.triggerAttackRelease("C4", "8n");               
       activeTimer.value = n}
     );
     timeSpans.value = [...timeSpans.value, { start: new Date() }];
@@ -221,9 +220,8 @@ export default component$((args?: TimerDigitsArgs) => {
                 if (elapsedTime.value > (activeTimer.value?.timer || 0)) {                  
                   args?.complete$();
                             
-                  args?.next$().then(n=> { 
-                    const synth = new Tone.Synth().toDestination();
-                    synth.triggerAttackRelease("C4", "8n");     
+                  args?.next$().then(n=> {                     
+                    beep.value.triggerAttackRelease("C4", "8n");     
                     if (n == undefined) {
                       elapsedTime.value = 0;
                       timeSpans.value = [];
