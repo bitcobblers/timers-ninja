@@ -278,7 +278,7 @@ export default component$((args?: TimerDigitsArgs) => {
         </div>
       </div>
       <div class="flex justify-center space-x-6 pt-6">        
-        {!started.value && <StartButton onClick$={startTimer} />}
+        {!started.value && <StartButton q-preload onClick$={startTimer} />}
         {started.value && <PauseButton onClick$={stopTimer} /> }
         <ResetButton onClick$={resetTimer} />
       </div>
