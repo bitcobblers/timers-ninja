@@ -60,9 +60,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     if (ctx.CountDirection) {
       sources.push(ctx.CountDirection[0]);
     }
-    for (const segment of ctx.timerValue[0].children.segments) {
-      sources.push(segment.children.Integer[0]);
-    }
+    sources.push(ctx.timerValue[0].children.Time);
     return [
       {
         icon : type,
@@ -74,8 +72,8 @@ export class MdTimerInterpreter extends BaseCstVisitor {
 
   timerValue(cxt: any): any {
     const segments =
-      cxt.segments != null
-        ? cxt.segments.map((block: any) => this.visit(block)).reverse()
+      cxt.Time != null
+        ? cxt.Time[0].image.split(":").reverse()
         : [];
 
     while (segments.length < 4) {

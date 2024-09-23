@@ -10,6 +10,7 @@ import {
   Integer,
   LabelClose,
   LabelOpen,
+  Time,
   allTokens,
 } from "./timer.tokens";
 
@@ -50,12 +51,7 @@ export class MdTimerParse extends CstParser {
     });
 
     $.RULE("timerValue", () => {
-      $.AT_LEAST_ONE_SEP({
-        SEP: Colon,
-        DEF: () => {
-          $.SUBRULE($.numericValue, { LABEL: "segments" });
-        },
-      });
+      $.CONSUME(Time);
     });
 
     $.RULE("timerMultiplier", () => {

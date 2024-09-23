@@ -1,13 +1,8 @@
 import type { IToken } from "chevrotain";
 
 /*
- 
- 
-
- 
 
 */
-
 export type MdTimerStack = {  
   
   blocks: MdTimerBlock[];  
@@ -16,7 +11,6 @@ export type MdTimerStack = {
 export type MdTimerTrace = {
   events: MdTimerBlockEvent[];
 }
-
 export type MdTimerBlockEvent = {
   eventId: number;
   timestamp: Date;
