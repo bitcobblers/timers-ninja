@@ -184,6 +184,7 @@ export default component$((args?: TimerDigitsArgs) => {
 
   const resetTimer = $(() => {
       elapsedTime.value = 0;
+      displayTime.value = 0;
       timeSpans.value = [];
       started.value = false;
       activeTimer.value = blankTimer;
