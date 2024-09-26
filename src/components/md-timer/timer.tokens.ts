@@ -1,4 +1,5 @@
 import { Lexer, createToken } from "chevrotain";
+import { comma } from "postcss/lib/list";
 
 export const WhiteSpace = createToken({
   name: "WhiteSpace",
@@ -6,7 +7,7 @@ export const WhiteSpace = createToken({
   group: Lexer.SKIPPED,
 });
 
-export const Return = createToken({ name: "Return", pattern: /[\r\n]+/ });
+export const Return = createToken({ name: "Return", pattern: /[\r\n]+/, group: Lexer.SKIPPED });
 
 export const Identifier = createToken({
   name: "Identifier",
@@ -14,8 +15,16 @@ export const Identifier = createToken({
 });
 
 export const Integer = createToken({ name: "Integer", pattern: /\d+/ });
-export const Comma = createToken({ name: "Comma", pattern: /,/ });
-export const Colon = createToken({ name: "Colon", pattern: /:/ });
+export const Multiplier = createToken({ name: "Multiplier", pattern: /\d+x/ });
+export const Delimiter = createToken({
+  name: "Delimiter",
+  pattern: Lexer.NA,
+});
+
+export const Comma = createToken({ name: "Comma", pattern: /,/, categories: Delimiter });
+export const Pipe = createToken({ name: "Pipe", pattern: /\|/, categories: Delimiter });
+export const SemiColon = createToken({ name: "SemiColon", pattern: /;/, categories: Delimiter });
+
 
 export const Weight = createToken({
   name: "Weight",
@@ -41,36 +50,32 @@ export const Plus = createToken({
   categories: CountDirection,
 });
 
-export const Time = createToken({ name: "Time", pattern: /(\d+)?(:\d+)?(:\d+)?(:[\d\?]+)/ });
-export const Question = createToken({name: "Question", pattern: /\?/ });
-
-export const GroupOpen = createToken({ name: "LabelOpen", pattern: /\[/ });
-export const GroupClose = createToken({ name: "LabelClose", pattern: /\]/ });
-
-export const LabelOpen = createToken({ name: "LabelOpen", pattern: /\(/ });
-export const LabelClose = createToken({ name: "LabelClose", pattern: /\)/ });
+export const Time = createToken({ name: "Time", pattern: /(\d+)?(:\d+)?(:\d+)?(:\d+)/ });
 
 export const allTokens = [
   WhiteSpace,
   Return,
-  // "keywords" appear before the Identifier
-  GroupOpen,
-  GroupClose,
+  // "keywords" appear before the Identifier  
+  Delimiter,
+  Comma,
+  Pipe,
+  SemiColon,
 
-  LabelOpen,
-  LabelClose,
-  Colon,
   CountDirection,
   Minus,
   Plus,
-  Comma,
+  
+  Multiplier,
+
   Weight,
   Kelos,
   Pounds,
   At,
+
   Time,  
-  Question,  
   // The Identifier must appear after the keywords because all keywords are valid identifiers.
+  
   Identifier,
+  
   Integer,
 ];

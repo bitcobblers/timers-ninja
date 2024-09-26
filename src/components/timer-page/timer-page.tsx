@@ -17,7 +17,7 @@ import {
   import TimelineHeader from "~/components/timeline-panel/timeline-header";
   import TimerDisplay, { type MdTimerBlockArgs } from "~/components/timer-display/timer-display";
   import type {
-    MdTimerBlock,
+    MDTimerCommand,
   } from "~/components/md-timer/timer.types";
   import { Version } from "~/version";
 

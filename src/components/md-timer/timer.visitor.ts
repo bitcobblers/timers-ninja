@@ -1,6 +1,6 @@
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import type { MdTimerBlock } from "./timer.types";
+import type { MDTimerCommand } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -14,10 +14,10 @@ export class MdTimerInterpreter extends BaseCstVisitor {
   }
 
   /// High level entry point, contains any number of simple of compound timers.
-  timerMarkdown(ctx: any): MdTimerBlock[] {
+  timerMarkdown(ctx: any): MDTimerCommand[] {
     const result = ctx.blocks.flatMap(
       (block: any) => block && this.visit(block),
-    ) as MdTimerBlock[];
+    ) as MDTimerCommand[];
     return result;
   }
 
@@ -51,7 +51,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     return ctx.blocks.map((block: any) => this.visit(block));
   }
 
-  simpleTimer(ctx: any): MdTimerBlock[] {
+  simpleTimer(ctx: any): MDTimerCommand[] {
     const type =
       ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus
         ? "down"

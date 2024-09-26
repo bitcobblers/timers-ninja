@@ -1,36 +1,14 @@
 import type { IToken } from "chevrotain";
 
-/*
-
-*/
-export type MdTimerStack = {  
-  
-  blocks: MdTimerBlock[];  
+export type MdTimerStack = {    
+  blocks: MDTimerCommand[];  
 }
 
-export type MdTimerTrace = {
-  events: MdTimerBlockEvent[];
-}
-export type MdTimerBlockEvent = {
-  eventId: number;
-  timestamp: Date;
-  type: string;
-  metadata : any;
-}
-
-export type MdTimerOptional = {
-  years?: number;
-  months?: number;
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-};
 export enum MDTimerEntryType {
   Time,
   Distance,
   Reptitions,
-  Weight,
+  Resistance,
 }
 
 export type MDTimerEntry = {
@@ -39,13 +17,32 @@ export type MDTimerEntry = {
   units: string;  
 }
 
+export type MdTimeRepeater = {
+  // Some type that will define how long the repeater runs, could be until lap
+  // button is clicked for user input, for measuring times.
+};
+
+export type MDTimerCommand = {
+  label : string;
+  repeater : MdTimeRepeater;  
+  metrics : MDTimerEntry[];
+  children: MDTimerCommand[];
+  sources: IToken[];
+}
+
+export type TimerInstance = {
+  direction: string;
+  timer: number;
+};
+
+
 export class MdWeightValue implements MDTimerEntry {
   constructor(units: string, value: number) {
-    this.type = MDTimerEntryType.Weight;
+    this.type = MDTimerEntryType.Resistance;
     this.units = units;
     this.value = value;
   }
-  
+
   type: MDTimerEntryType;
   value?: number;
   units: string;  
@@ -85,30 +82,12 @@ export class MdTimerValue implements MDTimerEntry {
   value? : number | undefined;
 };
 
-export type MdTimeRepeater = {
-  // Some type that will define how long the repeater runs, could be until lap
-  // button is clicked for user input, for measuring times.
-};
 
-export type MDTimerCommand = {
-  label : string;
-  repeater : MdTimeRepeater;  
-  metrics : MDTimerEntry[];
-  children: MDTimerCommand[];
+
+export class MdRoundRepeater implements MdTimeRepeater {
+  constructor(private rounds: number) {
+  }
 }
 
-
-
-
-export type MdTimerBlock = {
-  timer: number;
-  icon: string;  
-  round?: number;
-  label?: string;
-  sources: IToken[];
-};
-
-export type TimerInstance = {
-  direction: string;
-  timer: number;
-};
+export class MdLapRepeater implements MdTimeRepeater {
+}
