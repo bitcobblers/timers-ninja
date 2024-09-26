@@ -36,7 +36,7 @@
 [
 	-45(KatanaRight)
 	-15(Rest)
-	=45(KatanaLeft)
+	-45(KatanaLeft)
 	-15(Rest)
 ](3)
 [
