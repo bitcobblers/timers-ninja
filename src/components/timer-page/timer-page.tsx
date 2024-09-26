@@ -195,10 +195,10 @@ export default component$((params: { init: string, title: string }) => {
       try {
         const { outcome } = new MdTimerRuntime().read(input);
         total.value = 0;
-        result.value = outcome.map((block: MdTimerBlock) => {                
-          total.value += block.timer;        
-          return block as MdTimerBlockArgs
-        });
+        // result.value = outcome.map((block: MDTimerCommand) => {                
+        //   total.value += block.timer;        
+        //   return block as MdTimerBlockArgs
+        // });
       } catch (ex) {
         console.log(ex);
       }

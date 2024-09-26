@@ -1,15 +1,10 @@
 import type { IToken } from "chevrotain";
 import { CstParser } from "chevrotain";
-import {
-  Colon,
-  Comma,
+import {  
   CountDirection,
-  GroupClose,
-  GroupOpen,
+  Delimiter,
   Identifier,
-  Integer,
-  LabelClose,
-  LabelOpen,
+  Integer,  
   Time,
   allTokens,
 } from "./timer.tokens";
@@ -27,49 +22,30 @@ export class MdTimerParse extends CstParser {
 
     $.RULE("timerBlock", () => {
       $.OR([
-        { ALT: () => $.SUBRULE($.compoundTimer) },
+        { ALT: () => $.SUBRULE($.numericValue) },
         { ALT: () => $.SUBRULE($.simpleTimer) },
-      ]);
+      ]);            
       $.OPTION(() => {
-        $.SUBRULE($.timerMultiplier);
-      });
+        $.SUBRULE($.labels);
+      });      
     });
-
-    $.RULE("compoundTimer", () => {
-      $.CONSUME(GroupOpen);
-      $.MANY(() => {
-        $.SUBRULE($.timerBlock, { LABEL: "blocks" });
-      });
-      $.CONSUME(GroupClose);
-    });
-
+    
     $.RULE("simpleTimer", () => {
       $.OPTION(() => {
         $.CONSUME(CountDirection, { label: "directionValue" });
       });
-      $.SUBRULE($.timerValue);
-    });
-
-    $.RULE("timerValue", () => {
       $.CONSUME(Time);
     });
-
-    $.RULE("timerMultiplier", () => {
-      $.CONSUME(LabelOpen);
+    
+    $.RULE("labels", () => {
       $.MANY_SEP({
-        SEP: Comma,
+        SEP: Delimiter,
         DEF: () => {
-          $.SUBRULE($.multiplierValue, { label: "values" });
+          $.MANY(() => {
+            $.SUBRULE($.stringValue, { label: "values" });
+          });
         },
       });
-      $.CONSUME(LabelClose);
-    });
-
-    $.RULE("multiplierValue", () => {
-      $.OR([
-        { ALT: () => $.SUBRULE($.numericValue) },
-        { ALT: () => $.SUBRULE($.stringValue) },
-      ]);
     });
 
     $.RULE("numericValue", () => {

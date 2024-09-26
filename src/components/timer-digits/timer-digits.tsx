@@ -8,8 +8,8 @@ export type TimerDigitsArgs = {
 }
 export default component$((args: TimerDigitsArgs) => {
   
-  const [timer, mill] = new MdTimerValue(args.seconds).toClock();
+  const timer = new MdTimerValue(args.seconds.toString());
 
-  return <div>{timer}{args.showMills && <span  class="text-xl2">.<span class="text-base">{mill}</span></span>}</div>
+  return <div>{timer.value}{args.showMills && <span  class="text-xl2">.<span class="text-base">{timer.milliseconds}</span></span>}</div>
 });
 

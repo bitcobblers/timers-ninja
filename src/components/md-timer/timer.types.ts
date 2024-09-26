@@ -5,6 +5,7 @@ export type MdTimerStack = {
 }
 
 export enum MDTimerEntryType {
+  Na,
   Time,
   Distance,
   Reptitions,
@@ -82,7 +83,15 @@ export class MdTimerValue implements MDTimerEntry {
   value? : number | undefined;
 };
 
+export class MdRepetitionValue implements MDTimerEntry {
+  constructor(reps: number) {
+    this.value = reps;
+  }
+  value?: number | undefined;
+  units = "Count"
+  type = MDTimerEntryType.Reptitions;
 
+}
 
 export class MdRoundRepeater implements MdTimeRepeater {
   constructor(private rounds: number) {
