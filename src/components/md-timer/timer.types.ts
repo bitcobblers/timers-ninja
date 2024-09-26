@@ -26,65 +26,79 @@ export type MdTimerOptional = {
   minutes?: number;
   seconds?: number;
 };
+export enum MDTimerEntryType {
+  Time,
+  Distance,
+  Reptitions,
+  Weight,
+}
 
-export type MdTimerValue = {
+export type MDTimerEntry = {
+  type: MDTimerEntryType;
+  value?: number;
+  units: string;  
+}
+
+export class MdWeightValue implements MDTimerEntry {
+  constructor(units: string, value: number) {
+    this.type = MDTimerEntryType.Weight;
+    this.units = units;
+    this.value = value;
+  }
+  
+  type: MDTimerEntryType;
+  value?: number;
+  units: string;  
+}
+
+export class MdTimerValue implements MDTimerEntry {
+  constructor(timerToken: string) {
+    const segments = timerToken.split(":")
+        .reverse()
+        .map((d : unknown)=> d as number);
+   
+    while (segments.length < 4) {
+      segments.push(0);
+    }
+      
+    this.days = segments[3];
+    this.hours = segments[2];
+    this.minutes = segments[1];
+    this.seconds = segments[0];  
+    this.milliseconds = 0;
+    
+    this.type = MDTimerEntryType.Time;
+    this.units = "seconds";  
+    this.value = this.seconds * 1 
+      + this.minutes * 60 
+      + this.hours * 60 * 60 
+      + this.days * 60 * 60 * 24;
+  }
+
   days?: number;
   hours?: number;
   minutes?: number;
   seconds?: number;
   milliseconds? : number;
+  units: string;
+  type: MDTimerEntryType;  
+  value? : number | undefined;
 };
 
-export class MdTimerFromSeconds implements MdTimerValue {
-  constructor(miliseconds: number) {    
-    const multiplier = 10 ** 3;
-    let remaining = miliseconds;
+export type MdTimeRepeater = {
+  // Some type that will define how long the repeater runs, could be until lap
+  // button is clicked for user input, for measuring times.
+};
 
-    this.days = Math.floor(remaining  / 86400); 
-    remaining  %= 86400;
-
-    this.hours = Math.floor(remaining  / 3600);   
-    remaining %= 3600;
-
-    this.minutes = Math.floor(remaining / 60);    
-    remaining %= 60;
-
-    this.seconds = Math.floor(remaining)
-    
-    this.milliseconds = Math.round((remaining - this.seconds) * multiplier);
-  }
-
-  days?: number | undefined;
-  hours?: number | undefined;
-  minutes?: number | undefined;
-  seconds?: number | undefined;
-  milliseconds?: number | undefined;
-
-  toClock(): [string, string] { 
-    const result = [];
-    if (this.days != null && this.days != 0) {
-      result.push(this.days.toString())
-    }
-    if (this.hours != null && this.hours != 0) {
-      result.push(this.hours.toString())
-    }
-    if (this.minutes != null && this.minutes != 0) {
-      result.push(this.minutes.toString())
-    }    
-    let sec = this.seconds?.toString() || "0";
-    if (sec.length == 1) {
-      sec = "0" + sec;
-    }
-    
-    result.push(sec);
-    
-    let mill = this.milliseconds?.toString() || "0";
-    while (mill.length < 3) {
-      mill = mill + "0";
-    }             
-    return [result.join(":"),  mill];
-  }
+export type MDTimerCommand = {
+  label : string;
+  repeater : MdTimeRepeater;  
+  metrics : MDTimerEntry[];
+  children: MDTimerCommand[];
 }
+
+
+
 
 export type MdTimerBlock = {
   timer: number;

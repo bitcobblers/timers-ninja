@@ -5,7 +5,9 @@ export const WhiteSpace = createToken({
   pattern: /\s+/,
   group: Lexer.SKIPPED,
 });
+
 export const Return = createToken({ name: "Return", pattern: /[\r\n]+/ });
+
 export const Identifier = createToken({
   name: "Identifier",
   pattern: /[a-zA-Z]\w*/,
