@@ -6,7 +6,8 @@ export type MdTimerStack = {
 
 export enum MDTimerEntryType {
   Na,
-  Time,
+  Timer,
+  CountDown,
   Distance,
   Reptitions,
   Resistance,
@@ -15,7 +16,8 @@ export enum MDTimerEntryType {
 export type MDTimerEntry = {
   type: MDTimerEntryType;
   value?: number;
-  units: string;  
+  units: string;
+  sources: IToken[];
 }
 
 export type MdTimeRepeater = {
@@ -24,6 +26,7 @@ export type MdTimeRepeater = {
 };
 
 export type MDTimerCommand = {
+  line: number;
   label : string;
   repeater : MdTimeRepeater;  
   metrics : MDTimerEntry[];
@@ -38,19 +41,21 @@ export type TimerInstance = {
 
 
 export class MdWeightValue implements MDTimerEntry {
-  constructor(units: string, value: number) {
+  constructor(units: string, value: number, sources: IToken[]) {
     this.type = MDTimerEntryType.Resistance;
     this.units = units;
     this.value = value;
+    this.sources = sources;
   }
 
   type: MDTimerEntryType;
   value?: number;
   units: string;  
+  sources: IToken[];
 }
 
 export class MdTimerValue implements MDTimerEntry {
-  constructor(timerToken: string) {
+  constructor(timerToken: string, direction: "up" | "down", sources: IToken[]) {
     const segments = timerToken.split(":")
         .reverse()
         .map((d : unknown)=> d as number);
@@ -65,12 +70,16 @@ export class MdTimerValue implements MDTimerEntry {
     this.seconds = segments[0];  
     this.milliseconds = 0;
     
-    this.type = MDTimerEntryType.Time;
+    this.type = direction == "up" 
+      ? MDTimerEntryType.Timer 
+      : MDTimerEntryType.CountDown;
     this.units = "seconds";  
     this.value = this.seconds * 1 
       + this.minutes * 60 
       + this.hours * 60 * 60 
       + this.days * 60 * 60 * 24;
+
+    this.sources = sources;
   }
 
   days?: number;
@@ -81,16 +90,19 @@ export class MdTimerValue implements MDTimerEntry {
   units: string;
   type: MDTimerEntryType;  
   value? : number | undefined;
+  sources: IToken[];
+
 };
 
 export class MdRepetitionValue implements MDTimerEntry {
-  constructor(reps: number) {
+  constructor(reps: number,sources: IToken[]) {
     this.value = reps;
+    this.sources = sources;
   }
   value?: number | undefined;
   units = "Count"
   type = MDTimerEntryType.Reptitions;
-
+  sources: IToken[];
 }
 
 export class MdRoundRepeater implements MdTimeRepeater {

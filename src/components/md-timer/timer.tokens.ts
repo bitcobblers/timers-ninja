@@ -76,6 +76,5 @@ export const allTokens = [
   // The Identifier must appear after the keywords because all keywords are valid identifiers.
   
   Identifier,
-  
   Integer,
 ];

@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
 import { MdTimerRuntime } from "./md-timer";
+import { MDTimerEntryType } from "./timer.types";
 
 test(`parsedDirectionUpDefault`, async () => {    
     const runtime = new MdTimerRuntime();
@@ -8,28 +9,28 @@ test(`parsedDirectionUpDefault`, async () => {
     expect(outcome[0].metrics[0].value).not.toBeNull();    
 });
  
-// test(`parsedDirectionUpExplicit`, async () => {    
-//     const runtime = new MdTimerRuntime();
-//     const { outcome } = runtime.read("+:11");    
+test(`parsedDirectionUpExplicit`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("+:11");    
     
-//     expect(outcome[0].icon).toBe("up");    
-// });
+    expect(outcome[0].metrics[0].type).toBe(MDTimerEntryType.Timer);    
+});
 
-// test(`parsedDirectionDownExplicit`, async () => {    
-//     const runtime = new MdTimerRuntime();
-//     const { outcome } = runtime.read("-:11");    
+test(`parsedDirectionDownExplicit`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("-:11");    
     
-//     expect(outcome[0].icon).toBe("down");    
-// });
+    expect(outcome[0].metrics[0].type).toBe(MDTimerEntryType.CountDown);    
+});
 
 
-// test(`parsedSeconds`, async () => {    
-//     const runtime = new MdTimerRuntime();
-//     const { outcome } = runtime.read(":11");
-//     const timer = outcome[0].timer as number;
-    
-//     expect(timer).toBe(11);    
-// });
+test(`parsedSeconds`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read(":11");
+    const timer = outcome[0].metrics[0].value as number;
+    ``
+    expect(timer).toBe(11);    
+});
 
  test(`parsedMinutes`, async () => {    
      const runtime = new MdTimerRuntime();
@@ -67,7 +68,7 @@ test(`parseMultipleLines`, async () => {
 
 test(`parseMultipleLinesInGroup`, async () => {    
      const runtime = new MdTimerRuntime();
-     const { outcome } = runtime.read(`[:11\r\n-:22]`);    
+     const { outcome } = runtime.read(`:11\r\n-:22`);    
      expect(outcome[0].metrics[0].value).toBe(11);
      expect(outcome[1].metrics[0].value).toBe(22);      
 });
@@ -82,6 +83,14 @@ test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {
     expect(outcome[2].metrics[0].value).toBe(33);    
 });
 
+
+test(`parsedShortWeight`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("@11");
+    const weight = outcome[0].metrics[0].value as number
+  
+    expect(weight).toBe(11);    
+});
 
 // test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {    
 //     const runtime = new MdTimerRuntime();

@@ -1,10 +1,14 @@
 import type { IToken } from "chevrotain";
 import { CstParser } from "chevrotain";
 import {  
+  At,
   CountDirection,
   Delimiter,
   Identifier,
   Integer,  
+  Kelos,  
+  Pounds,  
+  Return,  
   Time,
   allTokens,
 } from "./timer.tokens";
@@ -14,22 +18,50 @@ export class MdTimerParse extends CstParser {
     super(allTokens);
     const $ = this as any;
 
-    $.RULE("timerMarkdown", () => {
+    $.RULE("timerMarkdown", () => {     
       $.MANY(() => {
         $.SUBRULE($.timerBlock, { LABEL: "blocks" });
-      });
+      });      
     });
 
     $.RULE("timerBlock", () => {
       $.OR([
-        { ALT: () => $.SUBRULE($.numericValue) },
+        { ALT: () => $.SUBRULE($.resistance,) },
         { ALT: () => $.SUBRULE($.simpleTimer) },
-      ]);            
-      $.OPTION(() => {
-        $.SUBRULE($.labels);
-      });      
+        // { ALT: () => $.SUBRULE($.labels) },
+      ]);                  
+    });      
+
+    $.RULE("resistance", () => {
+      $.OR([        
+        { ALT: () => $.SUBRULE($.resistanceLong) },                   
+        { ALT: () => $.SUBRULE($.resistanceValue) },
+        { ALT: () => $.SUBRULE($.resitanceShort) }
+      ]);
     });
+
+    $.RULE("resistanceLong", () => {      
+      $.CONSUME(At)
+      $.CONSUME(Integer)
+      $.OR([
+        { ALT: () => $.CONSUME(Kelos) },        
+        { ALT: () => $.CONSUME(Pounds) },
+      ])
+    })  
+
+    $.RULE("resistanceValue", () => {      
+      $.CONSUME(Integer)
+      $.OR([
+        { ALT: () => $.CONSUME(Kelos) },        
+        { ALT: () => $.CONSUME(Pounds) },
+      ])
+    })
     
+    $.RULE("resitanceShort", () => {    
+      $.CONSUME(At)
+      $.CONSUME(Integer)
+    })
+
     $.RULE("simpleTimer", () => {
       $.OPTION(() => {
         $.CONSUME(CountDirection, { label: "directionValue" });
@@ -38,7 +70,7 @@ export class MdTimerParse extends CstParser {
     });
     
     $.RULE("labels", () => {
-      $.MANY_SEP({
+      $.AT_LEAST_ONE_SEP({
         SEP: Delimiter,
         DEF: () => {
           $.MANY(() => {
