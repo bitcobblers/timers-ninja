@@ -34,6 +34,27 @@ export type MDTimerCommand = {
   sources: IToken[];
 }
 
+export type MDTimerStatementBuilder = {
+  sources(): IToken[];
+  apply(command: MDTimerCommand): void;
+}
+
+export class StatementLabelBuilder implements MDTimerStatementBuilder {
+  constructor(private labels: IToken[]) {}
+  apply(command: MDTimerCommand): void {
+    command.label = this.labels.map(l => l.image).join(" ");
+  }
+  sources() : IToken[] { return this.labels }
+}
+export class StatementMetricBuilder implements MDTimerStatementBuilder {
+  constructor(private entry: MDTimerEntry) {  }
+  apply(command: MDTimerCommand): void {
+    command.metrics.push(this.entry);
+    
+  }  
+  sources() : IToken[] { return this.entry.sources; }
+}
+
 export type TimerInstance = {
   direction: string;
   timer: number;

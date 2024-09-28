@@ -31,8 +31,8 @@ export const Weight = createToken({
   pattern: Lexer.NA,
 });
 
-export const Pounds = createToken({ name: "LB", pattern: /lb/, categories: Weight });
-export const Kelos = createToken({ name: "KG", pattern: /kg/, categories: Weight });
+export const Pounds = createToken({ name: "LB", pattern: /lb/i, categories: Weight });
+export const Kelos = createToken({ name: "KG", pattern: /kg/i, categories: Weight });
 export const At = createToken({ name: "At", pattern: /@/});
 
 export const CountDirection = createToken({

@@ -92,6 +92,29 @@ test(`parsedShortWeight`, async () => {
     expect(weight).toBe(11);    
 });
 
+test(`parsedWeightAndTime`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read(":10 @11LB");
+    const time = outcome[0].metrics[0].value as number
+    const weight = outcome[0].metrics[1].value as number
+  
+    expect(time).toBe(10);    
+    expect(weight).toBe(11);    
+});
+
+
+test(`parsedWeightAndTimeAndLabel`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read(":10 Kb Swings @53LB");
+    const time = outcome[0].metrics[0].value as number
+    const weight = outcome[0].metrics[1].value as number
+  
+    expect(outcome[0].label).toBe("Kb Swings")
+    expect(time).toBe(10);    
+    expect(weight).toBe(53);    
+});
+
+
 // test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {    
 //     const runtime = new MdTimerRuntime();
 //     const { outcome } = runtime.read(`[\r\n:11\r\n-:22\r\n test1,test2)\r\n:33`);

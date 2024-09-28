@@ -28,7 +28,7 @@ export class MdTimerParse extends CstParser {
       $.OR([
         { ALT: () => $.SUBRULE($.resistance,) },
         { ALT: () => $.SUBRULE($.simpleTimer) },
-        // { ALT: () => $.SUBRULE($.labels) },
+        { ALT: () => $.SUBRULE($.labels) },
       ]);                  
     });      
 
@@ -72,10 +72,16 @@ export class MdTimerParse extends CstParser {
     $.RULE("labels", () => {
       $.AT_LEAST_ONE_SEP({
         SEP: Delimiter,
-        DEF: () => {
-          $.MANY(() => {
-            $.SUBRULE($.stringValue, { label: "values" });
-          });
+        DEF: () => {          
+            $.SUBRULE($.label);          
+        },
+      });
+    });
+
+    $.RULE("label", () => {
+      $.AT_LEAST_ONE({      
+        DEF: () => {          
+          $.SUBRULE($.stringValue);          
         },
       });
     });
