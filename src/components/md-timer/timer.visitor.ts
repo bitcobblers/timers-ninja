@@ -1,7 +1,7 @@
 import { IToken } from "chevrotain";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import { MdRepetitionValue, MDTimerEntry, MDTimerEntryType, MDTimerStatementBuilder, MdTimerValue, MdWeightValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand } from "./timer.types";
+import { MdRepetitionValue, MDTimerEntry, MDTimerStatementBuilder, MdTimerValue, MdWeightValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -99,9 +99,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
   }
 
   labels(ctx: any): MDTimerStatementBuilder {
-        return new StatementLabelBuilder(this.visit(ctx.label[0]));
-    
-    
+        return new StatementLabelBuilder(this.visit(ctx.label[0]));  
   }
 
   label(ctx: any): MDTimerStatementBuilder {

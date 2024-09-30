@@ -149,23 +149,23 @@ const NinjaImage = component$(() => {
 
 export default component$((params: { init: string, title: string }) => {
     const markdown = useStore({ value: params.init });
-    const result = useSignal<MdTimerBlockArgs[]>([]);
+    const result = useSignal<MDTimerCommand[]>([]);
     const index = useSignal<number>(-1);
     const elapsted = useSignal<number>(0);
     const currentTimer = useSignal<number>(0);  
     const total = useSignal<number>(0);
-    const active = useSignal<MdTimerBlockArgs|undefined>();
+    const active = useSignal<MDTimerCommand|undefined>();
   
     const next = $(() => {            
       index.value++;
-      elapsted.value += active.value?.timer || 0;
+      elapsted.value += active.value?.timer() || 0;
       active.value = index.value <= result.value.length
         ? result.value[index.value]
         : undefined;
       
-        if (active.value) {
-          active.value.status = "Running"        
-        }
+        // if (active.value) {
+        //   // active.value.status = "Running"        
+        // }
       return active.value;
     });
   
@@ -195,10 +195,11 @@ export default component$((params: { init: string, title: string }) => {
       try {
         const { outcome } = new MdTimerRuntime().read(input);
         total.value = 0;
-        // result.value = outcome.map((block: MDTimerCommand) => {                
-        //   total.value += block.timer;        
-        //   return block as MdTimerBlockArgs
-        // });
+      
+        result.value = outcome.map((block: MDTimerCommand) => {                
+           total.value += block.timer;        
+           return block
+        });
       } catch (ex) {
         console.log(ex);
       }

@@ -32,6 +32,7 @@ export type MDTimerCommand = {
   metrics : MDTimerEntry[];
   children: MDTimerCommand[];
   sources: IToken[];
+  timer() : number;
 }
 
 export type MDTimerStatementBuilder = {
