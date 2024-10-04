@@ -1,7 +1,7 @@
 import { IToken } from "chevrotain";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import { MdRepetitionValue, IMDTimerEntry, MDTimerStatementBuilder, MdTimerValue, MdWeightValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand } from "./timer.types";
+import { MdRepetitionValue, IMDTimerEntry, MDTimerStatementBuilder, MdTimerValue, MdWeightValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand, StatementTimerBuilder, StatementMultiplierBuilder } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -26,7 +26,9 @@ export class MdTimerInterpreter extends BaseCstVisitor {
         if ((current?.line || 0) != entryLine) {
           current = {
             line: entryLine,
-            label: "",            
+            label: "",  
+            multiplier: undefined,
+            timer: undefined,          
             sources: [],
             children: [],
             metrics: []
@@ -75,9 +77,9 @@ export class MdTimerInterpreter extends BaseCstVisitor {
 
     return new StatementMetricBuilder(value as IMDTimerEntry);
   }
-  repeater(ctx:any) : StatementMetricBuilder {
+  repeater(ctx:any) : MDTimerStatementBuilder {
     
-    return new StatementMetricBuilder(new MdRepetitionValue(Number(ctx.Multiplier[0].image.replace(/\D/g, '')), [ctx.Multiplier[0]])); 
+    return new StatementMultiplierBuilder(new MdRepetitionValue(Number(ctx.Multiplier[0].image.replace(/\D/g, '')), [ctx.Multiplier[0]])); 
   }
 
   resitanceShort(ctx: any) {
@@ -102,7 +104,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       sources.push(ctx.CountDirection[0]);
     }
     sources.push(ctx.Time[0]);
-    return new StatementMetricBuilder(new MdTimerValue(ctx.Time[0].image, type, sources));
+    return new StatementTimerBuilder(new MdTimerValue(ctx.Time[0].image, type, sources));
   }
 
   labels(ctx: any): MDTimerStatementBuilder {

@@ -197,7 +197,7 @@ export default component$((params: { init: string, title: string }) => {
         total.value = 0;
       
         result.value = outcome.map((block: MDTimerCommand) => {                
-           total.value += block.timer;        
+           total.value += block.;        
            return block
         });
       } catch (ex) {

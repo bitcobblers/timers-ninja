@@ -4,8 +4,6 @@ export type MdTimerStack = {
   blocks: MDTimerCommand[];  
 }
 
-
-
 export enum MDTimerEntryType {  
   Timer,  
   StopWatch,
@@ -19,10 +17,11 @@ export abstract class MDTimerEntry implements IMDTimerEntry {
   constructor(public type: MDTimerEntryType,
     public value: undefined | number,
     public units: string, 
-    public sources: IToken[]){
-
+    public sources: IToken[])
+  {
   }
 }
+
 export type IMDTimerEntry = {
   type: MDTimerEntryType;
   value?: number;
@@ -30,14 +29,11 @@ export type IMDTimerEntry = {
   sources: IToken[];
 }
 
-export type MdTimeRepeater = {
-  // Some type that will define how long the repeater runs, could be until lap
-  // button is clicked for user input, for measuring times.
-};
-
 export type MDTimerCommand = {    
   line: number;
   label : string;
+  multiplier: undefined | IMDTimerEntry;
+  timer: undefined | IMDTimerEntry;
   metrics : IMDTimerEntry[];
   children: MDTimerCommand[];
   sources: IToken[];
@@ -56,26 +52,35 @@ export class StatementLabelBuilder implements MDTimerStatementBuilder {
   }
   sources() : IToken[] { return this.labels || [] }
 }
-export class StatementMetricBuilder implements MDTimerStatementBuilder {
+export class StatementTimerBuilder implements MDTimerStatementBuilder {
   constructor(private entry: IMDTimerEntry) {  }
   apply(command: MDTimerCommand): void {
-    command.metrics.push(this.entry);
-    
+    command.timer = this.entry;    
+  }  
+  sources() : IToken[] { return this.entry.sources; }
+}
+export class StatementMultiplierBuilder implements MDTimerStatementBuilder {
+  constructor(private entry: IMDTimerEntry) {  }
+  apply(command: MDTimerCommand): void {
+    command.multiplier = this.entry;    
   }  
   sources() : IToken[] { return this.entry.sources; }
 }
 
-export type TimerInstance = {
-  direction: string;
-  timer: number;
-};
+
+export class StatementMetricBuilder implements MDTimerStatementBuilder {
+  constructor(private entry: IMDTimerEntry) {  }
+  apply(command: MDTimerCommand): void {
+    command.metrics.push(this.entry);    
+  }  
+  sources() : IToken[] { return this.entry.sources; }
+}
 
 export class MdRepetitionValue extends MDTimerEntry {
   constructor(reps: number, sources: IToken[]) {    
     super(MDTimerEntryType.Reptitions,reps, "Reps", sources);
   }  
 }
-
 
 export class MdWeightValue extends MDTimerEntry {
   constructor(units: string, value: number, sources: IToken[]) {
