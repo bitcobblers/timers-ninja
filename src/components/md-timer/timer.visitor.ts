@@ -1,7 +1,7 @@
 import { IToken } from "chevrotain";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import { MdRepetitionValue, MDTimerEntry, MDTimerStatementBuilder, MdTimerValue, MdWeightValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand } from "./timer.types";
+import { MdRepetitionValue, IMDTimerEntry, MDTimerStatementBuilder, MdTimerValue, MdWeightValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -26,8 +26,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
         if ((current?.line || 0) != entryLine) {
           current = {
             line: entryLine,
-            label: "",
-            repeater: {},
+            label: "",            
             sources: [],
             children: [],
             metrics: []
@@ -53,13 +52,17 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       return this.visit(ctx.resistance);
     }
 
-    if (ctx.labels[0]) {
+    if (ctx.labels) {
       return this.visit(ctx.labels[0]);
-    }          
+    }    
+    
+    if (ctx.repeater) {
+      return this.visit(ctx.repeater[0])
+    }
   }
 
   resistance(ctx: any) {
-    let value = undefined as undefined | MDTimerEntry
+    let value = undefined as undefined | IMDTimerEntry
     if (ctx.resitanceShort) {
       value = this.visit(ctx.resitanceShort);
     }
@@ -70,7 +73,11 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       value = this.visit(ctx.resistanceLong);
     }
 
-    return new StatementMetricBuilder(value as MDTimerEntry);
+    return new StatementMetricBuilder(value as IMDTimerEntry);
+  }
+  repeater(ctx:any) : StatementMetricBuilder {
+    
+    return new StatementMetricBuilder(new MdRepetitionValue(Number(ctx.Multiplier[0].image.replace(/\D/g, '')), [ctx.Multiplier[0]])); 
   }
 
   resitanceShort(ctx: any) {
@@ -107,8 +114,9 @@ export class MdTimerInterpreter extends BaseCstVisitor {
   }
 
   numericValue(ctx: any): MdTimerValue {
+    const sources = [ctx.Integer[0]];
     const value = ctx.Integer[0].image;
-    return new MdRepetitionValue(Number(value), [ctx.Integer[0]]);
+    return new MdRepetitionValue(Number(value), sources);
   }
 
   stringValue(ctx: any): IToken {

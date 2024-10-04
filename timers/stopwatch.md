@@ -1,5 +1,5 @@
 # Stopwatch
 
 ```clock
-+:00
+:?
 ```

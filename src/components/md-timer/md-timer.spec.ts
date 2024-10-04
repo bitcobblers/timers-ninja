@@ -2,6 +2,30 @@ import { test, expect } from "vitest";
 import { MdTimerRuntime } from "./md-timer";
 import { MDTimerEntryType } from "./timer.types";
 
+
+
+test(`parseRepeater`, async () => {
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("2x");    
+
+    expect(outcome[0].metrics[0].value).toBe(2);    
+})
+
+test(`parseRepeaterAndLabel`, async () => {
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("2x Rounds");    
+
+    expect(outcome[0].label).toBe("Rounds");    
+})
+
+test(`parseRepeaterAndLabelWithSpaces`, async () => {
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read("2x Multi Rounds");    
+
+    expect(outcome[0].label).toBe("Multi Rounds");    
+})
+
+
 test(`parsedDirectionUpDefault`, async () => {    
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read(":11");    
@@ -9,18 +33,27 @@ test(`parsedDirectionUpDefault`, async () => {
     expect(outcome[0].metrics[0].value).not.toBeNull();    
 });
  
+
+test(`parsedDirectionUpDefault`, async () => {    
+    const runtime = new MdTimerRuntime();
+    const { outcome } = runtime.read(":11 Pushups");    
+    
+    expect(outcome[0].label).toBe("Pushups")
+});
+ 
+
 test(`parsedDirectionUpExplicit`, async () => {    
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read("+:11");    
     
-    expect(outcome[0].metrics[0].type).toBe(MDTimerEntryType.Timer);    
+    expect(outcome[0].metrics[0].type).toBe(MDTimerEntryType.StopWatch);    
 });
 
 test(`parsedDirectionDownExplicit`, async () => {    
     const runtime = new MdTimerRuntime();
     const { outcome } = runtime.read("-:11");    
     
-    expect(outcome[0].metrics[0].type).toBe(MDTimerEntryType.CountDown);    
+    expect(outcome[0].metrics[0].type).toBe(MDTimerEntryType.Timer);    
 });
 
 

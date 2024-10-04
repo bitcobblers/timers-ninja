@@ -2,7 +2,5 @@
 
 ```clock
 -:10 Get Ready
-
-15x
--1:00 Work
+15x -1:00 Work
 ```

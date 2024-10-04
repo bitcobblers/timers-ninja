@@ -7,6 +7,7 @@ import {
   Identifier,
   Integer,  
   Kelos,  
+  Multiplier,  
   Pounds,  
   Return,  
   Time,
@@ -29,8 +30,13 @@ export class MdTimerParse extends CstParser {
         { ALT: () => $.SUBRULE($.resistance,) },
         { ALT: () => $.SUBRULE($.simpleTimer) },
         { ALT: () => $.SUBRULE($.labels) },
+        { ALT: () => $.SUBRULE($.repeater) }
       ]);                  
     });      
+
+    $.RULE("repeater", () => {      
+      this.CONSUME(Multiplier)
+    })
 
     $.RULE("resistance", () => {
       $.OR([        
