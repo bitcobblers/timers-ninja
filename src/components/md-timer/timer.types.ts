@@ -67,13 +67,18 @@ export class StatementMultiplierBuilder implements MDTimerStatementBuilder {
   sources() : IToken[] { return this.entry.sources; }
 }
 
-
 export class StatementMetricBuilder implements MDTimerStatementBuilder {
   constructor(private entry: IMDTimerEntry) {  }
   apply(command: MDTimerCommand): void {
     command.metrics.push(this.entry);    
   }  
   sources() : IToken[] { return this.entry.sources; }
+}
+
+export class MdMultiplierValue extends MDTimerEntry {
+  constructor(reps: number, sources: IToken[]) {    
+    super(MDTimerEntryType.Reptitions, reps, "", sources);
+  }  
 }
 
 export class MdRepetitionValue extends MDTimerEntry {
@@ -85,6 +90,12 @@ export class MdRepetitionValue extends MDTimerEntry {
 export class MdWeightValue extends MDTimerEntry {
   constructor(units: string, value: number, sources: IToken[]) {
     super(MDTimerEntryType.Resistance,value, units, sources);
+  }
+}
+
+export class LabelMultiplierValue extends MdMultiplierValue {
+  constructor(public labels: string[], tokens: IToken[]) {    
+    super(labels.length, tokens);
   }
 }
 
