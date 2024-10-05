@@ -31,12 +31,13 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     for (let block of ctx.blocks) {
       var entry = this.visit(block) as MDTimerStatementBuilder;
       if (entry) {
-        var entryLine = Math.min(...entry.sources().map((e: any) => e.endLine));
+        var sources = entry.sources();
+        var entryLine = Math.min(...sources.map((e: any) => e.endLine as number));
         console.log("linInfo:" ,current?.line, entryLine, (current?.line || 0) + 2 <= entryLine )
                 
         if ((current?.line || 0) != entryLine) {                    
           if (current && !current?.multiplier) {
-            current!.multiplier = new MdMultiplierValue(1, []);
+            current!.multiplier = new MdMultiplierValue(1);
           }
           if (current) {
             push(current)
@@ -51,8 +52,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
             line: entryLine,
             label: "",
             multiplier: undefined,
-            timer: undefined,
-            sources: [],
+            timer: undefined,            
             children: [],
             metrics: []
           };
@@ -92,33 +92,34 @@ export class MdTimerInterpreter extends BaseCstVisitor {
 
   resistance(ctx: any) {
     let value = undefined as undefined | IMDTimerEntry
+    let tokens = [];
     if (ctx.resitanceShort) {
-      value = this.visit(ctx.resitanceShort);
+      [value, tokens] = this.visit(ctx.resitanceShort);      
     }
     if (ctx.resistanceValue) {
-      value = this.visit(ctx.resistanceValue);
+      [value, tokens] = this.visit(ctx.resistanceValue);
     }
     if (ctx.resistanceLong) {
-      value = this.visit(ctx.resistanceLong);
+      [value, tokens] = this.visit(ctx.resistanceLong);
     }
 
-    return new StatementMetricBuilder(value as IMDTimerEntry);
+    return new StatementMetricBuilder(value as IMDTimerEntry, tokens);
   }
   repeater(ctx: any): MDTimerStatementBuilder {
 
-    return new StatementMultiplierBuilder(new MdMultiplierValue(Number(ctx.Multiplier[0].image.replace(/\D/g, '')), [ctx.Multiplier[0]]));
+    return new StatementMultiplierBuilder(new MdMultiplierValue(Number(ctx.Multiplier[0].image.replace(/\D/g, ''))), [ctx.Multiplier[0]]);
   }
 
   resitanceShort(ctx: any) {
-    return new MdWeightValue("LB", Number(ctx.Integer[0].image), [ctx.Integer[0]]);
+    return [new MdWeightValue("LB", Number(ctx.Integer[0].image)), [ctx.Integer[0]]];
   }
 
   resistanceValue(ctx: any) {
-    return new MdWeightValue(ctx.Kelos ? "KG" : "LB", Number(ctx.Integer[0].image), [ctx.Integer[0]])
+    return [new MdWeightValue(ctx.Kelos ? "KG" : "LB", Number(ctx.Integer[0].image)), [ctx.Integer[0]]];
   }
 
   resistanceLong(ctx: any) {
-    return new MdWeightValue(ctx.Kelos ? "KG" : "LB", Number(ctx.Integer[0].image), [ctx.Integer[0]])
+    return [new MdWeightValue(ctx.Kelos ? "KG" : "LB", Number(ctx.Integer[0].image)), [ctx.Integer[0]]];
   }
 
   simpleTimer(ctx: any): MDTimerStatementBuilder {
@@ -131,7 +132,7 @@ export class MdTimerInterpreter extends BaseCstVisitor {
       sources.push(ctx.CountDirection[0]);
     }
     sources.push(ctx.Time[0]);
-    return new StatementTimerBuilder(new MdTimerValue(ctx.Time[0].image, type, sources));
+    return new StatementTimerBuilder(new MdTimerValue(ctx.Time[0].image, type), sources);
   }
 
   labels(ctx: any): MDTimerStatementBuilder {
@@ -140,17 +141,17 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     }
     let labels = ctx.label.map((label: any) => this.visit(label));
     let tokens = ctx.label.flatMap((label: any) => label.children.stringValue[0].children.Identifier as IToken[]);
-    return new StatementMultiplierBuilder(new LabelMultiplierValue(labels, tokens));
+    return new StatementMultiplierBuilder(new LabelMultiplierValue(labels), tokens);
   }
 
   label(ctx: any): MDTimerStatementBuilder {
     return ctx.stringValue.map((v: any) => this.visit(v));
   }
 
-  numericValue(ctx: any): MdTimerValue {
+  numericValue(ctx: any): [MdTimerValue, IToken[]] {
     const sources = [ctx.Integer[0]];
     const value = ctx.Integer[0].image;
-    return new MdRepetitionValue(Number(value), sources);
+    return [new MdRepetitionValue(Number(value)), sources];
   }
 
   stringValue(ctx: any): IToken {

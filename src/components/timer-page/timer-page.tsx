@@ -5,7 +5,10 @@ import {
     useTask$,
     Slot,
     $,
-    type QRL
+    type QRL,
+    createContextId,
+    useContextProvider,
+    Signal
   } from "@builder.io/qwik";
   
   import Editor from "~/components/editor";
@@ -15,7 +18,7 @@ import {
   import Glow from "~/components/glow";
   import Timeline from "~/components/timeline";
   import TimelineHeader from "~/components/timeline-panel/timeline-header";
-  import TimerDisplay, { type MdTimerBlockArgs } from "~/components/timer-display/timer-display";
+  import TimerDisplay  from "~/components/timer-display/timer-display";
   import type {
     MDTimerCommand,
   } from "~/components/md-timer/timer.types";
@@ -31,8 +34,7 @@ const NinjaImage = component$(() => {
       alt={`Timers Ninja Image`}
     />
   });
-  
-  
+   
   export type ContainerArgs  = {
     next$ : QRL<() => MdTimerBlockArgs | undefined>;
     reset$ : QRL<() => void>;  
@@ -40,6 +42,7 @@ const NinjaImage = component$(() => {
     tick$: QRL<(n: number) =>void>;
   }
   
+
   const Container = component$((args : ContainerArgs) => {  
     return (
       <>
@@ -146,21 +149,28 @@ const NinjaImage = component$(() => {
     );
   });
 
+export const mdCommands = createContextId<Signal<MDTimerCommand[]>>('commands');
+export const activeTimer = createContextId<Signal<MDTimerCommand>>('activeTimer');
+export const mdResults = createContextId<Signal<string>>('results');
 
 export default component$((params: { init: string, title: string }) => {
-    const markdown = useStore({ value: params.init });
-    const result = useSignal<MDTimerCommand[]>([]);
+    const markdown = useStore({ value: params.init });    
     const index = useSignal<number>(-1);
     const elapsted = useSignal<number>(0);
     const currentTimer = useSignal<number>(0);  
     const total = useSignal<number>(0);
+    
     const active = useSignal<MDTimerCommand|undefined>();
-  
+    useContextProvider(activeTimer, active);
+
+    const commands = useSignal<MDTimerCommand[]>([]);
+    useContextProvider(mdCommands, commands);
+
     const next = $(() => {            
       index.value++;
-      elapsted.value += active.value?.timer() || 0;
-      active.value = index.value <= result.value.length
-        ? result.value[index.value]
+      elapsted.value += active.value?.timer?.value || 0;
+      active.value = index.value <= commands.value.length
+        ? commands.value[index.value]
         : undefined;
       
         // if (active.value) {
@@ -188,7 +198,7 @@ export default component$((params: { init: string, title: string }) => {
       track(() => markdown.value);
       const input = markdown.value;
       if ((input.trim() || "") == "") {
-        result.value = [];
+        commands.value = [];
         return;
       }
   
@@ -196,8 +206,8 @@ export default component$((params: { init: string, title: string }) => {
         const { outcome } = new MdTimerRuntime().read(input);
         total.value = 0;
       
-        result.value = outcome.map((block: MDTimerCommand) => {                
-           total.value += block.;        
+        commands.value = outcome.map((block: MDTimerCommand) => {                
+           total.value += block.timer?.value!;        
            return block
         });
       } catch (ex) {
@@ -223,9 +233,9 @@ export default component$((params: { init: string, title: string }) => {
     return (
       <Container next$={next} reset$={reset} complete$={complete} tick$={tick}>
         <Editor q:slot="editor" value={markdown.value} onUpdate$={onUpdate} />
-        {result.value.length > 0 ? <TimelineHeader  index={index.value} length={result.value.length} title={params.title} elapsted={elapsted.value + currentTimer.value} total={total.value} /> : <div />}
-        {active.value && < TimelineEntry {...active.value} status="Running"/>}
-        {result.value.map((timer: MdTimerBlockArgs, i: number) => {
+        {commands.value.length > 0 ? <TimelineHeader  index={index.value} length={commands.value.length} title={params.title} elapsted={elapsted.value + currentTimer.value} total={total.value} /> : <div />}
+        {active.value && < TimelineEntry {...active.value} status={"Running"}/>}
+        {commands.value.map((timer: MDTimerCommand, i: number) => {
           if (index.value == -1 || index.value < i) {
             return  <TimelineEntry {...timer} key={getKey(i, timer)}  status=""/>;
           }

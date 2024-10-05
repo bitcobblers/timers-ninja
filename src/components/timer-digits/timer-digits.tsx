@@ -6,10 +6,7 @@ export type TimerDigitsArgs = {
   seconds: number;
   showMills? : boolean | undefined;
 }
-export default component$((args: TimerDigitsArgs) => {
-  
-  const timer = new MdTimerValue(args.seconds.toString());
-
-  return <div>{timer.value}{args.showMills && <span  class="text-xl2">.<span class="text-base">{timer.milliseconds}</span></span>}</div>
+export default component$((args: TimerDigitsArgs) => {    
+  return <div>{args.seconds}{args.showMills && <span  class="text-xl2">.<span class="text-base">0</span></span>}</div>
 });
 

@@ -1,8 +1,11 @@
 import { component$ } from "@builder.io/qwik";
 import TimerDigits from "../timer-digits/timer-digits";
 import { CountDownIcon, CountUpIcon } from "../timer-display/timer-display";
+import { MDTimerCommand, MDTimerEntryType } from "../md-timer/timer.types";
 
-export default component$((props: any) => {
+export type TimelineEntryArgs = { status :string; } & MDTimerCommand;
+
+export default component$((props: TimelineEntryArgs) => {
   return (
     <article id="commit-message-suggestions" class="">
       <div>
@@ -15,10 +18,10 @@ export default component$((props: any) => {
               <div class="flex items-center justify-between gap-x-6">
                 <div class="flex">
                   <div class="pt-2 pr-5">
-                  {props?.icon == "up" && <CountUpIcon />}
-                  {props?.icon == "down" && <CountDownIcon />}         
+                  {props.timer?.type == MDTimerEntryType.StopWatch && <CountUpIcon />}
+                  {props.timer?.type == MDTimerEntryType.Timer && <CountDownIcon />}         
                   </div>
-                  <TimerDigits seconds={props.timer} />
+                  <TimerDigits seconds={props.timer?.value || 0} />
                 </div>
                 <div class="min-w-0">
                   <div class="flex items-start gap-x-3">

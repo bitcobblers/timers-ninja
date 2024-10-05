@@ -16,8 +16,7 @@ export enum MDTimerEntryType {
 export abstract class MDTimerEntry implements IMDTimerEntry {
   constructor(public type: MDTimerEntryType,
     public value: undefined | number,
-    public units: string, 
-    public sources: IToken[])
+    public units: string)
   {
   }
 }
@@ -25,8 +24,7 @@ export abstract class MDTimerEntry implements IMDTimerEntry {
 export type IMDTimerEntry = {
   type: MDTimerEntryType;
   value?: number;
-  units: string;
-  sources: IToken[];
+  units: string;  
 }
 
 export type MDTimerCommand = {    
@@ -35,9 +33,7 @@ export type MDTimerCommand = {
   multiplier: undefined | IMDTimerEntry;
   timer: undefined | IMDTimerEntry;
   metrics : IMDTimerEntry[];
-  children: MDTimerCommand[];
-  sources: IToken[];
-  // timer() : number;
+  children: MDTimerCommand[];  
 }
 
 export type MDTimerStatementBuilder = {
@@ -53,54 +49,54 @@ export class StatementLabelBuilder implements MDTimerStatementBuilder {
   sources() : IToken[] { return this.labels || [] }
 }
 export class StatementTimerBuilder implements MDTimerStatementBuilder {
-  constructor(private entry: IMDTimerEntry) {  }
+  constructor(private entry: IMDTimerEntry, private tokens: IToken[]) {  }
   apply(command: MDTimerCommand): void {
     command.timer = this.entry;    
   }  
-  sources() : IToken[] { return this.entry.sources; }
+  sources() : IToken[] { return this.tokens; }
 }
 export class StatementMultiplierBuilder implements MDTimerStatementBuilder {
-  constructor(private entry: IMDTimerEntry) {  }
+  constructor(private entry: IMDTimerEntry, private tokens: IToken[]) {  }
   apply(command: MDTimerCommand): void {
     command.multiplier = this.entry;    
   }  
-  sources() : IToken[] { return this.entry.sources; }
+  sources() : IToken[] { return this.tokens; }
 }
 
 export class StatementMetricBuilder implements MDTimerStatementBuilder {
-  constructor(private entry: IMDTimerEntry) {  }
+  constructor(private entry: IMDTimerEntry, private tokens: IToken[]) {  }
   apply(command: MDTimerCommand): void {
     command.metrics.push(this.entry);    
   }  
-  sources() : IToken[] { return this.entry.sources; }
+  sources() : IToken[] { return this.tokens; }
 }
 
 export class MdMultiplierValue extends MDTimerEntry {
-  constructor(reps: number, sources: IToken[]) {    
-    super(MDTimerEntryType.Reptitions, reps, "", sources);
+  constructor(reps: number) {    
+    super(MDTimerEntryType.Reptitions, reps, "");
   }  
 }
 
 export class MdRepetitionValue extends MDTimerEntry {
-  constructor(reps: number, sources: IToken[]) {    
-    super(MDTimerEntryType.Reptitions,reps, "Reps", sources);
+  constructor(reps: number) {    
+    super(MDTimerEntryType.Reptitions,reps, "Reps");
   }  
 }
 
 export class MdWeightValue extends MDTimerEntry {
-  constructor(units: string, value: number, sources: IToken[]) {
-    super(MDTimerEntryType.Resistance,value, units, sources);
+  constructor(units: string, value: number) {
+    super(MDTimerEntryType.Resistance,value, units);
   }
 }
 
 export class LabelMultiplierValue extends MdMultiplierValue {
-  constructor(public labels: string[], tokens: IToken[]) {    
-    super(labels.length, tokens);
+  constructor(public labels: string[]) {    
+    super(labels.length);
   }
 }
 
 export class MdTimerValue extends MDTimerEntry {
-  constructor(timerToken: string, direction: "up" | "down", sources: IToken[]) {    
+  constructor(timerToken: string, direction: "up" | "down") {    
     const segments = timerToken.split(":")
         .reverse()
         .map((d : unknown)=> d as number);
@@ -116,7 +112,7 @@ export class MdTimerValue extends MDTimerEntry {
     + segments[2] * 60 * 60 
     + segments[3] * 60 * 60 * 24;
 
-    super(type, total, "seconds", sources);
+    super(type, total, "seconds");
 
     this.days = segments[3];
     this.hours = segments[2];

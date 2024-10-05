@@ -25,16 +25,6 @@ export type TimerProps = {
     onReset$?: QRL<() => void>;
 };
 
-
-export type MdTimerBlockArgs = {
-  timer: number;
-  icon?: "up" | "down" | "date";
-  round?: number;
-  label?: string;
-  size?: string;
-  status?: string;
-};
-
 export type ButtonArgs  = {
   onClick$ : QRL<() => void>;
 }
