@@ -11,8 +11,12 @@
             "id": "105af7ccaf133a8c",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {}
+              "type": "markdown",
+              "state": {
+                "file": "README.md",
+                "mode": "source",
+                "source": false
+              }
             }
           }
         ]
@@ -81,6 +85,7 @@
             "state": {
               "type": "backlink",
               "state": {
+                "file": "README.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -97,6 +102,7 @@
             "state": {
               "type": "outgoing-link",
               "state": {
+                "file": "README.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -118,7 +124,9 @@
             "type": "leaf",
             "state": {
               "type": "outline",
-              "state": {}
+              "state": {
+                "file": "README.md"
+              }
             }
           }
         ]
@@ -140,6 +148,9 @@
   },
   "active": "105af7ccaf133a8c",
   "lastOpenFiles": [
+    "vite.config.ts.timestamp-1728351807047-318af876c9732.mjs",
+    "src/components/md-timer/md-timer-runtime.tsx",
+    "syntax-diagram.png",
     "README.md",
     "timers/countdown-15.md"
   ]

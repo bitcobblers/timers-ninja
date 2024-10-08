@@ -13,7 +13,7 @@ import {
   
   import Editor from "~/components/editor";
   import TimelineEntry from "~/components/timeline-panel/timeline-entry";
-  import { MdTimerRuntime } from "~/components/md-timer/md-timer";
+  import { MdTimerCompiler } from "~/components/md-timer/md-timer";
   import ThemeToggle from "~/components/light-dark-toggle";
   import Glow from "~/components/glow";
   import Timeline from "~/components/timeline";
@@ -36,7 +36,7 @@ const NinjaImage = component$(() => {
   });
    
   export type ContainerArgs  = {
-    next$ : QRL<() => MdTimerBlockArgs | undefined>;
+    next$ : QRL<() =>  undefined>;
     reset$ : QRL<() => void>;  
     complete$: QRL<() => void>;
     tick$: QRL<(n: number) =>void>;
@@ -149,22 +149,16 @@ const NinjaImage = component$(() => {
     );
   });
 
-export const mdCommands = createContextId<Signal<MDTimerCommand[]>>('commands');
-export const activeTimer = createContextId<Signal<MDTimerCommand>>('activeTimer');
-export const mdResults = createContextId<Signal<string>>('results');
+
 
 export default component$((params: { init: string, title: string }) => {
     const markdown = useStore({ value: params.init });    
     const index = useSignal<number>(-1);
     const elapsted = useSignal<number>(0);
     const currentTimer = useSignal<number>(0);  
-    const total = useSignal<number>(0);
-    
+    const total = useSignal<number>(0);    
     const active = useSignal<MDTimerCommand|undefined>();
-    useContextProvider(activeTimer, active);
-
     const commands = useSignal<MDTimerCommand[]>([]);
-    useContextProvider(mdCommands, commands);
 
     const next = $(() => {            
       index.value++;
@@ -203,7 +197,7 @@ export default component$((params: { init: string, title: string }) => {
       }
   
       try {
-        const { outcome } = new MdTimerRuntime().read(input);
+        const { outcome } = new MdTimerCompiler().read(input);
         total.value = 0;
       
         commands.value = outcome.map((block: MDTimerCommand) => {                
@@ -237,7 +231,7 @@ export default component$((params: { init: string, title: string }) => {
         {active.value && < TimelineEntry {...active.value} status={"Running"}/>}
         {commands.value.map((timer: MDTimerCommand, i: number) => {
           if (index.value == -1 || index.value < i) {
-            return  <TimelineEntry {...timer} key={getKey(i, timer)}  status=""/>;
+            return  <TimelineEntry {...timer} key={timer.line}  status=""/>;
           }
         })}
       </Container>

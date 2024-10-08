@@ -4,6 +4,7 @@ import { allTokens } from "./timer.tokens";
 import { MdTimerParse } from "./timer.parser";
 import type { MDTimerCommand } from "./timer.types";
 import { MdTimerInterpreter } from "./timer.visitor";
+import { unescape } from "querystring";
 
 export type MdTimeRuntimeResult = {
   source: string;
@@ -13,7 +14,7 @@ export type MdTimeRuntimeResult = {
   outcome: MDTimerCommand[];
 };
 
-export class MdTimerRuntime {
+export class MdTimerCompiler {
   lexer: Lexer;
   visitor: MdTimerInterpreter;
   constructor() {
@@ -38,3 +39,15 @@ export class MdTimerRuntime {
     };
   }
 }
+
+export type MdTimerContext = {}
+export class MdTimerRuntime {
+  constructor(private script: MDTimerCommand[])
+  {
+  }
+
+   next(context: MdTimerContext): undefined | MDTimerInstance{    
+    return this.script[0];
+   }
+}
+export type MDTimerInstance = MDTimerCommand & {}

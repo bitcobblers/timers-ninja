@@ -1,10 +1,10 @@
 import { test, expect } from "vitest";
-import { MdTimerRuntime } from "./md-timer";
+import { MdTimerCompiler } from "./md-timer";
 import { MDTimerEntryType } from "./timer.types";
 
 
 test(`parsedWeightAndTimeAndLabelAndMultiplier`, async () => {    
-    const runtime = new MdTimerRuntime();
+    const runtime = new MdTimerCompiler();
     const { outcome } = runtime.read("2x :10 Kb Swings @53LB");
     const multiplier = outcome[0].multiplier?.value as number
     const time = outcome[0].timer?.value as number
@@ -17,7 +17,7 @@ test(`parsedWeightAndTimeAndLabelAndMultiplier`, async () => {
 });
 
 test(`parseMultipleLinesInMixedGroupAndStandAlone`, async () => {    
-    const runtime = new MdTimerRuntime();
+    const runtime = new MdTimerCompiler();
     const { outcome } = runtime.read(`
 test1, test2
 :11
@@ -32,7 +32,7 @@ test1, test2
 });
 
 test(`multiplierOnTimer`, async () => {    
-    const runtime = new MdTimerRuntime();
+    const runtime = new MdTimerCompiler();
     const { outcome } = runtime.read("2x :11");        
     const repeater = outcome[0].multiplier;
     

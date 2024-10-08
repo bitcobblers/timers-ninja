@@ -1,8 +1,8 @@
 import { test, expect } from "vitest";
-import { MdTimerRuntime } from "./md-timer";
+import { MdTimerCompiler } from "./md-timer";
 
 test(`parsedShortWeight`, async () => {    
-    const runtime = new MdTimerRuntime();
+    const runtime = new MdTimerCompiler();
     const { outcome } = runtime.read("@11");
     const weight = outcome[0].metrics[0].value as number
   
@@ -10,7 +10,7 @@ test(`parsedShortWeight`, async () => {
 });
 
 test(`parsedWeightAndTime`, async () => {    
-    const runtime = new MdTimerRuntime();
+    const runtime = new MdTimerCompiler();
     const { outcome } = runtime.read(":10 @11LB");
     const time = outcome[0].timer?.value as number
     const weight = outcome[0].metrics[0].value as number
@@ -21,7 +21,7 @@ test(`parsedWeightAndTime`, async () => {
 
 
 test(`parsedWeightAndTimeAndLabel`, async () => {    
-    const runtime = new MdTimerRuntime();
+    const runtime = new MdTimerCompiler();
     const { outcome } = runtime.read(":10 Kb Swings @53LB");
     const time = outcome[0].timer?.value as number
     const weight = outcome[0].metrics[0].value as number

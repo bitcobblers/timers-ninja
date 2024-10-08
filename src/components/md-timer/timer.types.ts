@@ -71,32 +71,44 @@ export class StatementMetricBuilder implements MDTimerStatementBuilder {
   sources() : IToken[] { return this.tokens; }
 }
 
-export class MdMultiplierValue extends MDTimerEntry {
-  constructor(reps: number) {    
-    super(MDTimerEntryType.Reptitions, reps, "");
-  }  
-}
-
-export class MdRepetitionValue extends MDTimerEntry {
-  constructor(reps: number) {    
-    super(MDTimerEntryType.Reptitions,reps, "Reps");
-  }  
-}
-
-export class MdWeightValue extends MDTimerEntry {
-  constructor(units: string, value: number) {
-    super(MDTimerEntryType.Resistance,value, units);
+export function MdMultiplierValue(reps: number) : IMDTimerEntry {
+  return {
+    type : MDTimerEntryType.Reptitions,
+    value: reps,
+    units: ""
   }
 }
 
-export class LabelMultiplierValue extends MdMultiplierValue {
-  constructor(public labels: string[]) {    
-    super(labels.length);
+export function MdRepetitionValue (reps: number): IMDTimerEntry {    
+  return { 
+    type: MDTimerEntryType.Reptitions,
+    value: reps,
+    units: "Reps"
+  }  
+}
+
+export function MdWeightValue(units: string, value: number): IMDTimerEntry {
+  return {
+    type :MDTimerEntryType.Resistance,
+    value,
+    units
   }
 }
 
-export class MdTimerValue extends MDTimerEntry {
-  constructor(timerToken: string, direction: "up" | "down") {    
+export function LabelMultiplierValue(labels: string[]): IMDTimerEntry {
+  return MdMultiplierValue(labels.length);
+  //   constructor(public labels: string[]) {    
+//     super(labels.length);
+//   }
+}
+
+export class EmptyTimer extends MDTimerEntry {
+  constructor(){
+    super(MDTimerEntryType.Timer, 0, "seconds");
+  }
+}
+
+export function MdTimerValue(timerToken: string, direction: "up" | "down") : IMDTimerEntry & any {  
     const segments = timerToken.split(":")
         .reverse()
         .map((d : unknown)=> d as number);
@@ -112,18 +124,14 @@ export class MdTimerValue extends MDTimerEntry {
     + segments[2] * 60 * 60 
     + segments[3] * 60 * 60 * 24;
 
-    super(type, total, "seconds");
-
-    this.days = segments[3];
-    this.hours = segments[2];
-    this.minutes = segments[1];
-    this.seconds = segments[0];  
-    this.milliseconds = 0;
+    return {
+      type,
+      value: total,
+      units: "seconds",
+      days: segments[3],
+      this: segments[2],
+      minutes: segments[1],
+      seconds: segments[0], 
+      milliseconds: 0
+    }    
   }
-
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-  milliseconds? : number; 
-};

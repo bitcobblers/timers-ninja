@@ -32,3 +32,14 @@ npm run build.timers
 ## Syntax Parser Diagram
 
 ![syntax diagram](./syntax-diagram.png)
+
+
+UI
+----
+
+Clock  
+- Running timer (update event, context element updated)
+- UserEvent (Start / Lap / Stop, Reset )
+
+Code / Workout Editor
+- Entry for code blocks
