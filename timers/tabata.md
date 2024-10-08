@@ -1,8 +1,7 @@
 # Tabata
 
 ```clock
-[
-    -20(work)
-    -10(rest)
-](8)
+8x 
+-20 Work
+-10 Rest
 ```

@@ -1,18 +1,39 @@
 import { Lexer, createToken } from "chevrotain";
+import { comma } from "postcss/lib/list";
 
 export const WhiteSpace = createToken({
   name: "WhiteSpace",
   pattern: /\s+/,
   group: Lexer.SKIPPED,
 });
-export const Return = createToken({ name: "Return", pattern: /[\r\n]+/ });
+
+export const Return = createToken({ name: "Return", pattern: /[\r\n]+/, group: Lexer.SKIPPED });
+
 export const Identifier = createToken({
   name: "Identifier",
   pattern: /[a-zA-Z]\w*/,
 });
+
 export const Integer = createToken({ name: "Integer", pattern: /\d+/ });
-export const Comma = createToken({ name: "Comma", pattern: /,/ });
-export const Colon = createToken({ name: "Colon", pattern: /:/ });
+export const Multiplier = createToken({ name: "Multiplier", pattern: /\d+x/ });
+export const Delimiter = createToken({
+  name: "Delimiter",
+  pattern: Lexer.NA,
+});
+
+export const Comma = createToken({ name: "Comma", pattern: /,/, categories: Delimiter });
+export const Pipe = createToken({ name: "Pipe", pattern: /\|/, categories: Delimiter });
+export const SemiColon = createToken({ name: "SemiColon", pattern: /;/, categories: Delimiter });
+
+
+export const Weight = createToken({
+  name: "Weight",
+  pattern: Lexer.NA,
+});
+
+export const Pounds = createToken({ name: "LB", pattern: /lb/i, categories: Weight });
+export const Kelos = createToken({ name: "KG", pattern: /kg/i, categories: Weight });
+export const At = createToken({ name: "At", pattern: /@/});
 
 export const CountDirection = createToken({
   name: "CountDirection",
@@ -29,28 +50,31 @@ export const Plus = createToken({
   categories: CountDirection,
 });
 
-export const GroupOpen = createToken({ name: "LabelOpen", pattern: /\[/ });
-export const GroupClose = createToken({ name: "LabelClose", pattern: /\]/ });
-
-export const LabelOpen = createToken({ name: "LabelOpen", pattern: /\(/ });
-export const LabelClose = createToken({ name: "LabelClose", pattern: /\)/ });
+export const Time = createToken({ name: "Time", pattern: /(\d+)?(:\d+)?(:\d+)?(:\d+)/ });
 
 export const allTokens = [
   WhiteSpace,
   Return,
-  // "keywords" appear before the Identifier
-  GroupOpen,
-  GroupClose,
+  // "keywords" appear before the Identifier  
+  Delimiter,
+  Comma,
+  Pipe,
+  SemiColon,
 
-  LabelOpen,
-  LabelClose,
-  Colon,
   CountDirection,
   Minus,
   Plus,
-  Comma,
+  
+  Multiplier,
 
+  Weight,
+  Kelos,
+  Pounds,
+  At,
+
+  Time,  
   // The Identifier must appear after the keywords because all keywords are valid identifiers.
+  
   Identifier,
   Integer,
 ];

@@ -1,6 +1,7 @@
+import { IToken } from "chevrotain";
 import { MdTimerParse } from "./timer.parser";
 import { Minus } from "./timer.tokens";
-import type { MdTimerBlock } from "./timer.types";
+import { IMDTimerEntry, MDTimerStatementBuilder, MdTimerValue, StatementLabelBuilder, StatementMetricBuilder, type MDTimerCommand, StatementTimerBuilder, StatementMultiplierBuilder, MdMultiplierValue, MdWeightValue, MdRepetitionValue, LabelMultiplierValue } from "./timer.types";
 
 const parser = new MdTimerParse() as any;
 const BaseCstVisitor = parser.getBaseCstVisitorConstructor();
@@ -14,44 +15,110 @@ export class MdTimerInterpreter extends BaseCstVisitor {
   }
 
   /// High level entry point, contains any number of simple of compound timers.
-  timerMarkdown(ctx: any): MdTimerBlock[] {
-    const result = ctx.blocks.flatMap(
-      (block: any) => block && this.visit(block),
-    ) as MdTimerBlock[];
-    return result;
-  }
+  timerMarkdown(ctx: any): MDTimerCommand[] {
+    const commands = [] as MDTimerCommand[];
+    let current = undefined as undefined | MDTimerCommand;
+    let parrent = undefined as undefined | MDTimerCommand;
 
-  timerBlock(ctx: any) {
-    const blocks = [];
-    if (ctx.compoundTimer || ctx.simpleTimer) {
-      const outcome = this.visit(ctx.compoundTimer || ctx.simpleTimer).flat(
-        Infinity,
-      );
-      const labels = ctx.timerMultiplier
-        ? this.visit(ctx.timerMultiplier)
-        : [{ round: 1, label: "" }];
-      for (const label of labels) {
-        for (const index of outcome) {
-          if (index != null) {
-            blocks.push({
-              ...index,
-              label: index.label
-                ? label.label + " - " + index.label
-                : label.label,
-            });
-          }
-        }
+    let push = (command: MDTimerCommand) => {
+      if (parrent) {
+        parrent.children.push(command);
+      }
+      else {
+        commands.push(command);
       }
     }
+    for (let block of ctx.blocks) {
+      var entry = this.visit(block) as MDTimerStatementBuilder;
+      if (entry) {
+        var sources = entry.sources();
+        var entryLine = Math.min(...sources.map((e: any) => e.endLine as number));
+                
+        if ((current?.line || 0) != entryLine) {                    
+          if (current) {
+            push(current)
+          }
+          if ((current?.line || 0) + 2 <= entryLine ) {
+            parrent = undefined;
+          }
+          if (!current?.timer && !parrent) {
+            parrent = current;
+          }
+          current = {
+            line: entryLine,
+            label: "",
+            multiplier: MdMultiplierValue(1),
+            timer: undefined,            
+            children: [],
+            metrics: []
+          };
+          
+        }
 
-    return blocks;
+        if (current) {
+          entry.apply(current);
+        }
+      }      
+    }    
+    
+    if (current) {
+      push(current)
+    }
+
+    return commands;
   }
 
-  compoundTimer(ctx: any) {
-    return ctx.blocks.map((block: any) => this.visit(block));
+  timerBlock(ctx: any): MDTimerStatementBuilder | undefined {
+    if (ctx.simpleTimer) {
+      return this.visit(ctx.simpleTimer)
+
+    }
+    if (ctx.resistance) {
+      return this.visit(ctx.resistance);
+    }
+
+    if (ctx.labels) {
+      return this.visit(ctx.labels[0]);
+    }
+
+    if (ctx.repeater) {
+      return this.visit(ctx.repeater[0])
+    }
   }
 
-  simpleTimer(ctx: any): MdTimerBlock[] {
+  resistance(ctx: any) {
+    let value = undefined as undefined | IMDTimerEntry
+    let tokens = [];
+    if (ctx.resitanceShort) {
+      [value, tokens] = this.visit(ctx.resitanceShort);      
+    }
+    if (ctx.resistanceValue) {
+      [value, tokens] = this.visit(ctx.resistanceValue);
+    }
+    if (ctx.resistanceLong) {
+      [value, tokens] = this.visit(ctx.resistanceLong);
+    }
+
+    return new StatementMetricBuilder(value as IMDTimerEntry, tokens);
+  }
+  repeater(ctx: any): MDTimerStatementBuilder {
+
+    return new StatementMultiplierBuilder(MdMultiplierValue(Number(ctx.Multiplier[0].image.replace(/\D/g, ''))), [ctx.Multiplier[0]]);
+  }
+
+  resitanceShort(ctx: any) {
+    return [MdWeightValue("LB", Number(ctx.Integer[0].image)), [ctx.Integer[0]]];
+  }
+
+  resistanceValue(ctx: any) {
+    return [MdWeightValue(ctx.Kelos ? "KG" : "LB", Number(ctx.Integer[0].image)), [ctx.Integer[0]]];
+  }
+
+  resistanceLong(ctx: any) {
+    return [MdWeightValue(ctx.Kelos ? "KG" : "LB", Number(ctx.Integer[0].image)), [ctx.Integer[0]]];
+  }
+
+  simpleTimer(ctx: any): MDTimerStatementBuilder {
     const type =
       ctx.CountDirection && ctx.CountDirection[0].tokenType == Minus
         ? "down"
@@ -60,68 +127,30 @@ export class MdTimerInterpreter extends BaseCstVisitor {
     if (ctx.CountDirection) {
       sources.push(ctx.CountDirection[0]);
     }
-    for (const segment of ctx.timerValue[0].children.segments) {
-      sources.push(segment.children.Integer[0]);
-    }
-    return [
-      {
-        icon : type,
-        timer: (this.visit(ctx.timerValue) as number),
-        sources,
-      },
-    ];
+    sources.push(ctx.Time[0]);
+    return new StatementTimerBuilder(MdTimerValue(ctx.Time[0].image, type), sources);
   }
 
-  timerValue(cxt: any): any {
-    const segments =
-      cxt.segments != null
-        ? cxt.segments.map((block: any) => this.visit(block)).reverse()
-        : [];
-
-    while (segments.length < 4) {
-      segments.push(0);
+  labels(ctx: any): MDTimerStatementBuilder {
+    if (ctx.label.length == 1) {
+      return new StatementLabelBuilder(this.visit(ctx.label[0]));
     }
-
-    const time = {
-      days: segments[3],
-      hours: segments[2],
-      minutes: segments[1],
-      seconds: segments[0],
-    };
-
-    return time.seconds * 1 +
-      time.minutes * 60 +
-      time.hours * 60 * 60 +
-      time.days * 60 * 60 * 24;
+    let labels = ctx.label.map((label: any) => this.visit(label));
+    let tokens = ctx.label.flatMap((label: any) => label.children.stringValue[0].children.Identifier as IToken[]);
+    return new StatementMultiplierBuilder(LabelMultiplierValue(labels), tokens);
   }
 
-  timerMultiplier(ctx: any) {
-    return (
-      ctx.multiplierValue?.flatMap((value: any) => this.visit(value)) || []
-    );
-  }
-  multiplierValue(ctx: any) {
-    const outcome = [];
-    if (ctx.numericValue) {
-      const count = this.visit(ctx.numericValue);
-      for (let index = 0; index < count; index++) {
-        outcome.push({ label: "Round " + (index + 1), index: index });
-      }
-    }
-
-    if (ctx.stringValue) {
-      const label = this.visit(ctx.stringValue);
-      outcome.push({ label: label });
-    }
-    return outcome;
+  label(ctx: any): MDTimerStatementBuilder {
+    return ctx.stringValue.map((v: any) => this.visit(v));
   }
 
-  numericValue(ctx: any): number {
+  numericValue(ctx: any): [IMDTimerEntry, IToken[]] {
+    const sources = [ctx.Integer[0]];
     const value = ctx.Integer[0].image;
-    return Number(value);
+    return [MdRepetitionValue(Number(value)), sources];
   }
 
-  stringValue(ctx: any): string {
-    return ctx.Identifier[0].image;
+  stringValue(ctx: any): IToken {
+    return ctx.Identifier[0];
   }
 }

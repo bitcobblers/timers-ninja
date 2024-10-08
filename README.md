@@ -1,6 +1,6 @@
 # Markdown Timer ⚡️
 
-Defining timers using user interfaces can get cumbersome especially for the more complected time tracking, identify repeating tasks like rest and work sets becomes simple with help of markdown. 
+Defining timers with user interfaces can be cumbersome, particularly for complex time-tracking needs. Identifying repeating tasks like rest and work sets, however, becomes simple with Markdown.
 
 ## Getting Started
 
@@ -24,6 +24,22 @@ Start up a local server
 npm run start
 ```
 
+Update the timers data file
+
+```Shell
+npm run build.timers
+```
 ## Syntax Parser Diagram
 
 ![syntax diagram](./syntax-diagram.png)
+
+
+UI
+----
+
+Clock  
+- Running timer (update event, context element updated)
+- UserEvent (Start / Lap / Stop, Reset )
+
+Code / Workout Editor
+- Entry for code blocks

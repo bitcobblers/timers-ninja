@@ -1,0 +1,154 @@
+{
+  "main": {
+    "id": "60aab5bea8d771e2",
+    "type": "split",
+    "children": [
+      {
+        "id": "f563c87a75ccd0f4",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "b683a30e4b2da4ce",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "stopwatch.md",
+                "mode": "source",
+                "source": false
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "18d12d3a5bfb2278",
+    "type": "split",
+    "children": [
+      {
+        "id": "d233c406965dfcdb",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3e3ddd3130dd4b57",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "60cb4009843a4711",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          },
+          {
+            "id": "b60b2a14cc798557",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "84cc65370279ebbc",
+    "type": "split",
+    "children": [
+      {
+        "id": "c571a27afdfb08ac",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1a07408162702e80",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "stopwatch.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1db8a51125c56104",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "stopwatch.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          },
+          {
+            "id": "1660e8eddb079303",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true
+              }
+            }
+          },
+          {
+            "id": "2da734ae0e6adf76",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "stopwatch.md"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false
+    }
+  },
+  "active": "b683a30e4b2da4ce",
+  "lastOpenFiles": [
+    "legs-25.md",
+    "stopwatch.md"
+  ]
+}

@@ -15,7 +15,10 @@ fs.readdir(directoryPath, (err, files) => {
     
     for (let i = 0; i < files.length; i++) {
       const slug = files[i].replace(".md", "");
-      const filePath = path.resolve(`timers/${slug}.md`);
+      if (slug.indexOf(".obsidian") > -1) {continue;}
+      const filePath = path.resolve(`timers/${slug}.md`);      
+      
+
       const file = fs.readFileSync(filePath, 'utf8');
       const { content } = matter(file);  
       const titleMatch = new RegExp("# (.*)", "g");

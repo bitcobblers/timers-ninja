@@ -1,6 +1,6 @@
 # 15 Min Countdown
 
 ```clock
--10(ready)
--15:00(Work)
+-:10 Get Ready
+-15:00 Work
 ```

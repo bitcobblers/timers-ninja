@@ -2,18 +2,19 @@ import type { IToken, CstNode } from "chevrotain";
 import { Lexer } from "chevrotain";
 import { allTokens } from "./timer.tokens";
 import { MdTimerParse } from "./timer.parser";
-import type { MdTimerBlock } from "./timer.types";
+import type { MDTimerCommand } from "./timer.types";
 import { MdTimerInterpreter } from "./timer.visitor";
+import { unescape } from "querystring";
 
 export type MdTimeRuntimeResult = {
   source: string;
   tokens: IToken[];
   parser: any;
   syntax: CstNode;
-  outcome: MdTimerBlock[];
+  outcome: MDTimerCommand[];
 };
 
-export class MdTimerRuntime {
+export class MdTimerCompiler {
   lexer: Lexer;
   visitor: MdTimerInterpreter;
   constructor() {
@@ -27,7 +28,7 @@ export class MdTimerRuntime {
     const parser = new MdTimerParse(tokens) as any;
 
     const cst = parser.timerMarkdown();
-    const raw = cst != null ? this.visitor.visit(cst) : ([] as MdTimerBlock[]);
+    const raw = cst != null ? this.visitor.visit(cst) : ([] as MDTimerCommand[]);
     // console.log("Raw: ", raw);
     return {
       source: inputText,
@@ -38,3 +39,15 @@ export class MdTimerRuntime {
     };
   }
 }
+
+export type MdTimerContext = {}
+export class MdTimerRuntime {
+  constructor(private script: MDTimerCommand[])
+  {
+  }
+
+   next(context: MdTimerContext): undefined | MDTimerInstance{    
+    return this.script[0];
+   }
+}
+export type MDTimerInstance = MDTimerCommand & {}
