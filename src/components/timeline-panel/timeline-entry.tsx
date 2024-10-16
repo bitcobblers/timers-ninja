@@ -1,9 +1,10 @@
 import { component$ } from "@builder.io/qwik";
 import TimerDigits from "../timer-digits/timer-digits";
-import { CountDownIcon, CountUpIcon } from "../timer-display/timer-display";
 import { MDTimerCommand, MDTimerEntryType } from "../md-timer/timer.types";
+import CountUpIcon from "../media/count-up-icon";
+import CountDownIcon from "../media/count-down-icon";
 
-export type TimelineEntryArgs = { status :string; } & MDTimerCommand;
+export type TimelineEntryArgs = { status :string; } & any;
 
 export default component$((props: TimelineEntryArgs) => {
   return (
