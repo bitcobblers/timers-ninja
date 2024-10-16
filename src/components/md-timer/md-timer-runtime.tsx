@@ -98,56 +98,32 @@ export default component$((props:RuntimeArgs) => {
     useContextProvider(mdRuntimeContext, context);             
         
     useVisibleTask$(({ track, cleanup }) => {        
-        track(() => source.value);        
+        track(() => source.value);                
         let intervalId: NodeJS.Timeout | undefined;  
         if (intervalId) {
             clearInterval(intervalId);
         }
         
-        if (source.value == undefined) { return; }
-        
-        const eventHandler = (event: MDRuntimeEvent) => {
-            const handlers: RuntimeEventHandler[]= [
-                new ElapsedTimeHandler(),
-                new StartTimerHandler(),
-                new StopTimerHandler(),
-                new ResetTimerHandler(),        
-            ];            
-            for(let handler of handlers) {
-                if (handler.handles == event.type) {
-                    handler.apply(context.value, event);
-                    console.log(event, handler);
-                }
-            }
-        };    
-        
-        const eventReader = $((event: MDRuntimeEvent) => {
-            const handlers: RuntimeEventHandler[]= [
-                new ElapsedTimeHandler(),
-                new StartTimerHandler(),
-                new StopTimerHandler(),
-                new ResetTimerHandler(),        
-            ];            
-            for(let handler of handlers) {
-                if (handler.handles == event.type) {
-                    handler.apply(context.value, event);
-                    console.log(event, handler);
-                }
-            }
-        });
-        props.onInput(eventReader);
-        
+        if (source.value == undefined) { return; }                        
         let compiledScript = new MdTimerCompiler().read(source.value).outcome;
         if (compiledScript.length == 0) {
             return; 
         }
-        const runtime = new MdTimerRuntime(compiledScript);
+        const runtime = new MdTimerRuntime(compiledScript, [
+            new ElapsedTimeHandler(),
+            new StartTimerHandler(),
+            new StopTimerHandler(),
+            new ResetTimerHandler(),        
+        ]);
+        
+        
         intervalId = setInterval(() => {
-            eventHandler({
+            runtime.next({
                 type: RuntimeEventType.Tick,
                 data: new Date()
             });
         }, refreshReate);
+        
         cleanup(() => {
             if (intervalId) {
                 clearInterval(intervalId);
