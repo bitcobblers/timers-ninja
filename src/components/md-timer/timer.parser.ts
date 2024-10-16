@@ -1,15 +1,16 @@
 import type { IToken } from "chevrotain";
 import { CstParser } from "chevrotain";
-import {
-  Colon,
-  Comma,
+import {  
+  At,
   CountDirection,
-  GroupClose,
-  GroupOpen,
+  Delimiter,
   Identifier,
-  Integer,
-  LabelClose,
-  LabelOpen,
+  Integer,  
+  Kelos,  
+  Multiplier,  
+  Pounds,  
+  Return,  
+  Time,
   allTokens,
 } from "./timer.tokens";
 
@@ -18,62 +19,77 @@ export class MdTimerParse extends CstParser {
     super(allTokens);
     const $ = this as any;
 
-    $.RULE("timerMarkdown", () => {
+    $.RULE("timerMarkdown", () => {     
       $.MANY(() => {
         $.SUBRULE($.timerBlock, { LABEL: "blocks" });
-      });
+      });      
     });
 
     $.RULE("timerBlock", () => {
       $.OR([
-        { ALT: () => $.SUBRULE($.compoundTimer) },
+        { ALT: () => $.SUBRULE($.resistance,) },
         { ALT: () => $.SUBRULE($.simpleTimer) },
+        { ALT: () => $.SUBRULE($.labels) },
+        { ALT: () => $.SUBRULE($.repeater) }
+      ]);                  
+    });      
+
+    $.RULE("repeater", () => {      
+      this.CONSUME(Multiplier)
+    })
+
+    $.RULE("resistance", () => {
+      $.OR([        
+        { ALT: () => $.SUBRULE($.resistanceLong) },                   
+        { ALT: () => $.SUBRULE($.resistanceValue) },
+        { ALT: () => $.SUBRULE($.resitanceShort) }
       ]);
-      $.OPTION(() => {
-        $.SUBRULE($.timerMultiplier);
-      });
     });
 
-    $.RULE("compoundTimer", () => {
-      $.CONSUME(GroupOpen);
-      $.MANY(() => {
-        $.SUBRULE($.timerBlock, { LABEL: "blocks" });
-      });
-      $.CONSUME(GroupClose);
-    });
+    $.RULE("resistanceLong", () => {      
+      $.CONSUME(At)
+      $.CONSUME(Integer)
+      $.OR([
+        { ALT: () => $.CONSUME(Kelos) },        
+        { ALT: () => $.CONSUME(Pounds) },
+      ])
+    })  
+
+    $.RULE("resistanceValue", () => {      
+      $.CONSUME(Integer)
+      $.OR([
+        { ALT: () => $.CONSUME(Kelos) },        
+        { ALT: () => $.CONSUME(Pounds) },
+      ])
+    })
+    
+    $.RULE("resitanceShort", () => {    
+      $.CONSUME(At)
+      $.CONSUME(Integer)
+    })
 
     $.RULE("simpleTimer", () => {
       $.OPTION(() => {
         $.CONSUME(CountDirection, { label: "directionValue" });
       });
-      $.SUBRULE($.timerValue);
+      $.CONSUME(Time);
     });
-
-    $.RULE("timerValue", () => {
+    
+    $.RULE("labels", () => {
       $.AT_LEAST_ONE_SEP({
-        SEP: Colon,
-        DEF: () => {
-          $.SUBRULE($.numericValue, { LABEL: "segments" });
+        SEP: Delimiter,
+        DEF: () => {          
+            $.SUBRULE($.label);          
         },
       });
     });
 
-    $.RULE("timerMultiplier", () => {
-      $.CONSUME(LabelOpen);
-      $.MANY_SEP({
-        SEP: Comma,
-        DEF: () => {
-          $.SUBRULE($.multiplierValue, { label: "values" });
+    $.RULE("label", () => {
+      $.AT_LEAST_ONE({      
+        DEF: () => {          
+          $.SUBRULE($.stringValue);          
         },
       });
-      $.CONSUME(LabelClose);
-    });
-
-    $.RULE("multiplierValue", () => {
-      $.OR([
-        { ALT: () => $.SUBRULE($.numericValue) },
-        { ALT: () => $.SUBRULE($.stringValue) },
-      ]);
     });
 
     $.RULE("numericValue", () => {

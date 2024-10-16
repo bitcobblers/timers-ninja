@@ -1,6 +1,6 @@
 # 15 Min EMOM
 
 ```clock
--10(ready)
-[-1:00(Work)](15)
+-:10 Get Ready
+15x -1:00 Work
 ```

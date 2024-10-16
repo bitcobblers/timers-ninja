@@ -1,15 +1,12 @@
 import type { QRL } from "@builder.io/qwik";
-import { component$, $, useOnDocument } from "@builder.io/qwik";
+import { component$, $, useOnDocument, useContext } from "@builder.io/qwik";
 import { EditorState } from "@codemirror/state";
 import { EditorView } from "@codemirror/view";
 import { basicSetup } from "codemirror";
 import { ViewPlugin } from "@codemirror/view";
 import { oneDark } from "@codemirror/theme-one-dark";
+import { mdRuntimeSource } from "./md-timer/md-timer-runtime";
 
-export type EditorProps = {
-  value: string;
-  onUpdate$: QRL<(value: string) => void>;
-};
 
 // const ComboBox = component$((args: { selected: string })=> {
 //   return <div>
@@ -37,7 +34,8 @@ export type EditorProps = {
 // </div>
 // });
 
-export default component$((params: EditorProps) => {
+export default component$((args: any) => {
+  const source = useContext(mdRuntimeSource);
   useOnDocument(
     "DOMContentLoaded",
     $((args: any) => {
@@ -45,13 +43,14 @@ export default component$((params: EditorProps) => {
         class EventPlugin {
           update(update: any) {            
             if (update.docChanged)
-              params.onUpdate$(update.state.doc.text.join("\n\r"));
+              
+              source.value = update.state.doc.text.join("\n\r");
           }
         },
       );
 
       const startState = EditorState.create({
-        doc: params.value,
+        doc: source.value,
         extensions: [basicSetup, notify, oneDark],
       });
 

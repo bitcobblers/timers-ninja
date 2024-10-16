@@ -2,18 +2,19 @@ import type { IToken, CstNode } from "chevrotain";
 import { Lexer } from "chevrotain";
 import { allTokens } from "./timer.tokens";
 import { MdTimerParse } from "./timer.parser";
-import type { MdTimerBlock } from "./timer.types";
+import type { MDTimerCommand } from "./timer.types";
 import { MdTimerInterpreter } from "./timer.visitor";
+import { MDRuntimeEvent, MDRuntimeContext, RuntimeEventHandler } from "./md-timer-runtime";
 
 export type MdTimeRuntimeResult = {
   source: string;
   tokens: IToken[];
   parser: any;
   syntax: CstNode;
-  outcome: MdTimerBlock[];
+  outcome: MDTimerCommand[];
 };
 
-export class MdTimerRuntime {
+export class MdTimerCompiler {
   lexer: Lexer;
   visitor: MdTimerInterpreter;
   constructor() {
@@ -22,13 +23,11 @@ export class MdTimerRuntime {
   }
 
   read(inputText: string): MdTimeRuntimeResult {
-    // console.log("INPUT: ", inputText);
     const { tokens } = this.lexer.tokenize(inputText);
     const parser = new MdTimerParse(tokens) as any;
 
     const cst = parser.timerMarkdown();
-    const raw = cst != null ? this.visitor.visit(cst) : ([] as MdTimerBlock[]);
-    // console.log("Raw: ", raw);
+    const raw = cst != null ? this.visitor.visit(cst) : ([] as MDTimerCommand[]);
     return {
       source: inputText,
       tokens,
@@ -38,3 +37,25 @@ export class MdTimerRuntime {
     };
   }
 }
+
+export class MdTimerRuntime {
+  constructor(private script: MDTimerCommand[], private handlers: RuntimeEventHandler[]) {
+
+  }
+
+  public Context: MDRuntimeContext | undefined = undefined;  
+  next(evnt: MDRuntimeEvent): undefined | MDTimerInstance {
+    if (this.Context == undefined) { return; }
+    for (let index = 0; index < this.handlers.length; index++) {
+      const handler = this.handlers[index];
+      if (handler.handles !== evnt.type) {
+        continue;
+      }
+
+      handler.apply(this.Context, evnt);
+    }
+
+    return this.script[0];
+  }
+}
+export type MDTimerInstance = MDTimerCommand & {}
