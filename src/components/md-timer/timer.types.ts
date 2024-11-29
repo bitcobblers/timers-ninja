@@ -1,106 +1,137 @@
 import type { IToken } from "chevrotain";
 
-/*
- 
- 
-
- 
-
-*/
-
-export type MdTimerStack = {  
-  
-  blocks: MdTimerBlock[];  
+export type MdTimerStack = {    
+  blocks: MDTimerCommand[];  
 }
 
-export type MdTimerTrace = {
-  events: MdTimerBlockEvent[];
+export enum MDTimerEntryType {  
+  Timer,  
+  StopWatch,
+  Distance,
+  Reptitions,
+  Resistance,
+  Multiplier
 }
 
-export type MdTimerBlockEvent = {
-  eventId: number;
-  timestamp: Date;
-  type: string;
-  metadata : any;
-}
-
-export type MdTimerOptional = {
-  years?: number;
-  months?: number;
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-};
-
-export type MdTimerValue = {
-  days?: number;
-  hours?: number;
-  minutes?: number;
-  seconds?: number;
-  milliseconds? : number;
-};
-
-export class MdTimerFromSeconds implements MdTimerValue {
-  constructor(miliseconds: number) {    
-    const multiplier = 10 ** 3;
-    let remaining = miliseconds;
-
-    this.days = Math.floor(remaining  / 86400); 
-    remaining  %= 86400;
-
-    this.hours = Math.floor(remaining  / 3600);   
-    remaining %= 3600;
-
-    this.minutes = Math.floor(remaining / 60);    
-    remaining %= 60;
-
-    this.seconds = Math.floor(remaining)
-    
-    this.milliseconds = Math.round((remaining - this.seconds) * multiplier);
+export abstract class MDTimerEntry implements IMDTimerEntry {
+  constructor(public type: MDTimerEntryType,
+    public value: undefined | number,
+    public units: string)
+  {
   }
+}
 
-  days?: number | undefined;
-  hours?: number | undefined;
-  minutes?: number | undefined;
-  seconds?: number | undefined;
-  milliseconds?: number | undefined;
+export type IMDTimerEntry = {
+  type: MDTimerEntryType;
+  value?: number;
+  units: string;  
+}
 
-  toClock(): [string, string] { 
-    const result = [];
-    if (this.days != null && this.days != 0) {
-      result.push(this.days.toString())
+export type MDTimerCommand = {    
+  line: number;
+  label : string;
+  multiplier: undefined | IMDTimerEntry;
+  timer: undefined | IMDTimerEntry;
+  metrics : IMDTimerEntry[];
+  children: MDTimerCommand[];  
+}
+
+export type MDTimerStatementBuilder = {
+  sources(): IToken[];
+  apply(command: MDTimerCommand): void;
+}
+
+export class StatementLabelBuilder implements MDTimerStatementBuilder {
+  constructor(private labels: IToken[]) {}
+  apply(command: MDTimerCommand): void {
+    command.label = this.labels.map(l => l.image).join(" ");
+  }
+  sources() : IToken[] { return this.labels || [] }
+}
+export class StatementTimerBuilder implements MDTimerStatementBuilder {
+  constructor(private entry: IMDTimerEntry, private tokens: IToken[]) {  }
+  apply(command: MDTimerCommand): void {
+    command.timer = this.entry;    
+  }  
+  sources() : IToken[] { return this.tokens; }
+}
+export class StatementMultiplierBuilder implements MDTimerStatementBuilder {
+  constructor(private entry: IMDTimerEntry, private tokens: IToken[]) {  }
+  apply(command: MDTimerCommand): void {
+    command.multiplier = this.entry;    
+  }  
+  sources() : IToken[] { return this.tokens; }
+}
+
+export class StatementMetricBuilder implements MDTimerStatementBuilder {
+  constructor(private entry: IMDTimerEntry, private tokens: IToken[]) {  }
+  apply(command: MDTimerCommand): void {
+    command.metrics.push(this.entry);    
+  }  
+  sources() : IToken[] { return this.tokens; }
+}
+
+export function MdMultiplierValue(reps: number) : IMDTimerEntry {
+  return {
+    type : MDTimerEntryType.Reptitions,
+    value: reps,
+    units: ""
+  }
+}
+
+export function MdRepetitionValue (reps: number): IMDTimerEntry {    
+  return { 
+    type: MDTimerEntryType.Reptitions,
+    value: reps,
+    units: "Reps"
+  }  
+}
+
+export function MdWeightValue(units: string, value: number): IMDTimerEntry {
+  return {
+    type :MDTimerEntryType.Resistance,
+    value,
+    units
+  }
+}
+
+export function LabelMultiplierValue(labels: string[]): IMDTimerEntry {
+  return MdMultiplierValue(labels.length);
+  //   constructor(public labels: string[]) {    
+//     super(labels.length);
+//   }
+}
+
+export class EmptyTimer extends MDTimerEntry {
+  constructor(){
+    super(MDTimerEntryType.Timer, 0, "seconds");
+  }
+}
+
+export function MdTimerValue(timerToken: string, direction: "up" | "down") : IMDTimerEntry & any {  
+    const segments = timerToken.split(":")
+        .reverse()
+        .map((d : unknown)=> d as number);
+   
+    while (segments.length < 4) {
+      segments.push(0);
     }
-    if (this.hours != null && this.hours != 0) {
-      result.push(this.hours.toString())
-    }
-    if (this.minutes != null && this.minutes != 0) {
-      result.push(this.minutes.toString())
+    const type = direction == "up"     
+    ? MDTimerEntryType.StopWatch
+    : MDTimerEntryType.Timer;
+    const total = segments[0] * 1 
+    + segments[1] * 60 
+    + segments[2] * 60 * 60 
+    + segments[3] * 60 * 60 * 24;
+
+    return {
+      type,
+      value: total,
+      units: "seconds",
+      days: segments[3],
+      this: segments[2],
+      minutes: segments[1],
+      seconds: segments[0], 
+      milliseconds: 0
     }    
-    let sec = this.seconds?.toString() || "0";
-    if (sec.length == 1) {
-      sec = "0" + sec;
-    }
-    
-    result.push(sec);
-    
-    let mill = this.milliseconds?.toString() || "0";
-    while (mill.length < 3) {
-      mill = mill + "0";
-    }             
-    return [result.join(":"),  mill];
   }
-}
-
-export type MdTimerBlock = {
-  timer: number;
-  icon: string;  
-  round?: number;
-  label?: string;
-  sources: IToken[];
-};
-
-export type TimerInstance = {
-  direction: string;
-  timer: number;
-};

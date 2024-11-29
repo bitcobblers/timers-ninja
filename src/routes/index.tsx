@@ -12,11 +12,8 @@ import TimerPage from "~/components/timer-page/timer-page";
 
 
 export default component$(() => {
-  const init = `[[   
-    -20(Work)
-    -10(Rest)
-](8)
-](pushups, pullups)`;
+  const init = `-:20 Work 
+-:10 Rest`;
   return <TimerPage init={init} title="Playground" />;
 });
 

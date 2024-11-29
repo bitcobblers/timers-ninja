@@ -4,6 +4,8 @@ import { $, useSignal, useVisibleTask$ } from '@builder.io/qwik';
 import { type QRL} from '@builder.io/qwik';
 import { type ContainerArgs } from "../timer-page/timer-page";
 import * as Tone from "tone";
+import { MDTimerInstance } from "../md-timer/md-timer";
+import { EmptyTimer } from "../md-timer/timer.types";
 
 export interface TimeSpan {
     
@@ -23,16 +25,6 @@ export type TimerProps = {
     onStop$?: QRL<(spans: TimeSpan[]) => void>;
     onComplete$?: QRL<(spans: TimeSpan[]) => void>;
     onReset$?: QRL<() => void>;
-};
-
-
-export type MdTimerBlockArgs = {
-  timer: number;
-  icon?: "up" | "down" | "date";
-  round?: number;
-  label?: string;
-  size?: string;
-  status?: string;
 };
 
 export type ButtonArgs  = {
@@ -114,128 +106,86 @@ const ResetButton = component$((args : ButtonArgs ) => {
 </button>
 })
 
-export const CountUpIcon = component$(() => {
-  return <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    class="h-5 w-5"
-  >
-    <path
-      fill-rule="evenodd"
-      d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm.53 5.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l1.72-1.72v5.69a.75.75 0 0 0 1.5 0v-5.69l1.72 1.72a.75.75 0 1 0 1.06-1.06l-3-3Z"
-      clip-rule="evenodd"
-    />
-  </svg>
-})
-
-export const CountDownIcon = component$(() => {
-  return <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 24 24"
-    fill="currentColor"
-    class="h-5 w-5"
-  >
-    <path
-      fill-rule="evenodd"
-      d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-.53 14.03a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V8.25a.75.75 0 0 0-1.5 0v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3Z"
-      clip-rule="evenodd"
-    />
-  </svg>
-})
-
 export type TimerDigitsArgs = ContainerArgs & {
   size: string  
 } 
 
 export default component$((args?: TimerDigitsArgs) => {
-  const blankTimer: MdTimerBlockArgs = {
-    timer : 0,
-     label: "Click Start."
-  }  
-  const sizedTimer = args?.size != undefined ? "text-" + args.size : "text-5xl";
-  const refreshReate = 10;
-  const elapsedTime = useSignal(0);
-  const displayTime = useSignal(0);
-  const started = useSignal(false);
-  const timeSpans = useSignal<TimeSpan[]>([]);
-  const activeTimer = useSignal<MdTimerBlockArgs|undefined>(blankTimer);
   
-  const startTimer = $(() => {
-    args?.next$().then(n=> {
-      const synth = new Tone.Synth().toDestination();
-      synth.triggerAttackRelease("C4", "8n");               
-      activeTimer.value = n;      
-      }
+  // const startTimer = $(() => {
+  //   args?.next$().then(n=> {
+  //     const synth = new Tone.Synth().toDestination();
+  //     synth.triggerAttackRelease("C4", "8n");               
+  //     activeTimer.value = n;      
+  //     }
       
-    );
-    timeSpans.value = [...timeSpans.value, { start: new Date() }];
-    started.value = true;    
-  });
+  //   );
+  //   timeSpans.value = [...timeSpans.value, { start: new Date() }];    
+  // });
 
-  const stopTimer = $(() => {
-      if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
-          const updatedTimeSpans = [...timeSpans.value]; // Create a copy
-          updatedTimeSpans[updatedTimeSpans.length - 1].end = new Date();
-          timeSpans.value = updatedTimeSpans; // Update the signal's value
-          started.value = false;
-      }
-  });
+  // const stopTimer = $(() => {
+  //     if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
+  //         const updatedTimeSpans = [...timeSpans.value]; // Create a copy
+  //         updatedTimeSpans[updatedTimeSpans.length - 1].end = new Date();
+  //         timeSpans.value = updatedTimeSpans; // Update the signal's value
+  //         started.value = false;
+  //     }
+  // });
 
-  const resetTimer = $(() => {
-      elapsedTime.value = 0;
-      displayTime.value = 0;
-      timeSpans.value = [];
-      started.value = false;
-      activeTimer.value = blankTimer;
-      args?.reset$();
-  });
-
-    // eslint-disable-next-line qwik/no-use-visible-task
-    useVisibleTask$(({ track }) => {      
-      track(() => timeSpans.value);      
-        let intervalId: NodeJS.Timeout | undefined;  
-        if (intervalId) {
-            clearInterval(intervalId);
-        }
+  // const resetTimer = $(() => {
+  //     elapsedTime.value = 0;
+  //     displayTime.value = 0;
+  //     timeSpans.value = [];
+  //     started.value = false;
+  //     activeTimer.value = blankTimer;
+  //     args?.reset$();
+  // });
+  // let intervalId: NodeJS.Timeout | undefined;  
+  //   // eslint-disable-next-line qwik/no-use-visible-task
+  //   useVisibleTask$(({ track }) => {      
+  //     track(() => timeSpans.value);
+        
+  //       if (intervalId) {
+  //           clearInterval(intervalId);
+  //       }
        
-        // If there's an active time span (last one without an end time)
-        if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
-            intervalId = setInterval(() => {
-                // Calculate elapsed time based on time spans
-                elapsedTime.value = calculateElapsedTime(timeSpans.value)                
-                displayTime.value = activeTimer.value?.icon == "up" ? elapsedTime.value : (activeTimer.value?.timer || 0) - elapsedTime.value;
-                displayTime.value = displayTime.value < 0 ? 0: displayTime.value;
-                args?.tick$(elapsedTime.value);
-                if (elapsedTime.value > (activeTimer.value?.timer || 0)) {                  
-                  args?.complete$();
+  //       // If there's an active time span (last one without an end time)
+  //       if (timeSpans.value.length > 0 && !timeSpans.value[timeSpans.value.length - 1].end) {
+  //           intervalId = setInterval(() => {
+  //               // Calculate elapsed time based on time spans
+  //               elapsedTime.value = calculateElapsedTime(timeSpans.value)                
+  //               displayTime.value = activeTimer.value?.icon == "up" ? elapsedTime.value : (activeTimer.value?.timer || 0) - elapsedTime.value;
+  //               displayTime.value = displayTime.value < 0 ? 0: displayTime.value;
+  //               args?.tick$(elapsedTime.value);
+  //               if (elapsedTime.value > (activeTimer.value?.timer || 0)) {                  
+  //                 args?.complete$();
                             
-                  args?.next$().then(n=> { 
-                    const synth = new Tone.Synth().toDestination();
-                    synth.triggerAttackRelease("C4", "8n");     
-                    if (n == undefined) {
-                      elapsedTime.value = 0;
-                      timeSpans.value = [];
-                      started.value = false;
-                      activeTimer.value = blankTimer;
-                      args.reset$();                      
+  //                 args?.next$().then(n=> { 
+  //                   const synth = new Tone.Synth().toDestination();
+  //                   synth.triggerAttackRelease("C4", "8n");     
+  //                   if (n == undefined) {
+  //                     elapsedTime.value = 0;
+  //                     timeSpans.value = [];
+  //                     started.value = false;
+  //                     activeTimer.value = blankTimer;
+  //                     args.reset$();                      
                       
-                      return;
-                    }                         
-                    timeSpans.value = [ { start: new Date() }];                    
+  //                     return;
+  //                   }                         
+  //                   timeSpans.value = [ { start: new Date() }];                    
                     
-                    activeTimer.value = n;
-                  });
-                }
-            }, refreshReate);
-        }
+  //                   activeTimer.value = n;
+  //                 });
+  //               }
+  //           }, refreshReate);
+  //       }
 
-        return () => {
-            if (intervalId) {
-                clearInterval(intervalId);
-            }
-        };
-    });
+  //       return () => {
+  //           if (intervalId) {
+  //               clearInterval(intervalId);
+  //           }
+  //       };
+  //   });
     
       
   return (
@@ -247,7 +197,7 @@ export default component$((args?: TimerDigitsArgs) => {
                      text-gray-800"
       >
         {/* <audio id="bell" src="boxing-bell.mp3"></audio> */}
-        {(activeTimer.value?.round || activeTimer.value?.label) &&
+        {/* {(activeTimer.value?.round || activeTimer.value?.label) &&
           <div class="mx-auto flex">
             <div class="text-center flex-grow bg-forest rounded-t-lg text-green-50">
               {activeTimer.value.round && "Round " + activeTimer.value.round}
@@ -270,7 +220,7 @@ export default component$((args?: TimerDigitsArgs) => {
       <div class="flex justify-center space-x-6 pt-6">        
         {!started.value && <StartButton q-preload onClick$={startTimer} />}
         {started.value && <PauseButton onClick$={stopTimer} /> }
-        <ResetButton onClick$={resetTimer} />
+        <ResetButton onClick$={resetTimer} /> */}
       </div>
     </>
   );
